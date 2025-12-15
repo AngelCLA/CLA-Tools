@@ -7,3 +7,47 @@
 html {
   scroll-behavior: smooth;
 }
+
+/* Estilos personalizados para scrollbars - Webkit (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #a78bfa;
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: background-color 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9370db;
+  background-clip: padding-box;
+}
+
+/* Modo oscuro - Webkit scrollbars */
+.dark ::-webkit-scrollbar-thumb {
+  background: #6d28d9;
+  background-clip: padding-box;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #7c3aed;
+  background-clip: padding-box;
+}
+
+/* Firefox scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #a78bfa transparent;
+}
+
+.dark * {
+  scrollbar-color: #6d28d9 transparent;
+}

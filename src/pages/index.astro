@@ -1,11 +1,27 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import Welcome from "../components/Welcome.astro";
+import ToolCards from "../components/ToolCards.astro";
+import Layout from "../layouts/Layout.astro";
+import AboutSection from "../components/AboutSection.astro";
+import Contact from "../components/ContactSection.astro";
 
 // Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
 // Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
 ---
 
-<Layout>
-	<Welcome />
+<Layout
+  title="CLA Tools - Herramientas Educativas Gratuitas Online"
+  description="Plataforma gratuita con herramientas para educadores. Convierte DOCX a GIFT para Moodle, une PDFs, convierte texto a HTML y más. Todo gratis y sin registro."
+  keywords="herramientas educativas, moodle, pdf, docx, gift, herramientas gratuitas, educación online"
+>
+  <Welcome />
+  <div class="flex flex-col min-h-screen items-center justify-center">
+    <h3 class="text-4xl font-bold text-purple-600 dark:text-purple-400 mb-6">
+      Herramientas Disponibles
+    </h3>
+    <p class="mb-12">Explora las herramientas que tenemos para ti.</p>
+    <ToolCards />
+    <AboutSection />
+    <Contact />
+  </div>
 </Layout>

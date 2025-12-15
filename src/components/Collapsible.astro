@@ -1,0 +1,96 @@
+---
+interface Props {
+  title: string;
+  defaultOpen?: boolean;
+}
+
+const { title, defaultOpen = false } = Astro.props;
+const uniqueId = `collapsible-${Math.random().toString(36).substring(7)}`;
+const contentId = `${uniqueId}-content`;
+const iconId = `${uniqueId}-icon`;
+---
+
+<div
+  class="w-full border-2 border-dashed border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 rounded-xl p-6"
+>
+  <button
+    id={uniqueId}
+    class="flex items-center justify-between w-full text-left group cursor-pointer"
+    aria-expanded={defaultOpen.toString()}
+    data-content-id={contentId}
+    data-icon-id={iconId}
+  >
+    <span
+      class="text-lg font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-2"
+    >
+      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <path
+          d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"
+        ></path>
+      </svg>
+      {title}
+    </span>
+    <svg
+      id={iconId}
+      class="w-5 h-5 text-purple-600 dark:text-purple-400 transition-transform duration-200"
+      style={defaultOpen ? "" : "transform: rotate(-90deg);"}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M19 9l-7 7-7-7"></path>
+    </svg>
+  </button>
+
+  <div
+    id={contentId}
+    class="overflow-hidden transition-all duration-500 ease-in-out"
+    style={defaultOpen
+      ? "max-height: 2000px; opacity: 1; margin-top: 1rem;"
+      : "max-height: 0px; opacity: 0; margin-top: 0;"}
+  >
+    <slot />
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const collapsibles = document.querySelectorAll(
+      '[id^="collapsible-"]'
+    ) as NodeListOf<HTMLButtonElement>;
+
+    collapsibles.forEach((button) => {
+      const contentId = button.getAttribute("data-content-id");
+      const iconId = button.getAttribute("data-icon-id");
+
+      if (!contentId || !iconId) return;
+
+      const content = document.getElementById(contentId);
+      const icon = document.getElementById(iconId);
+
+      if (!content || !icon) return;
+
+      button.addEventListener("click", function () {
+        const isCollapsed = content.style.maxHeight === "0px";
+
+        if (isCollapsed) {
+          content.style.maxHeight = "2000px";
+          content.style.opacity = "1";
+          content.style.marginTop = "1rem";
+          icon.style.transform = "rotate(0deg)";
+          button.setAttribute("aria-expanded", "true");
+        } else {
+          content.style.maxHeight = "0px";
+          content.style.opacity = "0";
+          content.style.marginTop = "0";
+          icon.style.transform = "rotate(-90deg)";
+          button.setAttribute("aria-expanded", "false");
+        }
+      });
+    });
+  });
+</script>

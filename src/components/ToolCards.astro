@@ -1,0 +1,73 @@
+---
+const tools = [
+  {
+    title: "DOCX a GIFT",
+    description:
+      "Convierte documentos de Word al formato GIFT para importar preguntas en Moodle.",
+    icon: "fas fa-file-word",
+    href: "/tools/docx-gift",
+  },
+  {
+    title: "Texto a HTML",
+    description:
+      "Convierte texto con formato a código HTML conservando estilos y estructura.",
+    icon: "fas fa-code",
+    href: "/tools/text-html",
+  },
+  {
+    title: "Unir PDF",
+    description:
+      "Combina múltiples archivos PDF en uno solo de manera sencilla.",
+    icon: "fas fa-file-pdf",
+    href: "/tools/merge-pdf",
+  },
+  {
+    title: "Formularios",
+    description: "Portal de formularios institucionales.",
+    icon: "fas fa-clipboard-list",
+    href: "/tools/forms",
+  },
+];
+---
+
+<section
+  id="tools"
+  class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-center"
+>
+  {
+    tools.map((tool) => (
+      <a
+        href={tool.href}
+        class="group rounded-2xl bg-white p-6 shadow-sm transition
+         hover:-translate-y-1 hover:shadow-xl shadow-purple-600/20 h-full flex flex-col
+         dark:bg-zinc-800/20"
+      >
+        <div class="mb-4 text-3xl text-purple-600 dark:text-purple-400">
+          <i class={tool.icon} />
+        </div>
+        <h2 class="mb-2 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+          {tool.title}
+        </h2>
+        <p class="text-sm text-zinc-600 dark:text-zinc-400">
+          {tool.description}
+        </p>
+      </a>
+    ))
+  }
+
+  <!-- Próximamente -->
+  <div
+    class="rounded-2xl bg-zinc-100 p-6 text-center
+       opacity-60 h-full flex flex-col dark:bg-zinc-800"
+  >
+    <div class="mb-4 text-3xl text-zinc-500 dark:text-zinc-400">
+      <i class="fas fa-clock"></i>
+    </div>
+    <h2 class="mb-2 text-lg font-semibold text-zinc-700 dark:text-zinc-300">
+      Próximamente
+    </h2>
+    <p class="text-sm text-zinc-600 dark:text-zinc-400">
+      Más herramientas disponibles.
+    </p>
+  </div>
+</section>

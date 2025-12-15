@@ -1,0 +1,161 @@
+<!-- Formato de ejemplo -->
+<div
+  class="w-full max-w-5xl border-2 mb-4 border-dashed border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 rounded-xl p-6"
+>
+  <button
+    id="toggle-example"
+    class="flex items-center justify-between w-full text-left group cursor-pointer"
+    aria-expanded="false"
+  >
+    <span
+      class="text-lg font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-2"
+    >
+      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <path
+          d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"
+        ></path>
+      </svg>
+      Ejemplo de formato en Word (.docx)
+    </span>
+    <svg
+      id="toggle-icon"
+      class="w-5 h-5 text-purple-600 dark:text-purple-400 transition-transform duration-200"
+      style="transform: rotate(-90deg);"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M19 9l-7 7-7-7"></path>
+    </svg>
+  </button>
+
+  <div
+    id="example-content"
+    class="overflow-hidden transition-all duration-500 ease-in-out"
+    style="max-height: 0px; opacity: 0; margin-top: 0;"
+  >
+    <p class="text-sm text-zinc-700 dark:text-zinc-300 font-medium mb-4">
+      <strong
+        >El conversor acepta estos formatos para marcar la respuesta correcta:</strong
+      >
+    </p>
+
+    <!-- Ejemplo 1 -->
+    <div
+      class="bg-zinc-50 dark:bg-zinc-800 rounded-lg p-4 border border-zinc-200 dark:border-zinc-700"
+    >
+      <p class="text-purple-600 dark:text-purple-400 font-semibold mb-2">
+        📌 Formato 1: Texto subrayado con fondo amarillo
+      </p>
+      <p class="font-bold text-zinc-900 dark:text-zinc-100">
+        ¿Cuál es la función clave de la Química Agrícola?
+      </p>
+      <p class="text-zinc-700 dark:text-zinc-300">
+        Fabricar maquinaria agrícola innovadora
+      </p>
+      <p class="text-zinc-700 dark:text-zinc-300">
+        Medir la humedad ambiental y del suelo
+      </p>
+      <p
+        class="underline bg-yellow-200 dark:bg-yellow-500/30 text-zinc-900 dark:text-zinc-100"
+      >
+        Mejorar la productividad del suelo y cultivos
+      </p>
+    </div>
+
+    <!-- Ejemplo 2 -->
+    <div
+      class="bg-zinc-50 dark:bg-zinc-800 rounded-lg p-4 border border-zinc-200 dark:border-zinc-700 mt-3"
+    >
+      <p class="text-purple-600 dark:text-purple-400 font-semibold mb-2">
+        📌 Formato 2: Texto con subrayado simple y fondo amarillo
+      </p>
+      <p class="font-bold text-zinc-900 dark:text-zinc-100">
+        De los siguientes procesos ¿Cuál se ve influenciado directamente por la
+        Química Agrícola?
+      </p>
+      <p class="text-zinc-700 dark:text-zinc-300">
+        Transcripción genética animal y vegetal
+      </p>
+      <p class="text-zinc-700 dark:text-zinc-300">
+        Reproducción animal y vegetal
+      </p>
+      <p
+        class="underline bg-yellow-200 dark:bg-yellow-500/30 text-zinc-900 dark:text-zinc-100"
+      >
+        Fotosíntesis
+      </p>
+    </div>
+
+    <!-- Ejemplo 3 -->
+    <div
+      class="bg-zinc-50 dark:bg-zinc-800 rounded-lg p-4 border border-zinc-200 dark:border-zinc-700 mt-3"
+    >
+      <p class="text-purple-600 dark:text-purple-400 font-semibold mb-2">
+        📌 Formato 3: Texto con subrayado simple
+      </p>
+      <p class="font-bold text-zinc-900 dark:text-zinc-100">
+        ¿Cuál es la unidad más común para expresar la concentración de
+        nutrientes en fertilizantes?
+      </p>
+      <p class="text-zinc-700 dark:text-zinc-300">Decibelios</p>
+      <p class="underline text-zinc-900 dark:text-zinc-100">
+        Miligramos por litro (mg/L)
+      </p>
+      <p class="text-zinc-700 dark:text-zinc-300">Voltios</p>
+    </div>
+
+    <!-- Reglas importantes -->
+    <div
+      class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mt-4"
+    >
+      <p class="text-sm text-zinc-700 dark:text-zinc-300">
+        <strong class="text-zinc-900 dark:text-zinc-100"
+          >Reglas importantes:</strong
+        ><br />
+        <span class="block mt-2">
+          ✓ Cada pregunta en <strong>negrita</strong> en un párrafo independiente
+        </span>
+        <span class="block">✓ Cada respuesta en su propio párrafo</span>
+        <span class="block">
+          ✓ Marca la respuesta correcta con <u>subrayado</u> o resaltado amarillo
+        </span>
+        <span class="block">
+          ✗ Evita listas con viñetas (usa párrafos simples)
+        </span>
+      </p>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  document.addEventListener("DOMContentLoaded", function () {
+    const toggleButton = document.getElementById("toggle-example");
+    const exampleContent = document.getElementById("example-content");
+    const toggleIcon = document.getElementById("toggle-icon");
+
+    if (toggleButton && exampleContent && toggleIcon) {
+      toggleButton.addEventListener("click", function () {
+        const isCollapsed = exampleContent.style.maxHeight === "0px";
+
+        if (isCollapsed) {
+          exampleContent.style.maxHeight = "2000px";
+          exampleContent.style.opacity = "1";
+          exampleContent.style.marginTop = "1rem";
+          toggleIcon.style.transform = "rotate(0deg)";
+          toggleButton.setAttribute("aria-expanded", "true");
+        } else {
+          exampleContent.style.maxHeight = "0px";
+          exampleContent.style.opacity = "0";
+          exampleContent.style.marginTop = "0";
+          toggleIcon.style.transform = "rotate(-90deg)";
+          toggleButton.setAttribute("aria-expanded", "false");
+        }
+      });
+    }
+  });
+</script>

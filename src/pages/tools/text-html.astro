@@ -1,5 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import textHtmlScript from "../../assets/scripts/text-html-converter.js?raw";
 ---
 
 <Layout
@@ -324,4 +325,6 @@ import Layout from "../../layouts/Layout.astro";
   </div>
 </Layout>
 
-<script is:inline src="/src/assets/scripts/text-html-converter.js"></script>
+<script is:inline define:vars={{ textHtmlScript: textHtmlScript }}>
+  eval(textHtmlScript);
+</script>

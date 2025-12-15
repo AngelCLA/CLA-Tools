@@ -3,6 +3,7 @@ import Welcome from "../../components/Welcome.astro";
 import ToolCards from "../../components/ToolCards.astro";
 import Layout from "../../layouts/Layout.astro";
 import ExampleCollapsable from "../../components/ExampleCollapsable.astro";
+import docxConverterScript from "../../assets/scripts/docx-gift-converter.js?raw";
 
 // Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
 // Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
@@ -219,4 +220,6 @@ import ExampleCollapsable from "../../components/ExampleCollapsable.astro";
 ></script>
 
 <!-- Cargar el conversor DOCX a GIFT -->
-<script is:inline src="/src/assets/scripts/docx-gift-converter.js"></script>
+<script is:inline define:vars={{ converterScript: docxConverterScript }}>
+  eval(converterScript);
+</script>

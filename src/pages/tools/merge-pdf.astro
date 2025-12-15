@@ -1,5 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import mergePdfScript from "../../assets/scripts/merge-pdf.js?raw";
 ---
 
 <Layout
@@ -183,4 +184,6 @@ import Layout from "../../layouts/Layout.astro";
   src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
 <!-- Merge PDF Script -->
-<script is:inline src="/src/assets/scripts/merge-pdf.js"></script>
+<script is:inline define:vars={{ mergeScript: mergePdfScript }}>
+  eval(mergeScript);
+</script>

@@ -3,6 +3,7 @@ import Welcome from "../../components/Welcome.astro";
 import ToolCards from "../../components/ToolCards.astro";
 import Layout from "../../layouts/Layout.astro";
 import ExampleCollapsable from "../../components/ExampleCollapsable.astro";
+import commonScript from "../../assets/scripts/common.js?raw";
 import docxConverterScript from "../../assets/scripts/docx-gift-converter.js?raw";
 
 // Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
@@ -59,7 +60,7 @@ import docxConverterScript from "../../assets/scripts/docx-gift-converter.js?raw
       <!-- File Info -->
       <div
         id="file-info"
-        class="hidden w-full max-w-5xl mt-4 bg-zinc-100 dark:bg-zinc-800 rounded-lg p-4 items-center justify-between flex cursor-pointer"
+        class="flex hidden w-full max-w-5xl mt-4 bg-zinc-100 dark:bg-zinc-800 rounded-lg p-4 items-center justify-between cursor-pointer"
       >
         <span
           id="file-name"
@@ -218,6 +219,17 @@ import docxConverterScript from "../../assets/scripts/docx-gift-converter.js?raw
   is:inline
   src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"
 ></script>
+
+<!-- Cargar JSZip para leer el contenido interno del DOCX -->
+<script
+  is:inline
+  src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"
+></script>
+
+<!-- Cargar common.js primero para las utilidades -->
+<script is:inline define:vars={{ commonScript }}>
+  eval(commonScript);
+</script>
 
 <!-- Cargar el conversor DOCX a GIFT -->
 <script is:inline define:vars={{ converterScript: docxConverterScript }}>

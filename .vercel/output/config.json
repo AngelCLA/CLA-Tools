@@ -30,22 +30,6 @@
 		{
 			"src": "^/api/tool-use-real/?$",
 			"dest": "_render"
-		},
-		{
-			"src": "^/tools/docx-gift/?$",
-			"dest": "_render"
-		},
-		{
-			"src": "^/tools/merge-pdf/?$",
-			"dest": "_render"
-		},
-		{
-			"src": "^/tools/text-html/?$",
-			"dest": "_render"
-		},
-		{
-			"src": "^/$",
-			"dest": "_render"
 		}
 	]
 }

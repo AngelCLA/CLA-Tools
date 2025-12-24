@@ -5,71 +5,170 @@ import ToolCards from "./ToolCards.astro";
 
 <div id="container" class="min-h-screen flex flex-col max-w-7xl mx-auto p-6">
   <div class="flex-1 flex items-center justify-center">
-    <section class="relative overflow-hidden w-full">
-      <!-- Fondo decorativo -->
-      <div class="absolute inset-0 -z-10">
-        <div
-          class="absolute left-1/2 top-1/2 h-auto w-125
-             -translate-x-1/2 -translate-y-1/2
-             rounded-full bg-purple-500/90 blur-3xl"
-        >
-        </div>
-      </div>
+    <!-- Fondo decorativo -->
+    <div class="absolute inset-0 dot-grid"></div>
 
+    <!-- Gradientes de fondo -->
+    <div
+      class="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-600 rounded-full gradient-blur"
+    >
+    </div>
+    <div
+      class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-600 rounded-full gradient-blur"
+    >
+    </div>
+    <section class="relative overflow-hidden w-full">
       <!-- Contenido -->
       <div class="mx-auto max-w-5xl px-6 text-center">
-        <span
-          class="mb-4 inline-block rounded-full bg-purple-100 px-4 py-1
-             text-sm font-medium text-purple-700
-             dark:bg-purple-500/10 dark:text-purple-400"
+        <!-- Badges superiores -->
+        <div
+          class="mb-6 inline-flex items-center gap-6 rounded-full bg-zinc-100/50 dark:bg-zinc-900/50 backdrop-blur-sm px-6 py-3 text-sm border border-zinc-800"
         >
-          ✨ 100% Gratuito · Sin Registro · Total Privacidad
-        </span>
+          <span
+            class="flex items-center gap-2 text-zinc-900 dark:text-zinc-300"
+          >
+            <svg
+              class="w-4 h-4 text-green-500"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clip-rule="evenodd"></path>
+            </svg>
+            100% Gratuito
+          </span>
+          <span class="text-zinc-600">·</span>
+          <span class="text-zinc-900 dark:text-zinc-300">Sin Registro</span>
+          <span class="text-zinc-600">·</span>
+          <span class="text-zinc-900 dark:text-zinc-300">Total Privacidad</span>
+        </div>
 
+        <!-- Título -->
         <h1
-          class="mb-6 text-4xl font-bold tracking-tight
-             text-zinc-900 sm:text-5xl
-             dark:text-zinc-100"
+          class="mb-2 text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-zinc-900 dark:text-white"
         >
-          CLA Tools – Colección de herramientas
+          CLA Tools
         </h1>
 
+        <h2
+          class="mb-8 text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight bg-linear-to-r from-purple-400 via-pink-500 to-purple-600 bg-clip-text text-transparent"
+        >
+          Herramientas Web
+        </h2>
+
+        <!-- Descripción -->
         <p
-          class="mx-auto mb-10 max-w-2xl text-base
-             text-zinc-600 sm:text-lg
-             dark:text-zinc-400"
+          class="mx-auto mb-6 max-w-2xl text-base sm:text-lg text-zinc-900 dark:text-zinc-400 leading-relaxed"
         >
           Plataforma gratuita con herramientas para agilizar la carga de
-          actividades y optimizar procesos académicos de forma rápida y
-          sencilla.
+          actividades y optimizar procesos académicos de forma <span
+            class="text-purple-600 dark:text-purple-400 font-semibold"
+            >rápida y sencilla</span
+          >.
         </p>
 
         <!-- CTA -->
-        <div class="flex flex-col justify-center gap-4 sm:flex-row">
+        <div class="flex flex-col justify-center gap-4 sm:flex-row mb-12">
           <a
             href="#tools-title"
-            class="inline-flex items-center justify-center
-               rounded-xl bg-purple-600 px-6 py-3
-               text-sm font-semibold text-white
+            class="inline-flex items-center justify-center gap-2
+               rounded-xl bg-purple-600 px-8 py-4
+               text-base font-semibold text-white
                transition hover:bg-purple-700
+               shadow-lg shadow-purple-600/30
                focus-visible:outline
                focus-visible:outline-purple-500"
           >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
             Ver herramientas
           </a>
 
           <a
             href="https://github.com/AngelCLA/cla-tools"
             target="_blank"
-            class="inline-flex items-center justify-center
-               rounded-xl border border-zinc-300 px-6 py-3
-               text-sm font-semibold text-zinc-700
-               transition hover:bg-zinc-100
-               dark:border-zinc-700 dark:text-zinc-300
-               dark:hover:bg-zinc-800"
+            class="inline-flex items-center justify-center gap-2
+               rounded-xl border border-zinc-700 bg-zinc-100/50 dark:bg-zinc-900/50 dark:text-zinc-300 backdrop-blur-sm px-8 py-4
+               text-base font-semibold text-zinc-900
+               transition dark:hover:bg-zinc-800 dark:hover:border-zinc-600 hover:bg-zinc-300/50 hover:border-zinc-600"
           >
-            GitHub
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path
+                d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"
+              ></path>
+            </svg>
+            Ver en GitHub
           </a>
+        </div>
+
+        <!-- Badges inferiores -->
+        <div
+          class="flex flex-wrap justify-center gap-4 text-sm text-zinc-900 dark:text-zinc-400"
+        >
+          <span class="flex items-center gap-2">
+            <svg
+              class="w-4 h-4 text-purple-600 dark:text-purple-400"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clip-rule="evenodd"></path>
+            </svg>
+            En el navegador
+          </span>
+          <span class="flex items-center gap-2">
+            <svg
+              class="w-4 h-4 text-purple-600 dark:text-purple-400"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clip-rule="evenodd"></path>
+            </svg>
+            Sin instalación
+          </span>
+          <span class="flex items-center gap-2">
+            <svg
+              class="w-4 h-4 text-purple-600 dark:text-purple-400"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clip-rule="evenodd"></path>
+            </svg>
+            Código abierto
+          </span>
+          <span class="flex items-center gap-2">
+            <svg
+              class="w-4 h-4 text-purple-600 dark:text-purple-400"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clip-rule="evenodd"></path>
+            </svg>
+            Procesamiento local
+          </span>
         </div>
       </div>
     </section>
@@ -78,7 +177,7 @@ import ToolCards from "./ToolCards.astro";
   <div class="flex justify-center pb-16 animate-bounce">
     <a
       href="#tools-title"
-      class="text-purple-600 dark:text-purple-400 transition-colors hover:text-purple-700 dark:hover:text-purple-300"
+      class="text-purple-600 transition-colors hover:text-pink-600"
       aria-label="Desplazar hacia herramientas"
     >
       <svg
@@ -101,3 +200,34 @@ import ToolCards from "./ToolCards.astro";
     </a>
   </div>
 </div>
+
+<style>
+  .gradient-blur {
+    filter: blur(100px);
+    opacity: 0.3;
+    animation: float 10s ease-in-out infinite;
+  }
+
+  .dot-grid {
+    background-image: radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.05) 1px,
+      transparent 1px
+    );
+    background-size: 30px 30px;
+    opacity: 0.5;
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+    33% {
+      transform: translate(30px, -30px) scale(1.1);
+    }
+    66% {
+      transform: translate(-30px, 30px) scale(0.9);
+    }
+  }
+</style>

@@ -1,11 +1,11 @@
 ---
 // src/components/StatsWidget.astro
-import { supabase } from "@/lib/supabase";
+import { supabase } from '@/lib/supabase';
 
 // Obtener estadísticas generales
 const { data: stats } = await supabase
-  .from("tool_usage")
-  .select("tool_slug, event_type");
+  .from('tool_usage')
+  .select('tool_slug, event_type');
 
 // Procesar datos por herramienta
 let toolMetrics = new Map();
@@ -13,280 +13,211 @@ let totalClicks = 0;
 let totalConversions = 0;
 
 if (stats) {
-  stats.forEach((record) => {
-    if (record.event_type === "click") totalClicks++;
-    if (record.event_type === "conversion") totalConversions++;
-
+  stats.forEach(record => {
+    if (record.event_type === 'click') totalClicks++;
+    if (record.event_type === 'conversion') totalConversions++;
+    
     if (!toolMetrics.has(record.tool_slug)) {
-      toolMetrics.set(record.tool_slug, {
+      toolMetrics.set(record.tool_slug, { 
         slug: record.tool_slug,
-        clicks: 0,
-        conversions: 0,
+        clicks: 0, 
+        conversions: 0 
       });
     }
-
+    
     const metric = toolMetrics.get(record.tool_slug);
-    if (record.event_type === "click") metric.clicks++;
-    if (record.event_type === "conversion") metric.conversions++;
+    if (record.event_type === 'click') metric.clicks++;
+    if (record.event_type === 'conversion') metric.conversions++;
   });
 }
 
 // Configuración de herramientas
-const toolConfig: Record<
-  string,
-  { name: string; icon: string; color: string; bgColor: string }
-> = {
-  "docx-to-gift": {
-    name: "DOCX to GIFT",
-    icon: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z",
-    color: "purple",
-    bgColor: "from-purple-500",
+const toolConfig: Record<string, { name: string; description: string; icon: string; colorLight: string; colorDark: string }> = {
+  'docx-to-gift': { 
+    name: 'DOCX to GIFT', 
+    description: 'Conversión de documentos',
+    icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+    colorLight: 'bg-purple-50 border-purple-200',
+    colorDark: 'dark:bg-purple-500/10 dark:border-purple-500/20'
   },
-  "text-to-html": {
-    name: "Text to HTML",
-    icon: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4",
-    color: "blue",
-    bgColor: "from-blue-500",
+  'text-to-html': { 
+    name: 'Text to HTML', 
+    description: 'Conversión de texto a código',
+    icon: 'M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4',
+    colorLight: 'bg-blue-50 border-blue-200',
+    colorDark: 'dark:bg-blue-500/10 dark:border-blue-500/20'
   },
-  "merge-pdf": {
-    name: "Merge PDF",
-    icon: "M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z",
-    color: "green",
-    bgColor: "from-green-500",
+  'merge-pdf': { 
+    name: 'Merge PDF', 
+    description: 'Unión de documentos PDF',
+    icon: 'M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z',
+    colorLight: 'bg-green-50 border-green-200',
+    colorDark: 'dark:bg-green-500/10 dark:border-green-500/20'
   },
-  forms: {
-    name: "Forms",
-    icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",
-    color: "orange",
-    bgColor: "from-orange-500",
-  },
+  'forms': { 
+    name: 'Forms', 
+    description: 'Generación de formularios',
+    icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2',
+    colorLight: 'bg-orange-50 border-orange-200',
+    colorDark: 'dark:bg-orange-500/10 dark:border-orange-500/20'
+  }
 };
 
 // Convertir a array y calcular tasa de conversión
-const metricsArray = Array.from(toolMetrics.values()).map((metric) => ({
+const metricsArray = Array.from(toolMetrics.values()).map(metric => ({
   ...metric,
   config: toolConfig[metric.slug] || {
     name: metric.slug,
-    icon: "M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4",
-    color: "gray",
-    bgColor: "from-gray-500",
+    description: 'Herramienta disponible',
+    icon: 'M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4',
+    colorLight: 'bg-gray-50 border-gray-200',
+    colorDark: 'dark:bg-gray-500/10 dark:border-gray-500/20'
   },
-  conversionRate:
-    metric.clicks > 0
-      ? ((metric.conversions / metric.clicks) * 100).toFixed(1)
-      : "0.0",
+  conversionRate: metric.clicks > 0 
+    ? ((metric.conversions / metric.clicks) * 100).toFixed(1)
+    : '0.0'
 }));
 
-const totalConversionRate =
-  totalClicks > 0 ? ((totalConversions / totalClicks) * 100).toFixed(1) : "0.0";
+const totalConversionRate = totalClicks > 0 
+  ? ((totalConversions / totalClicks) * 100).toFixed(1)
+  : '0.0';
 ---
 
-<div class="space-y-6 w-7xl">
-  <!-- Header -->
-  <div class="flex items-center justify-between">
-    <div>
-      <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-1">
-        Tool Analytics
-      </h3>
-      <p class="text-sm text-gray-500 dark:text-gray-400">
-        Real-time usage metrics per tool
-      </p>
-    </div>
-    <a
-      href="/admin/stats"
-      class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-black text-sm font-medium rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-all duration-200 hover:scale-105"
-    >
-      View Details
-      <svg
-        class="w-4 h-4"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M9 5l7 7-7 7"></path>
-      </svg>
-    </a>
-  </div>
-
-  <!-- Stats Grid -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-    <!-- Total Card (destacada) -->
-    <div class="relative group md:col-span-2 lg:col-span-1">
-      <div
-        class="absolute -inset-0.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur opacity-30 group-hover:opacity-50 transition duration-500"
-      >
+<section class="w-full bg-white dark:bg-zinc-900">
+  <div class="space-y-6 mb-12 max-w-6xl w-full mx-auto p-6 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/10 dark:to-pink-900/10 border border-purple-100 dark:border-purple-500/10 rounded-2xl backdrop-blur-sm">
+    <!-- Header -->
+    <div class="flex items-start justify-between">
+      <div>
+        <h3 class="text-2xl font-bold text-zinc-900 dark:text-white mb-2">
+          Métricas de uso
+        </h3>
+        <p class="text-zinc-600 dark:text-gray-400 text-sm">
+          Estadísticas en tiempo real de las herramientas
+        </p>
       </div>
-      <div
-        class="relative overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-black p-6"
+      <a 
+        href="/admin/stats" 
+        class="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-white/5 hover:bg-gray-50 dark:hover:bg-white/10 border border-gray-200 dark:border-white/10 text-zinc-900 dark:text-white text-sm font-medium rounded-lg transition-colors shadow-sm"
       >
-        <div
-          class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full blur-3xl opacity-20"
-        >
-        </div>
+        Ver detalles
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
 
-        <div class="relative">
-          <div class="flex items-center gap-3 mb-4">
-            <div
-              class="p-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl shadow-lg"
-            >
-              <svg
-                class="w-6 h-6 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                ></path>
-              </svg>
-            </div>
-            <div>
-              <h4
-                class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-              >
-                Total
-              </h4>
-              <p class="text-xs text-gray-400 dark:text-gray-500">
-                All tools combined
-              </p>
+    <!-- Main Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Total Card -->
+      <div class="p-8  dark:bg-zinc-950 dark:bg-gradient-to-br dark:from-purple-900/20 dark:to-pink-900/20 border border-gray-200 dark:border-purple-500/20 rounded-2xl shadow-sm dark:shadow-none">
+        <div class="flex items-center justify-between mb-8">
+          <div>
+            <h4 class="text-lg font-semibold text-zinc-900 dark:text-white mb-1">Total general</h4>
+            <div class="flex items-center gap-2">
+              <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span class="text-sm text-zinc-500 dark:text-gray-400">Datos en vivo</span>
             </div>
           </div>
-
-          <div class="space-y-4">
-            <div class="flex items-end justify-between">
-              <div>
-                <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                  Visits
-                </p>
-                <p class="text-3xl font-bold text-gray-900 dark:text-white">
-                  {totalClicks.toLocaleString()}
-                </p>
-              </div>
-              <div class="text-right">
-                <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                  Conversions
-                </p>
-                <p
-                  class="text-3xl font-bold text-green-600 dark:text-green-400"
-                >
-                  {totalConversions.toLocaleString()}
-                </p>
-              </div>
+          <div class="px-4 py-2 bg-purple-50 dark:bg-white/5 border border-purple-100 dark:border-white/10 rounded-lg">
+            <div class="text-2xl font-bold text-zinc-900 dark:text-white">{totalConversionRate}%</div>
+            <div class="text-xs text-zinc-500 dark:text-gray-400">Conversión</div>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-8 mb-8">
+          <div>
+            <div class="text-sm text-zinc-500 dark:text-gray-400 mb-2">Visitas totales</div>
+            <div class="text-5xl font-bold text-zinc-900 dark:text-white">
+              {totalClicks.toLocaleString()}
             </div>
+          </div>
+          <div>
+            <div class="text-sm text-zinc-500 dark:text-gray-400 mb-2">Conversiones totales</div>
+            <div class="text-5xl font-bold text-zinc-900 dark:text-white">
+              {totalConversions.toLocaleString()}
+            </div>
+          </div>
+        </div>
 
-            <div class="pt-4 border-t border-gray-200 dark:border-gray-800">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-xs text-gray-500 dark:text-gray-400"
-                  >Conversion Rate</span
-                >
-                <span
-                  class="text-sm font-semibold text-gray-900 dark:text-white"
-                  >{totalConversionRate}%</span
-                >
+        <div class="space-y-3">
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-zinc-500 dark:text-gray-400">Rendimiento general</span>
+            <span class="text-zinc-900 dark:text-white font-medium">{totalConversions} / {totalClicks}</span>
+          </div>
+          <div class="w-full bg-gray-200 dark:bg-white/5 rounded-full h-2 overflow-hidden">
+            <div 
+              class="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500"
+              style={`width: ${totalConversionRate}%`}
+            ></div>
+          </div>
+        </div>
+
+        <!-- Features -->
+        <div class="mt-8 pt-6 border-t border-gray-200 dark:border-white/10 space-y-3">
+          <div class="flex items-center gap-3 text-sm text-zinc-600 dark:text-gray-300">
+            <svg class="w-5 h-5 text-green-500 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Código auditado y probado en producción
+          </div>
+          <div class="flex items-center gap-3 text-sm text-zinc-600 dark:text-gray-300">
+            <svg class="w-5 h-5 text-blue-500 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            Actualizaciones constantes basadas en feedback
+          </div>
+        </div>
+      </div>
+
+      <!-- Individual Tools -->
+      <div class="space-y-4">
+        <h4 class="text-sm font-semibold text-zinc-900 dark:text-white uppercase tracking-wider">Herramientas</h4>
+        
+        <div class="space-y-2">
+          {metricsArray.map((metric) => (
+            <div class={`p-4 ${metric.config.colorLight} ${metric.config.colorDark} border rounded-xl hover:shadow-md dark:hover:bg-white/5 transition-all`}>
+              <div class="flex items-center gap-4">
+                <!-- Icon & Name -->
+                <div class="flex items-center gap-3 flex-1 min-w-0">
+                  <div class="p-2 bg-white dark:bg-white/5 rounded-lg shrink-0 shadow-sm dark:shadow-none">
+                    <svg class="w-4 h-4 text-zinc-900 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={metric.config.icon}/>
+                    </svg>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <h5 class="text-zinc-900 dark:text-white font-semibold text-sm truncate">{metric.config.name}</h5>
+                    <p class="text-zinc-600 dark:text-gray-400 text-xs truncate">{metric.config.description}</p>
+                  </div>
+                </div>
+
+                <!-- Metrics -->
+                <div class="flex items-center gap-6 shrink-0">
+                  <div class="text-right">
+                    <div class="text-lg font-bold text-zinc-900 dark:text-white">{metric.clicks.toLocaleString()}</div>
+                    <div class="text-xs text-zinc-500 dark:text-gray-400">visitas</div>
+                  </div>
+                  <div class="text-right">
+                    <div class="text-lg font-bold text-zinc-900 dark:text-white">{metric.conversions.toLocaleString()}</div>
+                    <div class="text-xs text-zinc-500 dark:text-gray-400">conv.</div>
+                  </div>
+                  <div class="text-right min-w-[60px]">
+                    <div class="text-lg font-bold text-zinc-900 dark:text-white">{metric.conversionRate}%</div>
+                    <div class="text-xs text-zinc-500 dark:text-gray-400">tasa</div>
+                  </div>
+                </div>
               </div>
-              <div
-                class="w-full bg-gray-200 dark:bg-gray-800 rounded-full h-2 overflow-hidden"
-              >
-                <div
+
+              <!-- Progress bar -->
+              <div class="mt-3 w-full bg-gray-200 dark:bg-white/5 rounded-full h-1 overflow-hidden">
+                <div 
                   class="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500"
-                  style={`width: ${totalConversionRate}%`}
-                >
-                </div>
+                  style={`width: ${metric.conversionRate}%`}
+                ></div>
               </div>
             </div>
-          </div>
+          ))}
         </div>
       </div>
     </div>
-
-    <!-- Individual Tool Cards -->
-    {
-      metricsArray.map((metric) => (
-        <div class="group/card relative overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-black p-6 hover:border-{metric.config.color}-500 dark:hover:border-{metric.config.color}-500 transition-all duration-300">
-          <div
-            class={`absolute top-0 right-0 w-32 h-32 bg-${metric.config.color}-500 rounded-full blur-3xl opacity-10 group-hover/card:opacity-20 transition-opacity`}
-          />
-
-          <div class="relative">
-            <div class="flex items-center gap-3 mb-4">
-              <div
-                class={`p-2.5 bg-${metric.config.color}-100 dark:bg-${metric.config.color}-900/30 rounded-lg`}
-              >
-                <svg
-                  class={`w-5 h-5 text-${metric.config.color}-600 dark:text-${metric.config.color}-400`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d={metric.config.icon}
-                  />
-                </svg>
-              </div>
-              <div class="flex-1 min-w-0">
-                <h4 class="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                  {metric.config.name}
-                </h4>
-              </div>
-            </div>
-
-            <div class="space-y-3">
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-xs text-gray-500 dark:text-gray-400">Visits</p>
-                  <p class="text-2xl font-bold text-gray-900 dark:text-white">
-                    {metric.clicks.toLocaleString()}
-                  </p>
-                </div>
-                <div class="text-right">
-                  <p class="text-xs text-gray-500 dark:text-gray-400">Conv.</p>
-                  <p class="text-2xl font-bold text-green-600 dark:text-green-400">
-                    {metric.conversions.toLocaleString()}
-                  </p>
-                </div>
-              </div>
-
-              <div class="pt-3 border-t border-gray-200 dark:border-gray-800">
-                <div class="flex items-center justify-between mb-1.5">
-                  <span class="text-xs text-gray-500 dark:text-gray-400">
-                    Rate
-                  </span>
-                  <span class="text-xs font-semibold text-gray-900 dark:text-white">
-                    {metric.conversionRate}%
-                  </span>
-                </div>
-                <div class="w-full bg-gray-200 dark:bg-gray-800 rounded-full h-1.5 overflow-hidden">
-                  <div
-                    class={`h-full bg-gradient-to-r ${metric.config.bgColor} to-${metric.config.color}-400 rounded-full transition-all duration-500`}
-                    style={`width: ${metric.conversionRate}%`}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      ))
-    }
   </div>
-
-  <!-- Live indicator -->
-  <div
-    class="flex items-center justify-between px-1 text-xs text-gray-500 dark:text-gray-400"
-  >
-    <div class="flex items-center gap-2">
-      <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-      <span>Live data</span>
-    </div>
-    <span>Updated just now</span>
-  </div>
-</div>
+</section>

@@ -1,19 +1,5 @@
 console.log('docx-gift.js cargado');
 
-function onConversionSuccess() {
-    console.log('🎉 Registrando conversión exitosa...');
-    
-    fetch("/api/tool-use-real", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tool_slug: "docx-to-gift" }),
-    })
-    .then(res => res.json())
-    .then(data => console.log('✅ Conversión registrada:', data))
-    .catch(err => console.error('❌ Error:', err));
-}
-
-
 // Verificar dependencias
 if (typeof mammoth === 'undefined') {
     console.error('Mammoth.js no está cargado');
@@ -243,7 +229,6 @@ class DocxToGiftConverter {
 
             this.showResults(giftContent);
             MessageHandler.showSuccess('¡Archivo convertido exitosamente!');
-            onConversionSuccess();
 
         } catch (error) {
             console.error('Error procesando documento:', error);

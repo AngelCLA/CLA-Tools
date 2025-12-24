@@ -5,7 +5,7 @@ import vercel from '@astrojs/vercel';
 export default defineConfig({
   site: 'https://tools.claangel.site',
   integrations: [tailwind()],
-  output: 'server',
+  output: 'static',
   adapter: vercel({
     edgeMiddleware: false,
     includeFiles: [],
@@ -15,9 +15,6 @@ export default defineConfig({
       rollupOptions: {
         external: [],
       },
-    },
-    ssr: {
-      noExternal: ['@supabase/supabase-js'],
     },
   },
 });

@@ -1,5 +1,4 @@
 ---
-
 const tools = [
   {
     title: "DOCX a GIFT",
@@ -59,7 +58,6 @@ const tools = [
       tools.map((tool) => (
         <a
           href={tool.href}
-          onclick="handleToolClick()"
           data-slug={tool.slug}
           class="tool-card group relative rounded-2xl bg-white p-6 h-full flex flex-col
          transition-all duration-300 ease-out
@@ -96,22 +94,3 @@ const tools = [
     </div>
   </section>
 </div>
-
-<script>
-  import { trackToolClick } from "@/lib/tracking";
-
-  function handleToolClick() {
-    trackToolClick("docx-to-gift");
-    // Navegar a la herramienta...
-  }
-</script>
-
-// Cuando completan la conversión:
-<script>
-  import { trackConversion } from "@/lib/tracking";
-
-  function onConversionSuccess() {
-    trackConversion("docx-to-gift");
-    // Mostrar resultado...
-  }
-</script>

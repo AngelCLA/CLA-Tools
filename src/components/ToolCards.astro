@@ -29,59 +29,64 @@ const tools = [
   },
 ];
 ---
-<div id="tools-title" class="mx-auto min-h-screen px-6 text-center mb-12 flex flex-col justify-center items-center">
-  <h3
-      
-      class="text-4xl font-bold text-purple-600 dark:text-purple-400 mb-6"
-    >
-      Herramientas Disponibles
-    </h3>
-    <p
-      class="mb-12 text-lg text-gray-600 dark:text-gray-300 max-w-4xl text-center"
-    >
-      Herramientas 100% gratuitas que funcionan directamente en tu navegador.
-      Sin registro, sin instalación y con total privacidad.
-    </p>
 
-<section
-  id="tools"
-  class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-center"
+<div
+  id="tools-title"
+  class="mx-auto min-h-screen px-6 text-start mb-12 flex flex-col justify-center items-center"
 >
-  {
-    tools.map((tool) => (
-      <a
-        href={tool.href}
-        class="group rounded-2xl bg-white p-6 shadow-sm transition
-         hover:-translate-y-1 hover:shadow-xl shadow-purple-600/20 h-full flex flex-col
-         dark:bg-zinc-800/20"
-      >
-        <div class="mb-4 text-3xl text-purple-600 dark:text-purple-400">
-          <i class={tool.icon} />
-        </div>
-        <h2 class="mb-2 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-          {tool.title}
-        </h2>
-        <p class="text-sm text-zinc-600 dark:text-zinc-400">
-          {tool.description}
-        </p>
-      </a>
-    ))
-  }
-
-  <!-- Próximamente -->
-  <div
-    class="rounded-2xl bg-zinc-100 p-6 text-center
-       opacity-60 h-full flex flex-col dark:bg-zinc-800"
+  <h3
+    class="mb-8 text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight bg-linear-to-r from-purple-400 via-pink-500 to-purple-600 bg-clip-text text-transparent"
   >
-    <div class="mb-4 text-3xl text-zinc-500 dark:text-zinc-400">
-      <i class="fas fa-clock"></i>
+    Herramientas Disponibles
+  </h3>
+  <p
+    class="mb-12 text-lg text-gray-600 dark:text-gray-300 max-w-4xl text-center"
+  >
+    Herramientas 100% gratuitas que funcionan directamente en tu navegador. Sin
+    registro, sin instalación y con total privacidad.
+  </p>
+
+  <section
+    id="tools"
+    class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-center"
+  >
+    {
+      tools.map((tool) => (
+        <a
+          href={tool.href}
+          class="tool-card group relative rounded-2xl bg-white p-6 h-full flex flex-col
+         transition-all duration-300 ease-out
+         dark:bg-zinc-800/20"
+        >
+          <div class="mb-4 text-3xl text-purple-600 dark:text-purple-400">
+            <i class={tool.icon} />
+          </div>
+
+          <h2 class="mb-2 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+            {tool.title}
+          </h2>
+
+          <p class="text-sm text-zinc-600 dark:text-zinc-400">
+            {tool.description}
+          </p>
+        </a>
+      ))
+    }
+
+    <!-- Próximamente -->
+    <div
+      class="rounded-2xl bg-zinc-100 p-6 text-center
+       opacity-60 h-full flex flex-col dark:bg-zinc-800"
+    >
+      <div class="mb-4 text-3xl text-zinc-500 dark:text-zinc-400">
+        <i class="fas fa-clock"></i>
+      </div>
+      <h2 class="mb-2 text-lg font-semibold text-zinc-700 dark:text-zinc-300">
+        Próximamente
+      </h2>
+      <p class="text-sm text-zinc-600 dark:text-zinc-400">
+        Más herramientas disponibles.
+      </p>
     </div>
-    <h2 class="mb-2 text-lg font-semibold text-zinc-700 dark:text-zinc-300">
-      Próximamente
-    </h2>
-    <p class="text-sm text-zinc-600 dark:text-zinc-400">
-      Más herramientas disponibles.
-    </p>
-  </div>
-</section>
+  </section>
 </div>

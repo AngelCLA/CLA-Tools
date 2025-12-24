@@ -51,3 +51,26 @@ html {
 .dark * {
   scrollbar-color: #6d28d9 transparent;
 }
+
+/* ToolCards global styles */
+.tool-card {
+  --x: 0px;
+  --y: 0px;
+
+  transform: translateY(0);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+/* 🔥 UN SOLO hover */
+.tool-card:hover {
+  transform: translateY(-4px);
+
+  box-shadow:
+    calc(var(--x) * 0.2) calc(var(--y) * 0.2) 28px rgba(168, 85, 247, 0.22),
+    calc(var(--x) * -0.2) calc(var(--y) * -0.2) 28px rgba(236, 72, 153, 0.18);
+}
+

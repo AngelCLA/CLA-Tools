@@ -1,5 +1,5 @@
 /* empty css                                    */
-import { f as createComponent, k as renderScript, l as renderHead, r as renderTemplate, h as addAttribute } from '../../chunks/astro/server_CfwuqGYk.mjs';
+import { f as createComponent, k as renderHead, l as renderScript, r as renderTemplate, h as addAttribute } from '../../chunks/astro/server_C2uEA6D3.mjs';
 import 'piccolore';
 import 'clsx';
 import { s as supabase } from '../../chunks/supabase_Bk8e56v9.mjs';
@@ -47,7 +47,7 @@ const $$Stats = createComponent(async ($$result, $$props, $$slots) => {
     "forms": "Formularios"
   };
   const { data: recentActivity, error: recentError } = await supabase.from("tool_usage").select("*").order("created_at", { ascending: false }).limit(10);
-  return renderTemplate`<html lang="es"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Estadísticas de Herramientas</title>${renderScript($$result, "C:/dev/Astro/cla-tools/src/pages/admin/stats.astro?astro&type=script&index=0&lang.ts")}<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">${renderHead()}</head> <body class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 min-h-screen"> <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"> <!-- Header --> <div class="mb-8"> <div class="flex items-center justify-between mb-4"> <h1 class="text-4xl font-bold text-gray-900 dark:text-white">
+  return renderTemplate`<html lang="es"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Estadísticas de Herramientas</title><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">${renderHead()}</head> <body class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 min-h-screen"> <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"> <!-- Header --> <div class="mb-8"> <div class="flex items-center justify-between mb-4"> <h1 class="text-4xl font-bold text-gray-900 dark:text-white">
 📊 Estadísticas de Uso
 </h1> <a href="/" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"> <i class="fas fa-home mr-2"></i>Inicio
 </a> </div> <p class="text-gray-600 dark:text-gray-400">
@@ -74,7 +74,7 @@ Actividad Reciente
     minute: "2-digit"
   })} </p> </div> </div> </div>`)} </div>` : renderTemplate`<div class="p-12 text-center"> <i class="fas fa-history text-4xl text-gray-300 dark:text-gray-600 mb-4"></i> <p class="text-gray-500 dark:text-gray-400">
 No hay actividad reciente
-</p> </div>`} </div> </div> </div> <!-- Auto-refresh --> ${renderScript($$result, "C:/dev/Astro/cla-tools/src/pages/admin/stats.astro?astro&type=script&index=1&lang.ts")} </body> </html>`;
+</p> </div>`} </div> </div> </div> <!-- Auto-refresh --> ${renderScript($$result, "C:/dev/Astro/cla-tools/src/pages/admin/stats.astro?astro&type=script&index=0&lang.ts")} </body> </html>`;
 }, "C:/dev/Astro/cla-tools/src/pages/admin/stats.astro", void 0);
 
 const $$file = "C:/dev/Astro/cla-tools/src/pages/admin/stats.astro";

@@ -1,4 +1,4 @@
-import { al as NOOP_MIDDLEWARE_HEADER, am as REDIRECT_STATUS_CODES, A as AstroError, an as ActionsReturnedInvalidDataError, V as DEFAULT_404_COMPONENT } from './astro/server_CfwuqGYk.mjs';
+import { al as NOOP_MIDDLEWARE_HEADER, am as REDIRECT_STATUS_CODES, A as AstroError, an as ActionsReturnedInvalidDataError, V as DEFAULT_404_COMPONENT } from './astro/server_C2uEA6D3.mjs';
 import { parse, stringify } from 'devalue';
 import { escape } from 'html-escaper';
 

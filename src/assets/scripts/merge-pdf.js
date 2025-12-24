@@ -1,5 +1,18 @@
 console.log("Inicializando unión de PDFs");
 
+function onConversionSuccess() {
+    console.log('🎉 Registrando conversión exitosa...');
+    
+    fetch("/api/tool-use-real", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tool_slug: "merge-pdf" }),
+    })
+    .then(res => res.json())
+    .then(data => console.log('✅ Conversión registrada:', data))
+    .catch(err => console.error('❌ Error:', err));
+}
+
 // Configurar PDF.js worker
 if (typeof pdfjsLib !== "undefined") {
   pdfjsLib.GlobalWorkerOptions.workerSrc =
@@ -381,6 +394,7 @@ class PDFMerger {
       this.progressBar.classList.add("hidden");
       this.processingMessage.classList.add("hidden");
       this.showSuccess("¡PDFs combinados exitosamente!");
+      onConversionSuccess();
       this.mergeButton.disabled = false;
     } catch (error) {
       console.error("Error al combinar PDFs:", error);

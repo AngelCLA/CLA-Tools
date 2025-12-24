@@ -1,5 +1,18 @@
 console.log("Inicializando conversor de Texto a HTML");
 
+function onConversionSuccess() {
+    console.log('🎉 Registrando conversión exitosa...');
+    
+    fetch("/api/tool-use-real", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tool_slug: "merge-pdf" }),
+    })
+    .then(res => res.json())
+    .then(data => console.log('✅ Conversión registrada:', data))
+    .catch(err => console.error('❌ Error:', err));
+}
+
 class TextToHtmlConverter {
   constructor() {
     this.editor = null;
@@ -144,6 +157,7 @@ class TextToHtmlConverter {
     this.htmlPreview.innerHTML = htmlContent;
     this.switchTab("html");
     this.showSuccess("¡HTML generado exitosamente!");
+    onConversionSuccess();
   }
 
   generateMoodleHtml() {
@@ -160,6 +174,7 @@ class TextToHtmlConverter {
     this.htmlPreview.innerHTML = cleanHtml;
     this.switchTab("html");
     this.showSuccess("¡HTML optimizado para Moodle generado!");
+    onConversionSuccess
   }
 
   clearEditor() {

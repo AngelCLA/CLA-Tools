@@ -1,13 +1,23 @@
-// @ts-check
 import { defineConfig } from 'astro/config';
+import tailwind from '@astrojs/tailwind';
+import vercel from '@astrojs/vercel/serverless';
 
-import tailwindcss from '@tailwindcss/vite';
-
-// https://astro.build/config
 export default defineConfig({
+  site: 'https://tools.claangel.site',
+  integrations: [tailwind()],
   output: 'server',
-  site: 'https://tools.claangel.site', // Cambia esto por tu dominio real
+  adapter: vercel({
+    edgeMiddleware: false,
+    includeFiles: [],
+  }),
   vite: {
-    plugins: [tailwindcss()]
-  }
+    build: {
+      rollupOptions: {
+        external: [],
+      },
+    },
+    ssr: {
+      noExternal: ['@supabase/supabase-js'],
+    },
+  },
 });

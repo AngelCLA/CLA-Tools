@@ -1,0 +1,189 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import mergePdfScript from "../../assets/scripts/merge-pdf.js?raw";
+---
+
+<Layout
+  title="Unir PDFs | CLA Tools"
+  description="Combina múltiples archivos PDF en uno solo de manera rápida y sencilla. Herramienta gratuita online para unir PDFs sin límites."
+  keywords="unir pdf, combinar pdf, fusionar pdf, merge pdf, juntar pdf, herramienta pdf gratuita"
+>
+  <!-- Font Awesome CDN -->
+  <link
+    slot="head"
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
+
+  <div class="flex flex-col min-h-full items-center justify-center py-8 px-4">
+    <div
+      class="w-full max-w-6xl bg-white dark:bg-zinc-800 shadow-2xl rounded-xl p-6 sm:p-8 md:p-12"
+    >
+      <!-- Header -->
+      <h1
+        class="text-3xl sm:text-4xl md:text-5xl font-bold text-purple-600 dark:text-purple-400 mb-4 text-center"
+      >
+        Unir Archivos PDF
+      </h1>
+      <p
+        class="mb-6 text-base sm:text-lg md:text-xl text-zinc-700 dark:text-zinc-300 text-center"
+      >
+        Combina múltiples archivos PDF en un solo documento
+      </p>
+
+      <!-- Upload Area -->
+      <div
+        id="upload-area"
+        class="border-2 border-dashed border-zinc-300 dark:border-zinc-600 rounded-lg p-8 sm:p-12 text-center mb-6 cursor-pointer hover:border-purple-500 dark:hover:border-purple-400 transition-all hover:bg-purple-50 dark:hover:bg-purple-900/10"
+      >
+        <div class="text-5xl sm:text-6xl mb-4">
+          <i class="fas fa-file-pdf text-purple-600 dark:text-purple-400"></i>
+        </div>
+        <div
+          class="text-lg sm:text-xl font-semibold text-zinc-700 dark:text-zinc-300 mb-2"
+        >
+          Arrastra tus archivos PDF aquí
+        </div>
+        <div class="text-sm sm:text-base text-zinc-500 dark:text-zinc-400">
+          o haz clic para seleccionar
+        </div>
+        <input
+          type="file"
+          id="file-input"
+          accept=".pdf"
+          multiple
+          class="hidden"
+        />
+      </div>
+
+      <!-- Reorder Instructions -->
+      <div
+        id="reorder-instructions"
+        class="hidden bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4 mb-6 text-sm sm:text-base text-blue-800 dark:text-blue-300"
+      >
+        <i class="fas fa-info-circle"></i> Puedes arrastrar los archivos para cambiar
+        el orden en que aparecerán en el PDF combinado.
+      </div>
+
+      <!-- Control Section -->
+      <div
+        id="control-section"
+        class="hidden flex-col sm:flex-row justify-between items-center gap-4 mb-6"
+      >
+        <div
+          id="file-count"
+          class="text-base sm:text-lg font-semibold text-zinc-700 dark:text-zinc-300"
+        >
+          0 archivos seleccionados
+        </div>
+        <div class="flex gap-3 w-full sm:w-auto">
+          <button
+            id="clear-all-btn"
+            class="flex-1 sm:flex-none px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition cursor-pointer"
+          >
+            <i class="fas fa-trash-alt"></i> Eliminar todos
+          </button>
+          <button
+            id="add-more-btn"
+            class="flex-1 sm:flex-none px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition cursor-pointer"
+          >
+            <i class="fas fa-plus"></i> Añadir más
+          </button>
+        </div>
+      </div>
+
+      <!-- View Controls -->
+      <div class="flex justify-center gap-2 mb-6">
+        <button
+          class="view-button px-4 py-2 border border-zinc-300 dark:border-zinc-600 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-700 transition cursor-pointer"
+          data-view="list"
+        >
+          <i class="fas fa-list"></i> Lista
+        </button>
+        <button
+          class="view-button active px-4 py-2 bg-purple-600 text-white border border-purple-600 rounded-lg hover:bg-purple-700 transition cursor-pointer"
+          data-view="grid"
+        >
+          <i class="fas fa-th"></i> Cuadrícula
+        </button>
+      </div>
+
+      <!-- PDF Preview -->
+      <div
+        id="pdf-preview"
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6"
+      >
+      </div>
+
+      <!-- Progress Bar -->
+      <div
+        id="progress-bar"
+        class="hidden w-full h-2 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden mb-4"
+      >
+        <div
+          id="progress-bar-inner"
+          class="h-full bg-purple-600 transition-all duration-300"
+          style="width: 0%"
+        >
+        </div>
+      </div>
+
+      <!-- Processing Message -->
+      <div
+        id="processing-message"
+        class="hidden text-center text-zinc-700 dark:text-zinc-300 mb-6"
+      >
+        Procesando archivos PDF...
+      </div>
+
+      <!-- Success Message -->
+      <div
+        id="success-message"
+        class="hidden fixed bottom-8 right-8 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg font-semibold animate-fade-in z-50"
+      >
+        ✅ ¡PDFs combinados exitosamente!
+      </div>
+
+      <!-- Error Message -->
+      <div
+        id="error-message"
+        class="hidden fixed bottom-8 right-8 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg font-semibold animate-fade-in z-50"
+      >
+        ❌ Error al procesar los archivos PDF.
+      </div>
+
+      <!-- Actions -->
+      <div class="flex justify-center">
+        <button
+          id="merge-button"
+          disabled
+          class="px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white font-bold text-lg rounded-lg transition shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+        >
+          <i class="fas fa-object-group"></i> Unir PDFs
+        </button>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<!-- PDF.js -->
+<script
+  is:inline
+  src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"
+></script>
+
+<!-- PDF-lib -->
+<script
+  is:inline
+  src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"
+></script>
+
+<!-- Sortable.js -->
+<script
+  is:inline
+  src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+<!-- Merge PDF Script -->
+<script is:inline define:vars={{ mergeScript: mergePdfScript }}>
+  eval(mergeScript);
+</script>

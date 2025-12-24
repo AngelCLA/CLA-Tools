@@ -74,3 +74,10 @@ html {
     calc(var(--x) * -0.2) calc(var(--y) * -0.2) 28px rgba(236, 72, 153, 0.18);
 }
 
+
+.text-gradient {
+    background: linear-gradient(to right, #a855f7, #ec4899, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}

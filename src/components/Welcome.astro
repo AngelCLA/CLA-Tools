@@ -3,23 +3,27 @@ import Navbar from "./Navbar.astro";
 import ToolCards from "./ToolCards.astro";
 ---
 
-<div id="container" class="min-h-screen flex flex-col max-w-7xl mx-auto p-6">
+<div
+  id="container"
+  class="min-h-screen flex flex-col max-w-7xl mx-auto p-4 sm:p-6 relative overflow-hidden"
+>
   <div class="flex-1 flex items-center justify-center">
     <!-- Fondo decorativo -->
     <div class="absolute inset-0 dot-grid"></div>
 
     <!-- Gradientes de fondo -->
     <div
-      class="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-600 rounded-full gradient-blur"
+      class="absolute top-1/4 left-1/4 w-40 h-40 sm:w-64 sm:h-64 md:w-96 md:h-96 bg-purple-600 rounded-full gradient-blur"
     >
     </div>
     <div
-      class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-600 rounded-full gradient-blur"
+      class="absolute bottom-1/4 right-1/4 w-40 h-40 sm:w-64 sm:h-64 md:w-96 md:h-96 bg-pink-600 rounded-full gradient-blur"
     >
     </div>
+
     <section class="relative overflow-hidden w-full">
       <!-- Contenido -->
-      <div class="mx-auto max-w-5xl px-6 text-center">
+      <div class="mx-auto max-w-5xl px-4 sm:px-6 text-center">
         <!-- Badges superiores -->
         <div
           class="mb-6 inline-flex items-center gap-6 rounded-full bg-zinc-100/10 dark:bg-zinc-900/20 backdrop-blur-sm px-6 py-3 text-sm border border-zinc-800"
@@ -40,9 +44,9 @@ import ToolCards from "./ToolCards.astro";
             100% Gratuito
           </span>
           <span class="text-zinc-600">·</span>
-          <span class="text-zinc-900 dark:text-zinc-300">Sin Registro</span>
+          <div class="text-zinc-900 dark:text-zinc-300">Sin Registro</div>
           <span class="text-zinc-600">·</span>
-          <span class="text-zinc-900 dark:text-zinc-300">Total Privacidad</span>
+          <div class="text-zinc-900 dark:text-zinc-300">Total Privacidad</div>
         </div>
 
         <!-- Título -->
@@ -74,12 +78,12 @@ import ToolCards from "./ToolCards.astro";
           <a
             href="#tools-title"
             class="inline-flex items-center justify-center gap-2
-               rounded-xl bg-purple-600 px-8 py-4
-               text-base font-semibold text-white
-               transition hover:bg-purple-700
-               shadow-lg shadow-purple-600/30
-               focus-visible:outline
-               focus-visible:outline-purple-500"
+         rounded-xl bg-purple-600 px-8 py-4
+         text-base font-semibold text-white
+         transition hover:bg-purple-700
+         shadow-lg shadow-purple-600/30
+         focus-visible:outline
+         focus-visible:outline-purple-500"
           >
             Ver herramientas
           </a>
@@ -88,9 +92,9 @@ import ToolCards from "./ToolCards.astro";
             href="https://github.com/AngelCLA/cla-tools"
             target="_blank"
             class="inline-flex items-center justify-center gap-2
-               rounded-xl border border-zinc-700 bg-zinc-100/50 dark:bg-zinc-900/50 dark:text-zinc-300 backdrop-blur-sm px-8 py-4
-               text-base font-semibold text-zinc-900
-               transition dark:hover:bg-zinc-800 dark:hover:border-zinc-600 hover:bg-zinc-300/50 hover:border-zinc-600"
+         rounded-xl border border-zinc-700 bg-zinc-100/50 dark:bg-zinc-900/50 dark:text-zinc-300 backdrop-blur-sm px-8 py-4
+         text-base font-semibold text-zinc-900
+         transition dark:hover:bg-zinc-800 dark:hover:border-zinc-600 hover:bg-zinc-300/50 hover:border-zinc-600"
           >
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path
@@ -161,8 +165,11 @@ import ToolCards from "./ToolCards.astro";
       </div>
     </section>
   </div>
-  <!-- Icono de scroll animado -->
-  <div class="flex justify-center pb-16 animate-bounce">
+
+  <!-- Indicador de scroll centrado abajo -->
+  <div
+    class="absolute bottom-24 left-1/2 -translate-x-1/2 flex justify-center animate-bounce"
+  >
     <a
       href="#tools-title"
       class="text-purple-600 transition-colors hover:text-pink-600"
@@ -187,35 +194,35 @@ import ToolCards from "./ToolCards.astro";
       </svg>
     </a>
   </div>
+
+  <style>
+    .gradient-blur {
+      filter: blur(100px);
+      opacity: 0.3;
+      animation: float 10s ease-in-out infinite;
+    }
+
+    .dot-grid {
+      background-image: radial-gradient(
+        circle,
+        rgba(255, 255, 255, 0.05) 1px,
+        transparent 1px
+      );
+      background-size: 30px 30px;
+      opacity: 0.5;
+    }
+
+    @keyframes float {
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+      33% {
+        transform: translate(30px, -30px) scale(1.1);
+      }
+      66% {
+        transform: translate(-30px, 30px) scale(0.9);
+      }
+    }
+  </style>
 </div>
-
-<style>
-  .gradient-blur {
-    filter: blur(100px);
-    opacity: 0.3;
-    animation: float 10s ease-in-out infinite;
-  }
-
-  .dot-grid {
-    background-image: radial-gradient(
-      circle,
-      rgba(255, 255, 255, 0.05) 1px,
-      transparent 1px
-    );
-    background-size: 30px 30px;
-    opacity: 0.5;
-  }
-
-  @keyframes float {
-    0%,
-    100% {
-      transform: translate(0, 0) scale(1);
-    }
-    33% {
-      transform: translate(30px, -30px) scale(1.1);
-    }
-    66% {
-      transform: translate(-30px, 30px) scale(0.9);
-    }
-  }
-</style>

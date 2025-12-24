@@ -6,140 +6,142 @@ import logo from "../assets/Logo.svg";
   class="sticky top-0 z-50 backdrop-blur-lg bg-white/80 dark:bg-zinc-950/60 border-b border-zinc-200 dark:border-zinc-900"
 >
   <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between h-16">
-      <!-- Logo y Título -->
-      <div class="flex items-center gap-3">
-        <a
-          href="/"
-          class="flex items-center gap-3 group transition-all hover:opacity-80"
-        >
-          <img src={logo.src} alt="Logo" class="w-12" />
+    <div class="flex flex-col">
+      <div class="flex items-center justify-between h-16">
+        <!-- Logo y Título -->
+        <div class="flex items-center gap-3">
+          <a
+            href="/"
+            class="flex items-center gap-2 sm:gap-3 group transition-all hover:opacity-80"
+          >
+            <img src={logo.src} alt="Logo" class="w-10 sm:w-12" />
 
-          <span
-            class="text-xl font-bold bg-clip-text text-purple-600 dark:text-purple-400"
-          >
-            CLA Tools
-          </span>
-        </a>
-      </div>
+            <span
+              class="text-lg sm:text-xl font-bold bg-clip-text text-purple-600 dark:text-purple-400"
+            >
+              CLA Tools
+            </span>
+          </a>
+        </div>
 
-      <!-- Enlaces de Navegación -->
-      <div class="hidden md:flex items-center gap-6">
-        <a
-          href="/#tools-title"
-          class="text-sm font-medium text-zinc-700 hover:text-purple-600 dark:text-zinc-300 dark:hover:text-purple-400 transition-colors"
-        >
-          Herramientas
-        </a>
-        <a
-          href="/#about"
-          class="text-sm font-medium text-zinc-700 hover:text-purple-600 dark:text-zinc-300 dark:hover:text-purple-400 transition-colors"
-        >
-          Acerca de
-        </a>
-        <a
-          href="/#contact"
-          class="text-sm font-medium text-zinc-700 hover:text-purple-600 dark:text-zinc-300 dark:hover:text-purple-400 transition-colors"
-        >
-          Contacto
-        </a>
+        <!-- Enlaces de Navegación Desktop -->
+        <div class="hidden md:flex items-center gap-6">
+          <a
+            href="/#tools-title"
+            class="text-sm font-medium text-zinc-700 hover:text-purple-600 dark:text-zinc-300 dark:hover:text-purple-400 transition-colors"
+          >
+            Herramientas
+          </a>
+          <a
+            href="/#about"
+            class="text-sm font-medium text-zinc-700 hover:text-purple-600 dark:text-zinc-300 dark:hover:text-purple-400 transition-colors"
+          >
+            Acerca de
+          </a>
+          <a
+            href="/#contact"
+            class="text-sm font-medium text-zinc-700 hover:text-purple-600 dark:text-zinc-300 dark:hover:text-purple-400 transition-colors"
+          >
+            Contacto
+          </a>
 
-        <!-- Botón Tema -->
-        <button
-          id="theme-toggle"
-          class="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
-          aria-label="Cambiar tema"
-        >
-          <svg
-            id="theme-icon-light"
-            class="w-5 h-5 text-zinc-700 dark:text-zinc-300 hidden dark:block"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+          <!-- Botón Tema Desktop -->
+          <button
+            id="theme-toggle"
+            class="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+            aria-label="Cambiar tema"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-            ></path>
-          </svg>
-          <svg
-            id="theme-icon-dark"
-            class="w-5 h-5 text-zinc-700 dark:text-zinc-300 block dark:hidden"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-            ></path>
-          </svg>
-        </button>
-      </div>
+            <svg
+              id="theme-icon-light"
+              class="w-5 h-5 text-zinc-700 dark:text-zinc-300 hidden dark:block"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+              ></path>
+            </svg>
+            <svg
+              id="theme-icon-dark"
+              class="w-5 h-5 text-zinc-700 dark:text-zinc-300 block dark:hidden"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+              ></path>
+            </svg>
+          </button>
+        </div>
 
-      <!-- Botones Móviles -->
-      <div class="md:hidden flex items-center gap-2">
-        <!-- Botón Tema Móvil -->
-        <button
-          id="theme-toggle-mobile"
-          class="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-          aria-label="Cambiar tema"
-        >
-          <svg
-            class="w-5 h-5 text-zinc-700 dark:text-zinc-300 hidden dark:block"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+        <!-- Botones Móviles -->
+        <div class="md:hidden flex items-center gap-2">
+          <!-- Botón Tema Móvil -->
+          <button
+            id="theme-toggle-mobile"
+            class="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+            aria-label="Cambiar tema"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-            ></path>
-          </svg>
-          <svg
-            class="w-5 h-5 text-zinc-700 dark:text-zinc-300 block dark:hidden"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-            ></path>
-          </svg>
-        </button>
+            <svg
+              class="w-5 h-5 text-zinc-700 dark:text-zinc-300 hidden dark:block"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+              ></path>
+            </svg>
+            <svg
+              class="w-5 h-5 text-zinc-700 dark:text-zinc-300 block dark:hidden"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+              ></path>
+            </svg>
+          </button>
 
-        <!-- Menú Móvil (Hamburguesa) -->
-        <button
-          id="mobile-menu-button"
-          class="md:hidden p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-          aria-label="Menú"
-        >
-          <svg
-            class="w-6 h-6 text-zinc-700 dark:text-zinc-300"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+          <!-- Menú Móvil (Hamburguesa) -->
+          <button
+            id="mobile-menu-button"
+            class="md:hidden p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+            aria-label="Menú"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4 6h16M4 12h16M4 18h16"></path>
-          </svg>
-        </button>
+            <svg
+              class="w-6 h-6 text-zinc-700 dark:text-zinc-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </button>
+        </div>
       </div>
 
       <!-- Menú Móvil Desplegable -->
-      <div id="mobile-menu" class="hidden md:hidden pb-4 space-y-2">
+      <div id="mobile-menu" class="hidden md:hidden pb-4 pt-2 space-y-1">
         <a
           href="/#tools-title"
           class="block px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800 rounded-lg transition-colors"

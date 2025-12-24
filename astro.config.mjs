@@ -5,7 +5,7 @@ import vercel from '@astrojs/vercel/serverless';
 export default defineConfig({
   site: 'https://tools.claangel.site',
   integrations: [tailwind()],
-  output: 'server',
+  output: 'static',
   adapter: vercel({
     edgeMiddleware: false,
     includeFiles: [],

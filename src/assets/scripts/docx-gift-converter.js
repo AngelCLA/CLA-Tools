@@ -78,15 +78,14 @@ class DocxToGiftConverter {
         }
 
         // Copy button event
-        if (this.elements.copyBtn) {
-            this.elements.copyBtn.addEventListener('click', () => {
-                if (this.elements.giftOutput && this.elements.giftOutput.value) {
-                    DOMUtils.copyToClipboard(this.elements.giftOutput.value, this.elements.copyBtn);
-                } else {
-                    MessageHandler.showError('No hay contenido para copiar');
-                }
-            });
-        }
+        this.elements.copyBtn.addEventListener('click', () => {
+            if (this.elements.giftOutput && this.elements.giftOutput.value) {
+                DOMUtils.copyToClipboard(this.elements.giftOutput.value, this.elements.copyBtn);
+                ToastManager.showToast('¡Copiado al portapapeles!', 'success'); // ⬅️ AGREGAR ESTO
+            } else {
+                ToastManager.showToast('No hay contenido para copiar', 'error');
+            }
+        });
 
         // Download button event
         if (this.elements.downloadBtn) {
@@ -111,7 +110,7 @@ class DocxToGiftConverter {
         
         const file = files[0];
         if (!file.name.toLowerCase().endsWith('.docx')) {
-            MessageHandler.showError('Por favor, selecciona un archivo DOCX');
+            ToastManager.showToast('Por favor, selecciona un archivo DOCX', 'error');
             return;
         }
 
@@ -168,7 +167,7 @@ class DocxToGiftConverter {
         } catch (error) {
             console.error('Error procesando archivo:', error);
             this.showLoading(false);
-            MessageHandler.showError('Error al leer el archivo DOCX: ' + error.message);
+            ToastManager.showToast('Error al leer el archivo: ' + error.message, 'error');
         }
     }
 
@@ -211,7 +210,7 @@ class DocxToGiftConverter {
             this.generatePreview(documentStructure);
 
             this.showResults(giftContent);
-            MessageHandler.showSuccess('¡Archivo convertido exitosamente!');
+            ToastManager.showToast(`¡Conversión exitosa! ${documentStructure.length} preguntas procesadas`, 'success');
 
         } catch (error) {
             console.error('Error procesando documento:', error);
@@ -225,7 +224,7 @@ class DocxToGiftConverter {
             }
             
             this.showLoading(false);
-            MessageHandler.showError('Error al procesar el documento. Ver información de depuración.');
+            ToastManager.showToast('Error al procesar el documento', 'error');
         }
     }
 

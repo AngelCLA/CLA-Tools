@@ -131,7 +131,7 @@ class TextToHtmlConverter {
       !this.editor.innerHTML.trim() ||
       this.editor.innerHTML === "<p><br></p>"
     ) {
-      this.showError("No hay contenido para convertir");
+      this.showToast("No hay contenido para convertir", "error");
       return;
     }
 
@@ -141,7 +141,7 @@ class TextToHtmlConverter {
     this.htmlOutput.value = formattedHtml;
     this.htmlPreview.innerHTML = htmlContent;
     this.switchTab("html");
-    this.showSuccess("¡HTML generado exitosamente!");
+    this.showToast("¡HTML generado exitosamente!", "success");
   }
 
   generateMoodleHtml() {
@@ -149,7 +149,7 @@ class TextToHtmlConverter {
       !this.editor.innerHTML.trim() ||
       this.editor.innerHTML === "<p><br></p>"
     ) {
-      this.showError("No hay contenido para convertir");
+      this.showToast("No hay contenido para convertir", "error");
       return;
     }
 
@@ -157,40 +157,119 @@ class TextToHtmlConverter {
     this.htmlOutput.value = cleanHtml;
     this.htmlPreview.innerHTML = cleanHtml;
     this.switchTab("html");
-    this.showSuccess("¡HTML optimizado para Moodle generado!");
-    onConversionSuccess
+    this.showToast("¡HTML optimizado para Moodle generado!", "success");
   }
 
   clearEditor() {
-    if (
-      confirm(
-        "¿Estás seguro de que deseas limpiar todo el contenido del editor?"
-      )
-    ) {
-      this.editor.innerHTML = "<p><br></p>";
-      this.editor.focus();
-    }
+    this.showConfirmModal(
+      "¿Limpiar editor?",
+      "Esta acción eliminará todo el contenido del editor. Esta acción no se puede deshacer.",
+      () => {
+        this.editor.innerHTML = "<p><br></p>";
+        this.editor.focus();
+        this.showToast("Editor limpiado", "success");
+      }
+    );
+  }
+
+  showConfirmModal(title, message, onConfirm) {
+    // Crear overlay
+    const overlay = document.createElement("div");
+    overlay.className = "fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in";
+    
+    // Crear modal
+    const modal = document.createElement("div");
+    modal.className = "bg-white dark:bg-zinc-800 rounded-xl shadow-2xl max-w-md w-full transform scale-95 opacity-0 transition-all duration-200";
+    
+    modal.innerHTML = `
+      <div class="p-6">
+        <div class="flex items-start gap-4 mb-4">
+          <div class="flex-shrink-0 w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+            <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-2">${title}</h3>
+            <p class="text-sm text-zinc-600 dark:text-zinc-400">${message}</p>
+          </div>
+        </div>
+        
+        <div class="flex gap-3 justify-end">
+          <button class="modal-cancel px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-lg transition">
+            Cancelar
+          </button>
+          <button class="modal-confirm px-4 py-2 text-sm font-medium bg-red-600 hover:bg-red-700 text-white rounded-lg transition">
+            Limpiar
+          </button>
+        </div>
+      </div>
+    `;
+    
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    
+    // Animar entrada
+    setTimeout(() => {
+      modal.style.transform = "scale(1)";
+      modal.style.opacity = "1";
+    }, 10);
+    
+    // Función para cerrar modal
+    const closeModal = () => {
+      modal.style.transform = "scale(0.95)";
+      modal.style.opacity = "0";
+      setTimeout(() => {
+        overlay.remove();
+      }, 200);
+    };
+    
+    // Event listeners
+    const cancelBtn = modal.querySelector(".modal-cancel");
+    const confirmBtn = modal.querySelector(".modal-confirm");
+    
+    cancelBtn.addEventListener("click", closeModal);
+    
+    confirmBtn.addEventListener("click", () => {
+      closeModal();
+      onConfirm();
+    });
+    
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) {
+        closeModal();
+      }
+    });
+    
+    // Cerrar con ESC
+    const handleEscape = (e) => {
+      if (e.key === "Escape") {
+        closeModal();
+        document.removeEventListener("keydown", handleEscape);
+      }
+    };
+    document.addEventListener("keydown", handleEscape);
   }
 
   copyHtml() {
     if (!this.htmlOutput.value) {
-      this.showError("No hay contenido para copiar");
+      this.showToast("No hay contenido para copiar", "error");
       return;
     }
 
     navigator.clipboard
       .writeText(this.htmlOutput.value)
       .then(() => {
-        this.showSuccess("¡Copiado al portapapeles!");
+        this.showToast("¡Código HTML copiado al portapapeles!", "success");
       })
       .catch(() => {
-        this.showError("Error al copiar");
+        this.showToast("Error al copiar al portapapeles", "error");
       });
   }
 
   downloadHtml() {
     if (!this.htmlOutput.value) {
-      this.showError("No hay contenido para descargar");
+      this.showToast("No hay contenido para descargar", "error");
       return;
     }
 
@@ -205,6 +284,8 @@ class TextToHtmlConverter {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+    
+    this.showToast("¡Archivo HTML descargado exitosamente!", "success");
   }
 
   handlePaste(e) {
@@ -215,8 +296,10 @@ class TextToHtmlConverter {
 
     if (html) {
       document.execCommand("insertHTML", false, html);
+      this.showToast("Contenido formateado pegado correctamente", "success");
     } else {
       document.execCommand("insertText", false, text);
+      this.showToast("Texto plano pegado", "success");
     }
   }
 
@@ -347,6 +430,21 @@ class TextToHtmlConverter {
     return tempDiv.innerHTML;
   }
 
+  // Método integrado de Toast (usa ToastManager si está disponible, sino usa fallback)
+  showToast(message, type = "success") {
+    if (window.ToastManager && typeof window.ToastManager.showToast === 'function') {
+      window.ToastManager.showToast(message, type);
+    } else {
+      // Fallback a los mensajes antiguos si ToastManager no está disponible
+      if (type === "success") {
+        this.showSuccess(message);
+      } else {
+        this.showError(message);
+      }
+    }
+  }
+
+  // Métodos legacy (mantener por compatibilidad)
   showSuccess(message) {
     const successMsg = document.getElementById("success-message");
     if (successMsg) {

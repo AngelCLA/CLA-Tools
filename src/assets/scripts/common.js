@@ -291,6 +291,77 @@ function showCacheMessage(message, type) {
         }, 300);
     }, 3000);
 }
+// Sistema de Toast Notifications
+const ToastManager = {
+  showToast(message, type = 'success') {
+  // Crear contenedor de toasts si no existe
+  let toastContainer = document.getElementById('toast-container');
+  if (!toastContainer) {
+    toastContainer = document.createElement('div');
+    toastContainer.id = 'toast-container';
+    toastContainer.className = 'fixed top-4 right-4 z-50 flex flex-col gap-2';
+    document.body.appendChild(toastContainer);
+  }
+
+  // Crear el toast
+  const toast = document.createElement('div');
+  toast.className = `
+    flex items-center gap-3 min-w-80 max-w-md p-4 rounded-lg shadow-lg
+    transform translate-x-full transition-transform duration-300 ease-out
+    ${type === 'success' 
+      ? 'bg-green-50 dark:bg-green-900/90 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200' 
+      : 'bg-red-50 dark:bg-red-900/90 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200'
+    }
+  `;
+
+  // Icono según el tipo
+  const icon = type === 'success' 
+    ? '<svg class="w-6 h-6 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>'
+    : '<svg class="w-6 h-6 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>';
+
+  toast.innerHTML = `
+    ${icon}
+    <span class="flex-1 font-medium">${message}</span>
+    <button class="toast-close text-current hover:opacity-70 transition-opacity">
+      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+      </svg>
+    </button>
+  `;
+
+  toastContainer.appendChild(toast);
+
+  // Animación de entrada
+  setTimeout(() => {
+    toast.style.transform = 'translateX(0)';
+  }, 10);
+
+  // Cerrar al hacer clic en X
+  const closeBtn = toast.querySelector('.toast-close');
+  closeBtn.addEventListener('click', () => ToastManager.removeToast(toast));
+
+  // Auto cerrar después de 5 segundos
+  setTimeout(() => ToastManager.removeToast(toast), 5000);
+  },
+
+  removeToast(toast) {
+  toast.style.transform = 'translateX(150%)';
+  setTimeout(() => {
+    toast.remove();
+    // Eliminar contenedor si no hay más toasts
+    const container = document.getElementById('toast-container');
+    if (container && container.children.length === 0) {
+      container.remove();
+    }
+  }, 300);
+}};
+
+// Ejemplo de uso en tu código existente:
+// Cuando se complete la conversión exitosamente:
+// showToast('¡Archivo convertido exitosamente!', 'success');
+
+// Cuando haya un error:
+// showToast('Error al procesar el archivo', 'error');
 
 // Event listener para el botón de purgar caché
 document.addEventListener('DOMContentLoaded', function() {
@@ -308,9 +379,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+
+
 // Exportar para uso global
 window.AppConfig = AppConfig;
 window.MessageHandler = MessageHandler;
 window.FileHandler = FileHandler;
 window.DOMUtils = DOMUtils;
 window.PageComponent = PageComponent;
+window.ToastManager = ToastManager;

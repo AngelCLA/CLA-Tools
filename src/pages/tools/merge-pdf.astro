@@ -1,5 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import commonScript from "../../assets/scripts/common.js?raw";
 import mergePdfScript from "../../assets/scripts/merge-pdf.js?raw";
 ---
 
@@ -171,7 +172,10 @@ import mergePdfScript from "../../assets/scripts/merge-pdf.js?raw";
   is:inline
   src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"
 ></script>
-
+<!-- Cargar common.js primero para las utilidades -->
+<script is:inline define:vars={{ commonScript }}>
+  eval(commonScript);
+</script>
 <!-- PDF-lib -->
 <script
   is:inline
@@ -182,6 +186,11 @@ import mergePdfScript from "../../assets/scripts/merge-pdf.js?raw";
 <script
   is:inline
   src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+<!-- Cargar common.js primero para las utilidades -->
+<script is:inline define:vars={{ commonScript }}>
+  eval(commonScript);
+</script>
 
 <!-- Merge PDF Script -->
 <script is:inline define:vars={{ mergeScript: mergePdfScript }}>

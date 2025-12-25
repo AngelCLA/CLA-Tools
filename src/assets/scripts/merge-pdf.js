@@ -70,19 +70,28 @@ class PDFMerger {
 
     // Control buttons
     this.addMoreBtn.addEventListener("click", () => this.fileInput.click());
-    this.clearAllBtn.addEventListener("click", () => this.resetInterface());
+    this.clearAllBtn.addEventListener("click", () => {
+      this.showConfirmModal(
+        "¿Eliminar todos los archivos?",
+        `Se eliminarán ${this.pdfFiles.length} archivo${this.pdfFiles.length > 1 ? 's' : ''} de la lista. Esta acción no se puede deshacer.`,
+        () => {
+          this.resetInterface();
+          ToastManager.showToast('Todos los archivos eliminados', 'success');
+        }
+      );
+    });
 
     // Merge button
     this.mergeButton.addEventListener("click", async () => {
       if (this.pdfFiles.length === 0) {
-        this.showError("No hay archivos PDF para unir");
+        ToastManager.showToast('No hay archivos PDF para unir', 'error');
         return;
       }
       try {
         await this.mergePDFs();
       } catch (error) {
         console.error("Error al unir PDFs:", error);
-        this.showError("Ocurrió un error al unir los archivos PDF");
+        ToastManager.showToast('Ocurrió un error al unir los archivos PDF', 'error');
       }
     });
 
@@ -136,7 +145,7 @@ class PDFMerger {
     }
 
     if (validFiles.length === 0) {
-      this.showError("Por favor, selecciona archivos PDF válidos");
+      ToastManager.showToast('Por favor, selecciona archivos PDF válidos', 'error');
       return;
     }
 
@@ -152,6 +161,8 @@ class PDFMerger {
     if (this.pdfFiles.length > 1) {
       this.reorderInstructions.classList.remove("hidden");
     }
+    
+    ToastManager.showToast(`${validFiles.length} archivo${validFiles.length > 1 ? 's agregados' : ' agregado'}`, 'success');
   }
 
   sortPDFsByName() {
@@ -247,9 +258,11 @@ class PDFMerger {
 
       // Delete button
       thumbnail.querySelector(".delete-btn").addEventListener("click", () => {
+        const fileName = this.pdfFiles[i].name;
         this.pdfFiles.splice(i, 1);
         this.updateFileList();
         this.updateFileCount();
+        ToastManager.showToast(`${fileName} eliminado`, 'success'); 
         if (this.pdfFiles.length === 0) {
           this.resetInterface();
         } else if (this.pdfFiles.length === 1) {
@@ -378,13 +391,13 @@ class PDFMerger {
 
       this.progressBar.classList.add("hidden");
       this.processingMessage.classList.add("hidden");
-      this.showSuccess("¡PDFs combinados exitosamente!");
+      ToastManager.showToast(`¡${this.pdfFiles.length} PDFs combinados exitosamente!`, 'success');
       this.mergeButton.disabled = false;
     } catch (error) {
       console.error("Error al combinar PDFs:", error);
       this.progressBar.classList.add("hidden");
       this.processingMessage.classList.add("hidden");
-      this.showError("Error al combinar los PDFs. Por favor, intenta de nuevo.");
+      ToastManager.showToast('Error al combinar los PDFs. Intenta de nuevo.', 'error');
       this.mergeButton.disabled = false;
     }
   }
@@ -405,22 +418,83 @@ class PDFMerger {
     });
   }
 
-  showSuccess(message) {
-    this.successMessage.textContent = message;
-    this.successMessage.classList.remove("hidden");
-
+  showConfirmModal(title, message, onConfirm) {
+    // Crear overlay
+    const overlay = document.createElement("div");
+    overlay.className = "fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in";
+    
+    // Crear modal
+    const modal = document.createElement("div");
+    modal.className = "bg-white dark:bg-zinc-800 rounded-xl shadow-2xl max-w-md w-full transform scale-95 opacity-0 transition-all duration-200";
+    
+    modal.innerHTML = `
+      <div class="p-6">
+        <div class="flex items-start gap-4 mb-4">
+          <div class="flex-shrink-0 w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+            <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-2">${title}</h3>
+            <p class="text-sm text-zinc-600 dark:text-zinc-400">${message}</p>
+          </div>
+        </div>
+        
+        <div class="flex gap-3 justify-end">
+          <button class="modal-cancel px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-lg transition">
+            Cancelar
+          </button>
+          <button class="modal-confirm px-4 py-2 text-sm font-medium bg-red-600 hover:bg-red-700 text-white rounded-lg transition">
+            Eliminar
+          </button>
+        </div>
+      </div>
+    `;
+    
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    
+    // Animar entrada
     setTimeout(() => {
-      this.successMessage.classList.add("hidden");
-    }, 4000);
-  }
-
-  showError(message) {
-    this.errorMessage.textContent = message;
-    this.errorMessage.classList.remove("hidden");
-
-    setTimeout(() => {
-      this.errorMessage.classList.add("hidden");
-    }, 5000);
+      modal.style.transform = "scale(1)";
+      modal.style.opacity = "1";
+    }, 10);
+    
+    // Función para cerrar modal
+    const closeModal = () => {
+      modal.style.transform = "scale(0.95)";
+      modal.style.opacity = "0";
+      setTimeout(() => {
+        overlay.remove();
+      }, 200);
+    };
+    
+    // Event listeners
+    const cancelBtn = modal.querySelector(".modal-cancel");
+    const confirmBtn = modal.querySelector(".modal-confirm");
+    
+    cancelBtn.addEventListener("click", closeModal);
+    
+    confirmBtn.addEventListener("click", () => {
+      closeModal();
+      onConfirm();
+    });
+    
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) {
+        closeModal();
+      }
+    });
+    
+    // Cerrar con ESC
+    const handleEscape = (e) => {
+      if (e.key === "Escape") {
+        closeModal();
+        document.removeEventListener("keydown", handleEscape);
+      }
+    };
+    document.addEventListener("keydown", handleEscape);
   }
 
   resetInterface() {

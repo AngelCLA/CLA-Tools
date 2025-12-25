@@ -6,7 +6,7 @@ import mergePdfScript from "../../assets/scripts/merge-pdf.js?raw";
 
 <Layout
   title="Unir PDFs | CLA Tools"
-  description="Combina múltiples archivos PDF en uno solo de manera rápida y sencilla. Herramienta gratuita online para unir PDFs sin límites."
+  description="Combina múltiples archivos PDF en un solo documento de forma rápida, gratuita y sin subir archivos a servidores externos."
   keywords="unir pdf, combinar pdf, fusionar pdf, merge pdf, juntar pdf, herramienta pdf gratuita"
 >
   <!-- Font Awesome CDN -->
@@ -17,19 +17,15 @@ import mergePdfScript from "../../assets/scripts/merge-pdf.js?raw";
   />
 
   <div class="flex flex-col min-h-full items-center justify-center py-8 px-4">
-    <div
-      class="w-full max-w-6xl bg-white dark:bg-zinc-800 shadow-2xl rounded-xl p-6 sm:p-8 md:p-12"
-    >
+    <div class="w-full max-w-6xl shadow-2xl rounded-xl p-6 sm:p-8 md:p-12">
       <!-- Header -->
       <h1
-        class="text-3xl sm:text-4xl md:text-5xl font-bold text-purple-600 dark:text-purple-400 mb-4 text-center"
+        class="text-3xl sm:text-4xl md:text-5xl font-bold text-gradient mb-4 text-center"
       >
-        Unir Archivos PDF
+        Unir archivos PDF en un solo documento
       </h1>
-      <p
-        class="mb-6 text-base sm:text-lg md:text-xl text-zinc-700 dark:text-zinc-300 text-center"
-      >
-        Combina múltiples archivos PDF en un solo documento
+      <p class="mb-6 text-base sm:text-lg md:text-xl text-gradient text-center">
+        Ordena, previsualiza y combina tus PDFs directamente desde el navegador.
       </p>
 
       <!-- Upload Area -->
@@ -62,8 +58,8 @@ import mergePdfScript from "../../assets/scripts/merge-pdf.js?raw";
         id="reorder-instructions"
         class="hidden bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4 mb-6 text-sm sm:text-base text-blue-800 dark:text-blue-300"
       >
-        <i class="fas fa-info-circle"></i> Puedes arrastrar los archivos para cambiar
-        el orden en que aparecerán en el PDF combinado.
+        <i class="fas fa-info-circle"></i> Puedes arrastrar los archivos para definir
+        el orden final del PDF combinado.
       </div>
 
       <!-- Control Section -->
@@ -75,7 +71,7 @@ import mergePdfScript from "../../assets/scripts/merge-pdf.js?raw";
           id="file-count"
           class="text-base sm:text-lg font-semibold text-zinc-700 dark:text-zinc-300"
         >
-          0 archivos seleccionados
+          0 archivos cargados
         </div>
         <div class="flex gap-3 w-full sm:w-auto">
           <button
@@ -112,7 +108,7 @@ import mergePdfScript from "../../assets/scripts/merge-pdf.js?raw";
       <!-- PDF Preview -->
       <div
         id="pdf-preview"
-        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6"
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-6"
       >
       </div>
 
@@ -134,23 +130,7 @@ import mergePdfScript from "../../assets/scripts/merge-pdf.js?raw";
         id="processing-message"
         class="hidden text-center text-zinc-700 dark:text-zinc-300 mb-6"
       >
-        Procesando archivos PDF...
-      </div>
-
-      <!-- Success Message -->
-      <div
-        id="success-message"
-        class="hidden fixed bottom-8 right-8 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg font-semibold animate-fade-in z-50"
-      >
-        ✅ ¡PDFs combinados exitosamente!
-      </div>
-
-      <!-- Error Message -->
-      <div
-        id="error-message"
-        class="hidden fixed bottom-8 right-8 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg font-semibold animate-fade-in z-50"
-      >
-        ❌ Error al procesar los archivos PDF.
+        Combinando archivos PDF…
       </div>
 
       <!-- Actions -->
@@ -164,6 +144,22 @@ import mergePdfScript from "../../assets/scripts/merge-pdf.js?raw";
         </button>
       </div>
     </div>
+  </div>
+
+  <!-- Success Message -->
+  <div
+    id="success-message"
+    class="hidden fixed bottom-8 right-8 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg font-semibold animate-fade-in z-50"
+  >
+    ✅ Listo. Tu PDF combinado está preparado para descargar.
+  </div>
+
+  <!-- Error Message -->
+  <div
+    id="error-message"
+    class="hidden fixed bottom-8 right-8 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg font-semibold animate-fade-in z-50"
+  >
+    ❌ Error al procesar los archivos PDF.
   </div>
 </Layout>
 

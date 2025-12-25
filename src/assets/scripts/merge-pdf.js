@@ -118,7 +118,8 @@ class PDFMerger {
         "grid-cols-1",
         "sm:grid-cols-2",
         "md:grid-cols-3",
-        "lg:grid-cols-4"
+        "lg:grid-cols-4",
+        "xl:grid-cols-5"
       );
       this.pdfPreview.classList.add("grid-cols-1");
     } else {
@@ -127,7 +128,8 @@ class PDFMerger {
         "grid-cols-1",
         "sm:grid-cols-2",
         "md:grid-cols-3",
-        "lg:grid-cols-4"
+        "lg:grid-cols-4",
+        "xl:grid-cols-5"
       );
     }
 
@@ -196,10 +198,10 @@ class PDFMerger {
       const isListView = this.currentView === "list";
       
       if (isListView) {
-        thumbnail.className = "group relative bg-white dark:bg-zinc-900 rounded-md shadow-sm hover:shadow-lg transition-all duration-300 cursor-move flex flex-row items-center gap-4 h-full p-4";
+        thumbnail.className = "group relative bg-white dark:bg-zinc-900 rounded-md shadow-sm hover:shadow-lg transition-all duration-300 cursor-move flex flex-row items-center gap-3 p-3";
         thumbnail.dataset.index = i;
         thumbnail.innerHTML = `
-          <div class="w-16 h-20 flex-shrink-0 bg-gray-100 dark:bg-zinc-800 rounded flex items-center justify-center overflow-hidden">
+          <div class="w-12 h-16 flex-shrink-0 bg-gray-100 dark:bg-zinc-800 rounded flex items-center justify-center overflow-hidden">
             <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" 
                  alt="Cargando miniatura..."
                  draggable="false"
@@ -212,9 +214,9 @@ class PDFMerger {
             </div>
           </div>
           <div class="flex items-center gap-2 flex-shrink-0">
-            <div class="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold">${i + 1}</div>
-            <button class="delete-btn w-8 h-8 bg-red-500 hover:bg-red-600 text-white border-0 rounded-full cursor-pointer flex items-center justify-center transition-all duration-200 hover:scale-110" title="Eliminar">
-              <i class="fas fa-times"></i>
+            <div class="w-7 h-7 bg-purple-600/90 text-white rounded-full flex items-center justify-center text-xs font-bold">${i + 1}</div>
+            <button class="delete-btn w-7 h-7 bg-red-500 hover:bg-red-600 text-white border-0 rounded-full cursor-pointer flex items-center justify-center transition-all duration-200 hover:scale-110" title="Eliminar">
+              <i class="fas fa-times text-xs"></i>
             </button>
           </div>
         `;
@@ -223,7 +225,7 @@ class PDFMerger {
         thumbnail.dataset.index = i;
         thumbnail.innerHTML = `
           <div class="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between z-10 gap-2.5">
-            <div class="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold">${i + 1}</div>
+            <div class="w-8 h-8 bg-purple-600/90 text-white rounded-full flex items-center justify-center text-sm font-bold">${i + 1}</div>
             <button class="delete-btn w-8 h-8 bg-red-500 hover:bg-red-600 text-white border-0 rounded-full cursor-pointer flex items-center justify-center transition-all duration-200 opacity-0 group-hover:opacity-100 hover:scale-110" title="Eliminar">
               <i class="fas fa-times"></i>
             </button>
@@ -291,9 +293,20 @@ class PDFMerger {
         if (oldIndex !== newIndex) {
           const item = this.pdfFiles.splice(oldIndex, 1)[0];
           this.pdfFiles.splice(newIndex, 0, item);
-          this.updateFileList();
+          this.updateOrderNumbers();
         }
       },
+    });
+  }
+
+  updateOrderNumbers() {
+    const thumbnails = this.pdfPreview.querySelectorAll('[data-index]');
+    thumbnails.forEach((thumbnail, index) => {
+      thumbnail.dataset.index = index;
+      const orderBadge = thumbnail.querySelector('.w-8.h-8.bg-purple-600, .w-7.h-7.bg-purple-600');
+      if (orderBadge) {
+        orderBadge.textContent = index + 1;
+      }
     });
   }
 

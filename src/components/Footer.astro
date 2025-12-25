@@ -1,43 +1,560 @@
+---
+// Footer.astro
+import logo from "../assets//logo.svg";
+---
+
+<style>
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes slideUp {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  .animate-fade-in {
+    animation: fadeIn 0.2s ease-out;
+  }
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+</style>
+
 <footer
-  class="mt-auto bg-zinc-100 dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800"
+  class="mt-auto bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-zinc-900 dark:to-zinc-950 border-t border-zinc-200 dark:border-zinc-800"
 >
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-      <div class="text-center md:text-left">
-        <p class="text-zinc-600 dark:text-zinc-400 text-sm">
-          © 2025 <span
-            class="font-semibold text-purple-600 dark:text-purple-400"
-            >CLA Tools</span
-          >. Todos los derechos reservados.
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Grid principal -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+      <!-- Columna 1: Branding -->
+      <div class="md:col-span-2">
+        <div class="flex items-center gap-3 mb-4">
+          <a
+            href="/"
+            class="flex items-center gap-2 sm:gap-3 group transition-all hover:opacity-80"
+          >
+            <img src={logo.src} alt="Logo" class="w-10 sm:w-12" />
+
+            <span
+              class="text-lg sm:text-xl font-bold bg-clip-text text-purple-600 dark:text-purple-400"
+            >
+              CLA Tools
+            </span>
+          </a>
+        </div>
+        <p
+          class="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed mb-4 max-w-md"
+        >
+          Herramientas gratuitas y fáciles de usar para trabajar con PDFs,
+          imágenes y más. Todo procesado localmente en tu navegador, sin subir
+          archivos a servidores.
         </p>
+        <div class="flex gap-3">
+          <a
+            href="https://github.com/AngelCLA/cla-tools"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="w-9 h-9 rounded-full bg-zinc-200 dark:bg-zinc-800 hover:bg-purple-600 dark:hover:bg-purple-600 text-zinc-700 dark:text-zinc-300 hover:text-white transition-all duration-300 flex items-center justify-center hover:scale-110 hover:shadow-lg"
+            title="GitHub"
+          >
+            <i class="fab fa-github text-sm"></i>
+          </a>
+          <a
+            href="mailto:lcebreros@upmys.edu.mx"
+            class="w-9 h-9 rounded-full bg-zinc-200 dark:bg-zinc-800 hover:bg-purple-600 dark:hover:bg-purple-600 text-zinc-700 dark:text-zinc-300 hover:text-white transition-all duration-300 flex items-center justify-center hover:scale-110 hover:shadow-lg"
+            title="Email"
+          >
+            <i class="fas fa-envelope text-sm"></i>
+          </a>
+          <a
+            href="https://instagram.com/cla__angel"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="w-9 h-9 rounded-full bg-zinc-200 dark:bg-zinc-800 hover:bg-purple-600 dark:hover:bg-purple-600 text-zinc-700 dark:text-zinc-300 hover:text-white transition-all duration-300 flex items-center justify-center hover:scale-110 hover:shadow-lg"
+            title="Instagram"
+          >
+            <i class="fab fa-instagram text-sm"></i>
+          </a>
+        </div>
       </div>
 
-      <div class="flex items-center gap-6">
-        <a
-          href="/#about"
-          class="text-sm text-zinc-600 hover:text-purple-600 dark:text-zinc-400 dark:hover:text-purple-400 transition-colors"
+      <!-- Columna 2: Herramientas -->
+      <div>
+        <h3
+          class="font-semibold text-zinc-800 dark:text-zinc-200 mb-4 text-sm uppercase tracking-wider"
         >
-          Acerca de
-        </a>
-        <a
-          href="/#contact"
-          class="text-sm text-zinc-600 hover:text-purple-600 dark:text-zinc-400 dark:hover:text-purple-400 transition-colors"
+          Herramientas
+        </h3>
+        <ul class="space-y-2.5">
+          <li>
+            <a
+              href="/tools/merge-pdf"
+              class="text-sm text-zinc-600 hover:text-purple-600 dark:text-zinc-400 dark:hover:text-purple-400 transition-colors flex items-center gap-2 group"
+            >
+              <i
+                class="fas fa-file-pdf text-xs opacity-60 group-hover:opacity-100"
+              ></i>
+              Unir PDFs
+            </a>
+          </li>
+          <li>
+            <a
+              href="/tools/split-pdf"
+              class="text-sm text-zinc-600 hover:text-purple-600 dark:text-zinc-400 dark:hover:text-purple-400 transition-colors flex items-center gap-2 group"
+            >
+              <i class="fas fa-code text-xs opacity-60 group-hover:opacity-100"
+              ></i>
+              Texto a HTML
+            </a>
+          </li>
+          <li>
+            <a
+              href="/tools/compress-pdf"
+              class="text-sm text-zinc-600 hover:text-purple-600 dark:text-zinc-400 dark:hover:text-purple-400 transition-colors flex items-center gap-2 group"
+            >
+              <i
+                class="fas fa-file-word text-xs opacity-60 group-hover:opacity-100"
+              ></i>
+              DOCX a GIF
+            </a>
+          </li>
+          <li>
+            <a
+              href="#tools-title"
+              class="text-sm text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 transition-colors flex items-center gap-2 font-medium group"
+            >
+              Ver todas
+              <i
+                class="fas fa-arrow-right text-xs transform group-hover:translate-x-1 transition-transform"
+              ></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Columna 3: Enlaces útiles -->
+      <div>
+        <h3
+          class="font-semibold text-zinc-800 dark:text-zinc-200 mb-4 text-sm uppercase tracking-wider"
         >
-          Contacto
-        </a>
-        <a
-          href="https://github.com/AngelCLA/cla-tools"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="text-zinc-600 hover:text-purple-600 dark:text-zinc-400 dark:hover:text-purple-400 transition-colors"
+          Información
+        </h3>
+        <ul class="space-y-2.5">
+          <li>
+            <a
+              href="/#about"
+              class="text-sm text-zinc-600 hover:text-purple-600 dark:text-zinc-400 dark:hover:text-purple-400 transition-colors flex items-center gap-2 group"
+            >
+              <i
+                class="fas fa-info-circle text-xs opacity-60 group-hover:opacity-100"
+              ></i>
+              Acerca de
+            </a>
+          </li>
+          <li>
+            <button
+              id="open-privacy-btn"
+              class="text-sm text-zinc-600 hover:text-purple-600 dark:text-zinc-400 dark:hover:text-purple-400 transition-colors flex items-center gap-2 group"
+            >
+              <i
+                class="fas fa-shield-alt text-xs opacity-60 group-hover:opacity-100"
+              ></i>
+              Privacidad
+            </button>
+          </li>
+          <li>
+            <button
+              id="open-terms-btn"
+              class="text-sm text-zinc-600 hover:text-purple-600 dark:text-zinc-400 dark:hover:text-purple-400 transition-colors flex items-center gap-2 group"
+            >
+              <i
+                class="fas fa-file-contract text-xs opacity-60 group-hover:opacity-100"
+              ></i>
+              Términos
+            </button>
+          </li>
+          <li>
+            <a
+              href="/#contact"
+              class="text-sm text-zinc-600 hover:text-purple-600 dark:text-zinc-400 dark:hover:text-purple-400 transition-colors flex items-center gap-2 group"
+            >
+              <i
+                class="fas fa-envelope text-xs opacity-60 group-hover:opacity-100"
+              ></i>
+              Contacto
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Separador -->
+    <div class="border-t border-zinc-200 dark:border-zinc-800 pt-6">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        <!-- Copyright -->
+        <div class="text-center md:text-left">
+          <p class="text-zinc-600 dark:text-zinc-400 text-sm">
+            © 2025 <span
+              class="font-semibold text-purple-600 dark:text-purple-400"
+              >CLA Tools</span
+            >. Todos los derechos reservados.
+          </p>
+        </div>
+
+        <!-- Badges o info adicional -->
+        <div
+          class="flex items-center gap-4 text-xs text-zinc-500 dark:text-zinc-500"
         >
-          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-            <path
-              d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
-            ></path>
-          </svg>
-        </a>
+          <div class="flex items-center gap-1.5">
+            <i class="fas fa-shield-alt text-green-600"></i>
+            <span>100% Privado</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <i class="fas fa-bolt text-yellow-500"></i>
+            <span>Rápido</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <i class="fas fa-code text-purple-500"></i>
+            <span>Open Source</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </footer>
+
+<!-- Modal de Privacidad -->
+<div
+  id="privacy-modal"
+  class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in"
+>
+  <div
+    class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl max-w-3xl w-full max-h-[80vh] overflow-hidden animate-slide-up"
+  >
+    <!-- Header del modal -->
+    <div
+      class="bg-gradient-to-r from-purple-600 to-purple-700 p-6 flex items-center justify-between"
+    >
+      <div class="flex items-center gap-3">
+        <div
+          class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center"
+        >
+          <i class="fas fa-shield-alt text-white text-lg"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-white">Política de Privacidad</h2>
+      </div>
+      <button
+        id="close-privacy-btn"
+        class="w-8 h-8 rounded-lg hover:bg-white/20 text-white transition-colors flex items-center justify-center"
+      >
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Contenido scrolleable -->
+    <div class="p-6 overflow-y-auto max-h-[calc(80vh-100px)]">
+      <div class="prose dark:prose-invert max-w-none">
+        <p class="text-zinc-600 dark:text-zinc-400 mb-4">
+          <strong>Última actualización:</strong> 25 de diciembre de 2025
+        </p>
+
+        <h3
+          class="text-lg font-semibold text-zinc-800 dark:text-zinc-200 mt-6 mb-3"
+        >
+          1. Procesamiento Local
+        </h3>
+        <p class="text-zinc-600 dark:text-zinc-400 mb-4">
+          Todas las herramientas de CLA Tools procesan tus archivos directamente
+          en tu navegador. <strong
+            >Nunca subimos tus archivos a nuestros servidores</strong
+          >. Tus datos permanecen completamente privados y bajo tu control.
+        </p>
+
+        <h3
+          class="text-lg font-semibold text-zinc-800 dark:text-zinc-200 mt-6 mb-3"
+        >
+          2. Datos que Recopilamos
+        </h3>
+        <p class="text-zinc-600 dark:text-zinc-400 mb-4">
+          Utilizamos herramientas de análisis (como Google Analytics) para
+          entender cómo se usa nuestro sitio. Esto incluye:
+        </p>
+        <ul
+          class="list-disc list-inside text-zinc-600 dark:text-zinc-400 mb-4 space-y-2"
+        >
+          <li>Páginas visitadas</li>
+          <li>Tiempo de permanencia</li>
+          <li>Tipo de dispositivo y navegador</li>
+          <li>Ubicación aproximada (ciudad/país)</li>
+        </ul>
+
+        <h3
+          class="text-lg font-semibold text-zinc-800 dark:text-zinc-200 mt-6 mb-3"
+        >
+          3. Cookies
+        </h3>
+        <p class="text-zinc-600 dark:text-zinc-400 mb-4">
+          Utilizamos cookies solo para funciones esenciales como recordar tus
+          preferencias de tema (modo oscuro/claro). Puedes desactivarlas en la
+          configuración de tu navegador.
+        </p>
+
+        <h3
+          class="text-lg font-semibold text-zinc-800 dark:text-zinc-200 mt-6 mb-3"
+        >
+          4. Seguridad
+        </h3>
+        <p class="text-zinc-600 dark:text-zinc-400 mb-4">
+          Como tus archivos nunca salen de tu dispositivo, no hay riesgo de
+          interceptación o acceso no autorizado por terceros. El procesamiento
+          local garantiza la máxima seguridad.
+        </p>
+
+        <h3
+          class="text-lg font-semibold text-zinc-800 dark:text-zinc-200 mt-6 mb-3"
+        >
+          5. Contacto
+        </h3>
+        <p class="text-zinc-600 dark:text-zinc-400 mb-4">
+          Si tienes preguntas sobre nuestra política de privacidad, contáctanos
+          en: <a
+            href="mailto:contact@claangel.site"
+            class="text-purple-600 hover:text-purple-700"
+            >contact@claangel.site</a
+          >
+        </p>
+      </div>
+    </div>
+
+    <!-- Footer del modal -->
+    <div
+      class="border-t border-zinc-200 dark:border-zinc-800 p-4 flex justify-end"
+    >
+      <button
+        id="privacy-ok-btn"
+        class="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors font-medium"
+      >
+        Entendido
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Términos -->
+<div
+  id="terms-modal"
+  class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in"
+>
+  <div
+    class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl max-w-3xl w-full max-h-[80vh] overflow-hidden animate-slide-up"
+  >
+    <!-- Header del modal -->
+    <div
+      class="bg-gradient-to-r from-purple-600 to-purple-700 p-6 flex items-center justify-between"
+    >
+      <div class="flex items-center gap-3">
+        <div
+          class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center"
+        >
+          <i class="fas fa-file-contract text-white text-lg"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-white">Términos y Condiciones</h2>
+      </div>
+      <button
+        id="close-terms-btn"
+        class="w-8 h-8 rounded-lg hover:bg-white/20 text-white transition-colors flex items-center justify-center"
+      >
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Contenido scrolleable -->
+    <div class="p-6 overflow-y-auto max-h-[calc(80vh-100px)]">
+      <div class="prose dark:prose-invert max-w-none">
+        <p class="text-zinc-600 dark:text-zinc-400 mb-4">
+          <strong>Última actualización:</strong> 25 de diciembre de 2025
+        </p>
+
+        <h3
+          class="text-lg font-semibold text-zinc-800 dark:text-zinc-200 mt-6 mb-3"
+        >
+          1. Aceptación de los Términos
+        </h3>
+        <p class="text-zinc-600 dark:text-zinc-400 mb-4">
+          Al acceder y utilizar CLA Tools, aceptas estar sujeto a estos términos
+          y condiciones. Si no estás de acuerdo, por favor no uses nuestros
+          servicios.
+        </p>
+
+        <h3
+          class="text-lg font-semibold text-zinc-800 dark:text-zinc-200 mt-6 mb-3"
+        >
+          2. Uso del Servicio
+        </h3>
+        <p class="text-zinc-600 dark:text-zinc-400 mb-4">
+          CLA Tools proporciona herramientas gratuitas para manipular archivos
+          PDF y otros formatos. Te concedemos una licencia no exclusiva para
+          usar nuestras herramientas con los siguientes términos:
+        </p>
+        <ul
+          class="list-disc list-inside text-zinc-600 dark:text-zinc-400 mb-4 space-y-2"
+        >
+          <li>
+            Puedes usar las herramientas para fines personales y comerciales
+          </li>
+          <li>No debes usar el servicio para actividades ilegales</li>
+          <li>No debes intentar acceder a sistemas no autorizados</li>
+          <li>No debes sobrecargar deliberadamente nuestros servidores</li>
+        </ul>
+
+        <h3
+          class="text-lg font-semibold text-zinc-800 dark:text-zinc-200 mt-6 mb-3"
+        >
+          3. Contenido del Usuario
+        </h3>
+        <p class="text-zinc-600 dark:text-zinc-400 mb-4">
+          Eres el único responsable de los archivos que procesas usando nuestras
+          herramientas. No revisamos ni tenemos acceso al contenido que
+          procesas, ya que todo se ejecuta localmente en tu navegador.
+        </p>
+
+        <h3
+          class="text-lg font-semibold text-zinc-800 dark:text-zinc-200 mt-6 mb-3"
+        >
+          4. Limitación de Responsabilidad
+        </h3>
+        <p class="text-zinc-600 dark:text-zinc-400 mb-4">
+          CLA Tools se proporciona "tal cual" sin garantías de ningún tipo. No
+          nos hacemos responsables de:
+        </p>
+        <ul
+          class="list-disc list-inside text-zinc-600 dark:text-zinc-400 mb-4 space-y-2"
+        >
+          <li>Pérdida de datos o archivos</li>
+          <li>Errores en el procesamiento de archivos</li>
+          <li>Interrupciones del servicio</li>
+          <li>Daños directos o indirectos derivados del uso del servicio</li>
+        </ul>
+
+        <h3
+          class="text-lg font-semibold text-zinc-800 dark:text-zinc-200 mt-6 mb-3"
+        >
+          5. Propiedad Intelectual
+        </h3>
+        <p class="text-zinc-600 dark:text-zinc-400 mb-4">
+          El código, diseño y contenido de CLA Tools están protegidos por
+          derechos de autor. No puedes copiar, modificar o distribuir nuestro
+          código sin autorización expresa.
+        </p>
+
+        <h3
+          class="text-lg font-semibold text-zinc-800 dark:text-zinc-200 mt-6 mb-3"
+        >
+          6. Modificaciones
+        </h3>
+        <p class="text-zinc-600 dark:text-zinc-400 mb-4">
+          Nos reservamos el derecho de modificar estos términos en cualquier
+          momento. Los cambios entrarán en vigor inmediatamente después de su
+          publicación.
+        </p>
+
+        <h3
+          class="text-lg font-semibold text-zinc-800 dark:text-zinc-200 mt-6 mb-3"
+        >
+          7. Contacto
+        </h3>
+        <p class="text-zinc-600 dark:text-zinc-400 mb-4">
+          Para preguntas sobre estos términos, contáctanos en: <a
+            href="mailto:contact@claangel.sitee"
+            class="text-blue-600 hover:text-blue-700">contact@claangel.sitee</a
+          >
+        </p>
+      </div>
+    </div>
+
+    <!-- Footer del modal -->
+    <div
+      class="border-t border-zinc-200 dark:border-zinc-800 p-4 flex justify-end"
+    >
+      <button
+        id="terms-ok-btn"
+        class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
+      >
+        Entendido
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Modal de Privacidad
+  const privacyModal = document.getElementById("privacy-modal");
+  const openPrivacyBtn = document.getElementById("open-privacy-btn");
+  const closePrivacyBtn = document.getElementById("close-privacy-btn");
+  const privacyOkBtn = document.getElementById("privacy-ok-btn");
+
+  function openPrivacyModal() {
+    privacyModal?.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closePrivacyModal() {
+    privacyModal?.classList.add("hidden");
+    document.body.style.overflow = "auto";
+  }
+
+  openPrivacyBtn?.addEventListener("click", openPrivacyModal);
+  closePrivacyBtn?.addEventListener("click", closePrivacyModal);
+  privacyOkBtn?.addEventListener("click", closePrivacyModal);
+
+  // Modal de Términos
+  const termsModal = document.getElementById("terms-modal");
+  const openTermsBtn = document.getElementById("open-terms-btn");
+  const closeTermsBtn = document.getElementById("close-terms-btn");
+  const termsOkBtn = document.getElementById("terms-ok-btn");
+
+  function openTermsModal() {
+    termsModal?.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeTermsModal() {
+    termsModal?.classList.add("hidden");
+    document.body.style.overflow = "auto";
+  }
+
+  openTermsBtn?.addEventListener("click", openTermsModal);
+  closeTermsBtn?.addEventListener("click", closeTermsModal);
+  termsOkBtn?.addEventListener("click", closeTermsModal);
+
+  // Cerrar modales con ESC
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closePrivacyModal();
+      closeTermsModal();
+    }
+  });
+
+  // Cerrar modal al hacer clic fuera
+  privacyModal?.addEventListener("click", (e) => {
+    if (e.target === privacyModal) {
+      closePrivacyModal();
+    }
+  });
+
+  termsModal?.addEventListener("click", (e) => {
+    if (e.target === termsModal) {
+      closeTermsModal();
+    }
+  });
+</script>

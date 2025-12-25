@@ -1,5 +1,3 @@
-console.log("Inicializando conversor de Texto a HTML");
-
 class TextToHtmlConverter {
   constructor() {
     this.editor = null;

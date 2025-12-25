@@ -2,8 +2,6 @@
  * Utilidades comunes para todas las páginas
  */
 
-console.log('common.js cargado');
-
 // Configuración global
 const AppConfig = {
     animations: {
@@ -20,7 +18,6 @@ const AppConfig = {
 class MessageHandler {
     static show(element, type = 'info', duration = AppConfig.messages.showDuration) {
         if (!element) {
-            console.log('Elemento de mensaje no encontrado');
             return;
         }
         
@@ -36,7 +33,6 @@ class MessageHandler {
     }
 
     static showSuccess(message, customElement = null) {
-        console.log('Mostrando mensaje de éxito:', message);
         const element = customElement || document.getElementById('successMessage');
         if (element) {
             element.textContent = `✅ ${message}`;
@@ -45,7 +41,6 @@ class MessageHandler {
     }
 
     static showError(message, customElement = null) {
-        console.log('Mostrando mensaje de error:', message);
         const element = customElement || document.getElementById('errorMessage');
         if (element) {
             element.textContent = `❌ ${message}`;
@@ -54,7 +49,6 @@ class MessageHandler {
     }
 
     static showWarning(message, customElement = null) {
-        console.log('Mostrando mensaje de advertencia:', message);
         const element = customElement || document.getElementById('warningMessage');
         if (element) {
             element.textContent = `⚠️ ${message}`;
@@ -104,15 +98,12 @@ class FileHandler {
 // Utilidades para DOM
 class DOMUtils {
     static setupDragAndDrop(uploadArea, fileInput, onFilesSelected, acceptedTypes = []) {
-        console.log('Configurando drag and drop');
-        
         if (!uploadArea || !fileInput) {
             console.error('uploadArea o fileInput no encontrado');
             return;
         }
 
         uploadArea.addEventListener('click', () => {
-            console.log('Click en uploadArea');
             fileInput.click();
         });
 
@@ -134,15 +125,12 @@ class DOMUtils {
         });
 
         fileInput.addEventListener('change', (e) => {
-            console.log('Archivo seleccionado');
             const files = Array.from(e.target.files);
             this.handleFileSelection(files, onFilesSelected, acceptedTypes);
         });
     }
 
     static handleFileSelection(files, callback, acceptedTypes = []) {
-        console.log('Procesando archivos seleccionados:', files);
-        
         if (acceptedTypes.length === 0) {
             callback(files);
             return;
@@ -209,7 +197,6 @@ class DOMUtils {
 // Clase base para componentes de página
 class PageComponent {
     constructor() {
-        console.log('Inicializando PageComponent');
         this.elements = {};
         this.init();
     }
@@ -327,5 +314,3 @@ window.MessageHandler = MessageHandler;
 window.FileHandler = FileHandler;
 window.DOMUtils = DOMUtils;
 window.PageComponent = PageComponent;
-
-console.log('common.js: Variables globales exportadas');

@@ -1,5 +1,3 @@
-console.log('docx-gift.js cargado');
-
 // Verificar dependencias
 if (typeof mammoth === 'undefined') {
     console.error('Mammoth.js no está cargado');
@@ -7,7 +5,6 @@ if (typeof mammoth === 'undefined') {
 
 class DocxToGiftConverter {
     constructor() {
-        console.log('Inicializando DocxToGiftConverter');
         this.processedContent = '';
         this.fileName = '';
         this.debugInfo = '';
@@ -76,7 +73,6 @@ class DocxToGiftConverter {
         // Remove file event
         if (this.elements.removeFile) {
             this.elements.removeFile.addEventListener('click', () => {
-                console.log('Removiendo archivo');
                 this.resetInterface();
             });
         }
@@ -84,7 +80,6 @@ class DocxToGiftConverter {
         // Copy button event
         if (this.elements.copyBtn) {
             this.elements.copyBtn.addEventListener('click', () => {
-                console.log('Copiando al portapapeles');
                 if (this.elements.giftOutput && this.elements.giftOutput.value) {
                     DOMUtils.copyToClipboard(this.elements.giftOutput.value, this.elements.copyBtn);
                 } else {
@@ -96,7 +91,6 @@ class DocxToGiftConverter {
         // Download button event
         if (this.elements.downloadBtn) {
             this.elements.downloadBtn.addEventListener('click', () => {
-                console.log('Descargando archivo GIFT');
                 if (!this.processedContent) {
                     MessageHandler.showError('No hay contenido para descargar');
                     return;
@@ -142,7 +136,6 @@ class DocxToGiftConverter {
 
         try {
             const arrayBuffer = await FileHandler.readFileAsArrayBuffer(file);
-// console.log('Archivo leído, procesando con Mammoth...');
             
             // Extraer highlighting del XML del DOCX
             await this.extractHighlightedTexts(arrayBuffer);
@@ -163,7 +156,6 @@ class DocxToGiftConverter {
             const html = result.value;
             const messages = result.messages;
 
-            // console.log('HTML generado por Mammoth:', html.substring(0, 200) + '...');
 
             this.debugInfo = "=== MAMMOTH MESSAGES ===\n";
             messages.forEach(msg => {
@@ -190,8 +182,6 @@ class DocxToGiftConverter {
             const zip = await JSZip.loadAsync(arrayBuffer);
             const docXml = await zip.file('word/document.xml').async('string');
             
-            // console.log('=== EXTRAYENDO HIGHLIGHTING ===');
-            
             // Regex correcta: Buscar <w:r> que contenga <w:highlight w:val="yellow"/> y extraer el texto
             const highlightPattern = /<w:r[^>]*>[\s\S]*?<w:highlight\s+w:val="yellow"[\s\S]*?<w:t[^>]*>([^<]+)<\/w:t>[\s\S]*?<\/w:r>/gi;
             
@@ -200,28 +190,21 @@ class DocxToGiftConverter {
                 const text = match[1]?.trim();
                 if (text) {
                     this.highlightedTexts.add(text);
-                    // console.log(`✓ Highlighting detectado: "${text}"`);
                 }
             }
-
-            // console.log('Textos con highlighting final:', Array.from(this.highlightedTexts));
-            // console.log('Total encontrados:', this.highlightedTexts.size);
         } catch (error) {
             console.warn('Error extrayendo highlighting del DOCX:', error);
         }
     }
 
     processDocument(html) {
-        // console.log('Procesando documento HTML');
         try {
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = html;
 
             const documentStructure = this.extractDocumentStructure(tempDiv);
-            // console.log('Estructura extraída:', documentStructure);
             
             const giftContent = this.generateGiftFormat(documentStructure);
-            // console.log('Contenido GIFT generado');
 
             this.processedContent = giftContent;
             this.updateStatistics(documentStructure);
@@ -247,7 +230,6 @@ class DocxToGiftConverter {
     }
 
     extractDocumentStructure(htmlElement) {
-        // console.log('Extrayendo estructura del documento');
         const structure = [];
         const paragraphs = htmlElement.querySelectorAll('p');
         
@@ -279,7 +261,6 @@ class DocxToGiftConverter {
             } else if (text && currentQuestion && text.length > 1) {
                 const isCorrect = this.isAnswerCorrect(p, text);
                 
-                // console.log(`Respuesta: "${text.substring(0, 50)}..." - HTML:`, p.outerHTML.substring(0, 300));
                 this.debugInfo += `  HTML de la respuesta: ${p.outerHTML.substring(0, 200)}\n`;
                 
                 currentAnswers.push({
@@ -305,7 +286,6 @@ class DocxToGiftConverter {
             }
         });
 
-        // console.log('Estructura final:', structure);
         return structure;
     }
 
@@ -313,7 +293,6 @@ class DocxToGiftConverter {
         // 1. Verificar si está en los textos con highlighting del XML
         if (this.highlightedTexts.has(text.trim())) {
             this.debugInfo += `  → RESPUESTA CORRECTA (highlighting del XML): "${text}"\n`;
-            // console.log(`✓ Highlighting detectado: "${text}"`);
             return true;
         }
 
@@ -376,7 +355,6 @@ class DocxToGiftConverter {
                 const spanText = span.textContent.trim();
                 if (spanText && (spanText === text || text.includes(spanText))) {
                     this.debugInfo += `  → RESPUESTA CORRECTA (span background-color): "${text}"\n`;
-                    // console.log(`✓ Detectada como correcta por background-color: "${spanText}"`);
                     return true;
                 }
             }
@@ -387,7 +365,6 @@ class DocxToGiftConverter {
     }
 
     generateGiftFormat(structure) {
-        // console.log('Generando formato GIFT');
         let giftContent = '';
 
         structure.forEach(item => {
@@ -417,7 +394,6 @@ class DocxToGiftConverter {
     }
 
     generatePreview(structure) {
-        // console.log('Generando vista previa');
         if (!this.elements.questionsPreview) return;
 
         let previewHTML = '';
@@ -440,7 +416,6 @@ class DocxToGiftConverter {
     }
 
     updateStatistics(structure) {
-        // console.log('Actualizando estadísticas');
         const questionCount = structure.length;
         let totalAnswers = 0;
         let correctAnswers = 0;
@@ -462,7 +437,6 @@ class DocxToGiftConverter {
     }
 
     showResults(giftContent) {
-        // console.log('Mostrando resultados');
         this.showLoading(false);
         
         if (this.elements.giftOutput) {
@@ -501,7 +475,6 @@ class DocxToGiftConverter {
     }
 
     resetInterface() {
-        // console.log('Reseteando interfaz');
         if (this.elements.fileInput) {
             this.elements.fileInput.value = '';
         }
@@ -523,10 +496,8 @@ class DocxToGiftConverter {
         this.debugInfo = '';
         this.highlightedTexts = new Set(); // Reset highlighting
     }
-
     
 }
 
 // Inicializar converter
-// console.log('Creando instancia del converter');
 window.docxConverter = new DocxToGiftConverter();

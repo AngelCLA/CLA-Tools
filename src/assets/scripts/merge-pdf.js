@@ -1,5 +1,3 @@
-console.log("Inicializando unión de PDFs");
-
 // Configurar PDF.js worker
 if (typeof pdfjsLib !== "undefined") {
   pdfjsLib.GlobalWorkerOptions.workerSrc =

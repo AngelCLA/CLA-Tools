@@ -67,7 +67,12 @@ class TextToHtmlConverter {
     if (this.editor) {
       this.editor.addEventListener("paste", (e) => this.handlePaste(e));
       this.editor.addEventListener("keydown", (e) => this.handleKeydown(e));
+      // Monitor cambios en el editor para actualizar estado de botones
+      this.editor.addEventListener("input", () => this.updateButtonStates());
     }
+    
+    // Verificar estado inicial de botones
+    this.updateButtonStates();
   }
 
   setupEditor() {
@@ -126,11 +131,87 @@ class TextToHtmlConverter {
     }
   }
 
+  hasEditorContent() {
+    if (!this.editor) return false;
+    
+    const content = this.editor.innerHTML.trim();
+    
+    // Normalizar el contenido eliminando espacios en blanco entre etiquetas
+    const normalizedContent = content.replace(/>\s+</g, '><');
+    
+    // Lista de patrones que se consideran "vacíos"
+    const emptyPatterns = [
+      '<p><br></p>',
+      '<p></p>',
+      '<br>',
+      '<p><br/></p>',
+      '<p> </p>',
+      '<p>&nbsp;</p>',
+      '<div><br></div>',
+      '<div></div>'
+    ];
+    
+    // Verificar si el contenido normalizado coincide con algún patrón vacío
+    if (emptyPatterns.includes(normalizedContent)) {
+      return false;
+    }
+    
+    // Verificar si solo tiene espacios en blanco en el texto
+    const textContent = this.editor.textContent.trim();
+    
+    return content && textContent.length > 0;
+  }
+
+  updateButtonStates() {
+    const hasContent = this.hasEditorContent();
+    const generateBtn = document.getElementById("generate-html-btn");
+    const moodleBtn = document.getElementById("generate-moodle-btn");
+    const clearBtn = document.getElementById("clear-editor-btn");
+    
+    const disabledClasses = "opacity-50 cursor-not-allowed";
+    const enabledClasses = "hover:bg-purple-700 cursor-pointer";
+    const moodleEnabledClasses = "hover:bg-blue-700 cursor-pointer";
+    const clearEnabledClasses = "hover:bg-red-700 cursor-pointer";
+    
+    if (hasContent) {
+      // Habilitar botones
+      if (generateBtn) {
+        generateBtn.disabled = false;
+        generateBtn.classList.remove(...disabledClasses.split(" "));
+        generateBtn.classList.add(...enabledClasses.split(" "));
+      }
+      if (moodleBtn) {
+        moodleBtn.disabled = false;
+        moodleBtn.classList.remove(...disabledClasses.split(" "));
+        moodleBtn.classList.add(...moodleEnabledClasses.split(" "));
+      }
+      if (clearBtn) {
+        clearBtn.disabled = false;
+        clearBtn.classList.remove(...disabledClasses.split(" "));
+        clearBtn.classList.add(...clearEnabledClasses.split(" "));
+      }
+    } else {
+      // Deshabilitar botones
+      if (generateBtn) {
+        generateBtn.disabled = true;
+        generateBtn.classList.remove(...enabledClasses.split(" "));
+        generateBtn.classList.add(...disabledClasses.split(" "));
+      }
+      if (moodleBtn) {
+        moodleBtn.disabled = true;
+        moodleBtn.classList.remove(...moodleEnabledClasses.split(" "));
+        moodleBtn.classList.add(...disabledClasses.split(" "));
+      }
+      if (clearBtn) {
+        clearBtn.disabled = true;
+        clearBtn.classList.remove(...clearEnabledClasses.split(" "));
+        clearBtn.classList.add(...disabledClasses.split(" "));
+      }
+    }
+  }
+
   generateHtml() {
-    if (
-      !this.editor.innerHTML.trim() ||
-      this.editor.innerHTML === "<p><br></p>"
-    ) {
+    if (!this.hasEditorContent()) {
       this.showToast("No hay contenido para convertir", "error");
       return;
     }
@@ -145,10 +226,7 @@ class TextToHtmlConverter {
   }
 
   generateMoodleHtml() {
-    if (
-      !this.editor.innerHTML.trim() ||
-      this.editor.innerHTML === "<p><br></p>"
-    ) {
+    if (!this.hasEditorContent()) {
       this.showToast("No hay contenido para convertir", "error");
       return;
     }
@@ -167,6 +245,7 @@ class TextToHtmlConverter {
       () => {
         this.editor.innerHTML = "<p><br></p>";
         this.editor.focus();
+        this.updateButtonStates();
         this.showToast("Editor limpiado", "success");
       }
     );
@@ -301,6 +380,9 @@ class TextToHtmlConverter {
       document.execCommand("insertText", false, text);
       this.showToast("Texto plano pegado", "success");
     }
+    
+    // Actualizar estado de botones después de pegar
+    setTimeout(() => this.updateButtonStates(), 100);
   }
 
   handleKeydown(e) {

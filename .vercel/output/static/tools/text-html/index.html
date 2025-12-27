@@ -191,6 +191,12 @@ Ver tutorial
 
   // Cerrar panel y guardar preferencia
   closeBtn?.addEventListener("click", () => {
+    // Detener el video vaciando completamente el src
+    if (iframe && !iframe.classList.contains("hidden")) {
+      iframe.src = "";
+      iframe.classList.add("hidden");
+      playBtn?.classList.remove("hidden");
+    }
     localStorage.setItem("cla_hide_tutorial", "1");
     floatingTutorial.style.display = "none";
   });

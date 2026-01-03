@@ -115,11 +115,15 @@ const {
   <body
     class="bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 min-h-screen flex flex-col transition-colors duration-200"
   >
-    <Header />
+    <div class="no-print">
+      <Header />
+    </div>
     <main class="flex-1">
       <slot />
     </main>
-    <Footer />
+    <div class="no-print">
+      <Footer />
+    </div>
   </body>
 </html>
 

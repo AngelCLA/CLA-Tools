@@ -83,3 +83,10 @@ html {
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
+
+/* Ocultar elementos en impresión */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}

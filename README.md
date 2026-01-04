@@ -273,7 +273,7 @@ Distribuido bajo la Licencia MIT. Ver `LICENSE` para más información.
 
 **CLA Tools** - [@AngelCLA](https://github.com/AngelCLA)
 
-- Email: lcebreros@upmys.edu.mx
+- Email: claangeldev@gmail.com
 - GitHub: [https://github.com/AngelCLA/cla-tools](https://github.com/AngelCLA/cla-tools)
 - Issues: [https://github.com/AngelCLA/cla-tools/issues](https://github.com/AngelCLA/cla-tools/issues)
 

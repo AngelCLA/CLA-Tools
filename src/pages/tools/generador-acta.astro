@@ -10,7 +10,7 @@ import generadorActa from "../../assets/scripts/generar-actas.js?raw";
   description="Genera actas de acuerdos académicos con formato profesional. Personaliza criterios de evaluación, unidades y evidencias. Imprime o descarga en PDF."
   keywords="generador acta, acta acuerdos, documento académico, acta escolar, generador pdf"
 >
-<script is:inline define:vars={{ generadorActa }}>
+  <script is:inline define:vars={{ generadorActa }}>
     eval(generadorActa);
   </script>
 
@@ -23,17 +23,40 @@ import generadorActa from "../../assets/scripts/generar-actas.js?raw";
       class="w-full max-w-7xl bg-white dark:bg-zinc-900 shadow-2xl rounded-xl p-6 sm:p-8 md:p-12"
     >
       <!-- Header -->
-      <h1
-        class="no-print text-3xl sm:text-4xl md:text-5xl font-bold text-gradient mb-4 text-center"
+      <div
+        class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4"
       >
-        Generador de Acta de Acuerdos
-      </h1>
-      <p
-        class="no-print mb-6 text-base sm:text-lg md:text-xl text-gradient text-center"
-      >
-        Crea actas de acuerdos académicos con formato profesional. Personaliza
-        criterios de evaluación, unidades y evidencias.
-      </p>
+        <div class="text-center md:text-left">
+          <h1
+            class="no-print text-3xl sm:text-4xl font-bold text-gradient mb-2"
+          >
+            Generador de Acta de Acuerdos
+          </h1>
+          <p
+            class="no-print text-sm sm:text-base text-zinc-500 dark:text-zinc-400"
+          >
+            Crea documentos académicos profesionales en minutos.
+          </p>
+        </div>
+        <div
+          id="save-status"
+          class="no-print opacity-0 transition-opacity duration-300 flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 text-xs font-medium border border-green-100 dark:border-green-800"
+        >
+          <svg
+            class="w-3.5 h-3.5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 13l4 4L19 7"></path>
+          </svg>
+          Cambios guardados
+        </div>
+      </div>
 
       <!-- Instructions -->
       <div
@@ -105,25 +128,37 @@ import generadorActa from "../../assets/scripts/generar-actas.js?raw";
                   />
                 </div>
                 <div class="grid grid-cols-2 gap-3">
-                <div>
-                  <label class="form-label">Materia</label>
-                  <input
-                    type="text"
-                    id="materia"
-                    class="form-input"
-                    value="Programación Web"
-                  />
-                </div>
-                
-                <div>
-                  <label class="form-label">Nombre del Docente</label>
-                  <input
-                    type="text"
-                    id="docente"
-                    class="form-input"
-                    value="Ing. Luis Angel Cebreros Carrillo"
-                  />
-                </div>
+                  <div>
+                    <label class="form-label flex items-center gap-1">
+                      Materia
+                      <span
+                        class="text-zinc-400"
+                        title="Nombre oficial de la asignatura">ⓘ</span
+                      >
+                    </label>
+                    <input
+                      type="text"
+                      id="materia"
+                      class="form-input"
+                      value="Programación Web"
+                    />
+                  </div>
+
+                  <div>
+                    <label class="form-label flex items-center gap-1">
+                      Nombre del Docente
+                      <span
+                        class="text-zinc-400"
+                        title="Nombre completo con grado académico">ⓘ</span
+                      >
+                    </label>
+                    <input
+                      type="text"
+                      id="docente"
+                      class="form-input"
+                      value="Ing. Luis Angel Cebreros Carrillo"
+                    />
+                  </div>
                 </div>
                 <div>
                   <label class="form-label">Carrera</label>
@@ -145,19 +180,18 @@ import generadorActa from "../../assets/scripts/generar-actas.js?raw";
                     />
                   </div>
                   <div>
-                  <label class="form-label">Número de Alumnos</label>
-                  <input
-                    type="number"
-                    id="numAlumnos"
-                    class="form-input"
-                    value="20"
-                    min="1"
-                  />
-                </div>
-                  
+                    <label class="form-label">Número de Alumnos</label>
+                    <input
+                      type="number"
+                      id="numAlumnos"
+                      class="form-input"
+                      value="20"
+                      min="1"
+                    />
+                  </div>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
-                    <div>
+                  <div>
                     <label class="form-label">Periodo</label>
                     <input
                       type="text"
@@ -166,15 +200,15 @@ import generadorActa from "../../assets/scripts/generar-actas.js?raw";
                       value="enero-abril 2026"
                     />
                   </div>
-                <div>
-                  <label class="form-label">Fecha de Elaboración</label>
-                  <input
-                    type="text"
-                    id="fechaCelebracion"
-                    class="form-input"
-                    value="5 de enero de 2026"
-                  />
-                </div>
+                  <div>
+                    <label class="form-label">Fecha de Elaboración</label>
+                    <input
+                      type="text"
+                      id="fechaCelebracion"
+                      class="form-input"
+                      value="5 de enero de 2026"
+                    />
+                  </div>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                   <div>
@@ -201,17 +235,24 @@ import generadorActa from "../../assets/scripts/generar-actas.js?raw";
 
             <!-- Porcentajes -->
             <div class="fade-in">
-              <div class="section-title">
-                <svg
-                  class="w-5 h-5 text-purple-600 dark:text-purple-400"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
+              <div class="section-title justify-between">
+                <div class="flex items-center gap-2">
+                  <svg
+                    class="w-5 h-5 text-purple-600 dark:text-purple-400"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"
+                    ></path>
+                  </svg>
+                  Porcentajes de Evaluación
+                </div>
+                <span
+                  id="percentage-total"
+                  class="text-xs font-bold px-2 py-1 rounded bg-zinc-100 dark:bg-zinc-800"
+                  >Total: 100%</span
                 >
-                  <path
-                    d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"
-                  ></path>
-                </svg>
-                Porcentajes de Evaluación (%)
               </div>
               <div class="grid grid-cols-2 gap-3">
                 <div>
@@ -371,10 +412,10 @@ import generadorActa from "../../assets/scripts/generar-actas.js?raw";
         </div>
 
         <!-- Botón Imprimir - Full width abajo -->
-        <div class="mt-6">
+        <div class="mt-6 flex flex-col sm:flex-row gap-4">
           <button
             id="print-btn"
-            class="btn-primary w-full justify-center py-3 text-base shadow-lg"
+            class="btn-primary flex-1 justify-center py-3 text-base shadow-lg"
           >
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
               <path
@@ -383,6 +424,18 @@ import generadorActa from "../../assets/scripts/generar-actas.js?raw";
                 clip-rule="evenodd"></path>
             </svg>
             Imprimir / Guardar PDF
+          </button>
+          <button
+            id="clear-btn"
+            class="btn-secondary justify-center py-3 px-8 text-base border-red-500 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 dark:border-red-400 dark:text-red-400"
+          >
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                clip-rule="evenodd"></path>
+            </svg>
+            Limpiar Datos
           </button>
         </div>
       </div>
@@ -656,6 +709,5 @@ import generadorActa from "../../assets/scripts/generar-actas.js?raw";
     #units-list::-webkit-scrollbar-thumb:hover {
       @apply bg-purple-500 dark:bg-purple-500;
     }
-    </style>
-
+  </style>
 </Layout>

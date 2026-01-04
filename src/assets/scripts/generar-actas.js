@@ -1,4 +1,6 @@
-let units = [
+const STORAGE_KEY = "acta_acuerdos_data";
+
+    let units = [
       {
         title: "Unidad I. Modelos de Negocios Electrónicos.",
         evidences: [
@@ -7,6 +9,94 @@ let units = [
       },
     ];
 
+    let saveTimeout;
+    function showSaveStatus() {
+      const status = document.getElementById("save-status");
+      if (!status) return;
+      
+      status.classList.remove("opacity-0");
+      status.classList.add("opacity-100");
+      
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(() => {
+        status.classList.remove("opacity-100");
+        status.classList.add("opacity-0");
+      }, 2000);
+    }
+
+    function saveToLocalStorage() {
+      const data = {
+        units,
+        inputs: {
+          logoUrl: document.getElementById("logoUrl").value,
+          materia: document.getElementById("materia").value,
+          carrera: document.getElementById("carrera").value,
+          grupo: document.getElementById("grupo").value,
+          periodoEval: document.getElementById("periodoEval").value,
+          fechaCelebracion: document.getElementById("fechaCelebracion").value,
+          horaIni: document.getElementById("horaIni").value,
+          horaFin: document.getElementById("horaFin").value,
+          p_producto: document.getElementById("p_producto").value,
+          p_conocimiento: document.getElementById("p_conocimiento").value,
+          p_desempeno: document.getElementById("p_desempeno").value,
+          p_actitudinal: document.getElementById("p_actitudinal").value,
+          c1: document.getElementById("c1").value,
+          c2: document.getElementById("c2").value,
+          c3: document.getElementById("c3").value,
+          r1: document.getElementById("r1").value,
+          r2: document.getElementById("r2").value,
+          r3: document.getElementById("r3").value,
+          numAlumnos: document.getElementById("numAlumnos").value,
+          docente: document.getElementById("docente").value,
+        },
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      showSaveStatus();
+    }
+
+    function loadFromLocalStorage() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          const data = JSON.parse(saved);
+          if (data.units) units = data.units;
+          if (data.inputs) {
+            Object.keys(data.inputs).forEach((id) => {
+              const el = document.getElementById(id);
+              if (el) el.value = data.inputs[id];
+            });
+          }
+        } catch (e) {
+          console.error("Error loading from localStorage", e);
+        }
+      }
+    }
+
+    function clearData() {
+      if (confirm("¿Estás seguro de que deseas limpiar todos los datos?")) {
+        localStorage.removeItem(STORAGE_KEY);
+        
+        // Reset units to a single empty unit
+        units = [
+          {
+            title: "",
+            evidences: [""],
+          },
+        ];
+
+        // Clear all inputs
+        const inputs = document.querySelectorAll(
+          "#logoUrl, #materia, #carrera, #grupo, #periodoEval, #fechaCelebracion, #horaIni, #horaFin, #p_producto, #p_conocimiento, #p_desempeno, #p_actitudinal, #c1, #c2, #c3, #r1, #r2, #r3, #numAlumnos, #docente"
+        );
+        inputs.forEach((input) => {
+          input.value = "";
+        });
+
+        renderUnitsEditor();
+        updatePreview();
+      }
+    }
+
     function addUnit() {
       units.push({
         title: "Nueva Unidad",
@@ -14,18 +104,21 @@ let units = [
       });
       renderUnitsEditor();
       updatePreview();
+      saveToLocalStorage();
     }
 
     function addEvidence(unitIndex) {
       units[unitIndex].evidences.push("Nueva evidencia");
       renderUnitsEditor();
       updatePreview();
+      saveToLocalStorage();
     }
 
     function removeEvidence(unitIndex, evidenceIndex) {
       units[unitIndex].evidences.splice(evidenceIndex, 1);
       renderUnitsEditor();
       updatePreview();
+      saveToLocalStorage();
     }
 
     function removeUnit(index) {
@@ -33,6 +126,7 @@ let units = [
         units.splice(index, 1);
         renderUnitsEditor();
         updatePreview();
+        saveToLocalStorage();
       }
     }
 
@@ -45,7 +139,7 @@ let units = [
             (ev, ei) => `
           <div class="evidence-item">
             <div class="flex w-full gap-2">
-              <textarea class="dark:bg-zinc-900 w-full form-textarea flex-1 text-sm" rows="2" oninput="units[${i}].evidences[${ei}] = this.value; updatePreview()" placeholder="Descripción de evidencia">${ev}</textarea>
+              <textarea class="dark:bg-zinc-900 w-full form-textarea flex-1 text-sm" rows="2" oninput="units[${i}].evidences[${ei}] = this.value; updatePreview(); saveToLocalStorage()" placeholder="Descripción de evidencia">${ev}</textarea>
               <button onclick="removeEvidence(${i}, ${ei})" class="btn-danger self-start color-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20">
                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
@@ -69,7 +163,10 @@ let units = [
             </button>
           </div>
           <div class="mb-3">
-            <input type="text" class="dark:bg-zinc-900 w-full form-input font-semibold" value="${u.title}" oninput="units[${i}].title = this.value; updatePreview()" placeholder="Título de la unidad">
+            <input type="text" class="dark:bg-zinc-900 w-full form-input font-semibold" value="${u.title}" 
+              oninput="units[${i}].title = this.value; updatePreview(); saveToLocalStorage()" 
+              onkeydown="if(event.key==='Enter'){ event.preventDefault(); addEvidence(${i}) }"
+              placeholder="Título de la unidad">
           </div>
           <div>
             <label class="form-label mb-2">Evidencias</label>
@@ -78,7 +175,7 @@ let units = [
               <svg class="w-3 h-3 items-center justify-center" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
               </svg>
-              Agregar Evidencia
+              Agregar Evidencia (Enter en título)
             </button>
           </div>
         `;
@@ -88,16 +185,31 @@ let units = [
 
     function updatePreview() {
       const val = (id) => document.getElementById(id).value;
+      
+      // Update percentage total
+      const pProd = parseInt(val("p_producto")) || 0;
+      const pCono = parseInt(val("p_conocimiento")) || 0;
+      const pDese = parseInt(val("p_desempeno")) || 0;
+      const pActi = parseInt(val("p_actitudinal")) || 0;
+      const total = pProd + pCono + pDese + pActi;
+      
+      const totalEl = document.getElementById("percentage-total");
+      if (totalEl) {
+        totalEl.textContent = `Total: ${total}%`;
+        if (total !== 100) {
+          totalEl.classList.remove("bg-zinc-100", "dark:bg-zinc-800", "text-zinc-600", "dark:text-zinc-400");
+          totalEl.classList.add("bg-red-100", "dark:bg-red-900/30", "text-red-600", "dark:text-red-400");
+        } else {
+          totalEl.classList.remove("bg-red-100", "dark:bg-red-900/30", "text-red-600", "dark:text-red-400");
+          totalEl.classList.add("bg-green-100", "dark:bg-green-900/30", "text-green-600", "dark:text-green-400");
+        }
+      }
+
       const numAlumnos = parseInt(val("numAlumnos")) || 1;
       const materia = val("materia");
       const carrera = val("carrera");
       const grupo = val("grupo");
       const fechaCelebracion = val("fechaCelebracion");
-
-      const pProd = val("p_producto");
-      const pCono = val("p_conocimiento");
-      const pDese = val("p_desempeno");
-      const pActi = val("p_actitudinal");
 
       let alumnosRows = "";
       for (let i = 1; i <= numAlumnos; i++) {
@@ -304,7 +416,10 @@ let units = [
       );
 
       inputs.forEach((input) => {
-        input.addEventListener("input", updatePreview);
+        input.addEventListener("input", () => {
+          updatePreview();
+          saveToLocalStorage();
+        });
       });
     }
 
@@ -346,12 +461,22 @@ let units = [
       }
     }
 
+    // Clear button
+    function setupClearButton() {
+      const clearBtn = document.getElementById("clear-btn");
+      if (clearBtn) {
+        clearBtn.addEventListener("click", clearData);
+      }
+    }
+
     // Initialize on load
     window.addEventListener("DOMContentLoaded", () => {
+      loadFromLocalStorage();
       setupTabs();
       setupInputListeners();
       setupPrintButton();
       setupAddUnitButton();
+      setupClearButton();
       renderUnitsEditor();
       updatePreview();
     });

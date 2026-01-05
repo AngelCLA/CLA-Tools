@@ -203,7 +203,7 @@ import logo from "../assets//logo.svg";
         <!-- Copyright -->
         <div class="text-center md:text-left">
           <p class="text-zinc-600 dark:text-zinc-400 text-sm">
-            © 2025 <span
+            © <span id="footer-year"></span> <span
               class="font-semibold text-purple-600 dark:text-purple-400"
               >CLA Tools</span
             >. Todos los derechos reservados.
@@ -327,9 +327,9 @@ import logo from "../assets//logo.svg";
         <p class="text-zinc-600 dark:text-zinc-400 mb-4">
           Si tienes preguntas sobre nuestra política de privacidad, contáctanos
           en: <a
-            href="mailto:contact@claangel.site"
+            href="mailto:claangeldev@gmail.com"
             class="text-purple-600 hover:text-purple-700"
-            >contact@claangel.site</a
+            >claangeldev@gmail.com</a
           >
         </p>
       </div>
@@ -474,8 +474,8 @@ import logo from "../assets//logo.svg";
         </h3>
         <p class="text-zinc-600 dark:text-zinc-400 mb-4">
           Para preguntas sobre estos términos, contáctanos en: <a
-            href="mailto:contact@claangel.sitee"
-            class="text-blue-600 hover:text-blue-700">contact@claangel.sitee</a
+            href="mailto:claangeldev@gmail.com"
+            class="text-blue-600 hover:text-blue-700">claangeldev@gmail.com</a
           >
         </p>
       </div>
@@ -496,6 +496,11 @@ import logo from "../assets//logo.svg";
 </div>
 
 <script>
+    // Año automático en el footer
+    document.addEventListener("DOMContentLoaded", () => {
+      const yearSpan = document.getElementById("footer-year");
+      if (yearSpan) yearSpan.textContent = new Date().getFullYear().toString();
+    });
   // Modal de Privacidad
   const privacyModal = document.getElementById("privacy-modal");
   const openPrivacyBtn = document.getElementById("open-privacy-btn");

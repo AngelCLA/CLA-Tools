@@ -25,6 +25,9 @@ const STORAGE_KEY = "acta_acuerdos_data";
     }
 
     function saveToLocalStorage() {
+      // Sincronizar antes de guardar para asegurar que tenemos los datos más recientes
+      syncStateFromDOM();
+      
       const data = {
         units,
         inputs: {
@@ -52,6 +55,25 @@ const STORAGE_KEY = "acta_acuerdos_data";
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       showSaveStatus();
+    }
+
+    function syncStateFromDOM() {
+      const unitCards = document.querySelectorAll(".unit-card");
+      unitCards.forEach((card, i) => {
+        if (!units[i]) return;
+        
+        const titleInput = card.querySelector('input[type="text"]');
+        if (titleInput) {
+          units[i].title = titleInput.value;
+        }
+        
+        const evidenceTextareas = card.querySelectorAll("textarea");
+        evidenceTextareas.forEach((textarea, ei) => {
+          if (units[i].evidences && units[i].evidences[ei] !== undefined) {
+            units[i].evidences[ei] = textarea.value;
+          }
+        });
+      });
     }
 
     function loadFromLocalStorage() {
@@ -94,10 +116,58 @@ const STORAGE_KEY = "acta_acuerdos_data";
 
         renderUnitsEditor();
         updatePreview();
+        saveToLocalStorage();
+      }
+    }
+
+    function restoreExampleData() {
+      if (confirm("¿Estás seguro de que deseas restaurar los datos de ejemplo? Se perderán los cambios actuales.")) {
+        const exampleUnits = [
+          {
+            title: "Unidad I. Modelos de Negocios Electrónicos.",
+            evidences: [
+              "EP1. Resuelve cuestionario donde identifica y define los elementos tecnológicos que intervienen en el comercio electrónico así como los diferentes modelos de e-Business (B2C, C2C, B2B, etc.)",
+            ],
+          },
+        ];
+
+        const exampleInputs = {
+          logoUrl: "https://static.wixstatic.com/media/38837b_df7d67422665440a99fd48193b02cb1d~mv2.png/v1/crop/x_24,y_0,w_784,h_492/fill/w_280,h_168,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/38837b_df7d67422665440a99fd48193b02cb1d~mv2.png",
+          materia: "Programación Web",
+          docente: "Ing. Luis Angel Cebreros Carrillo",
+          carrera: "INGENIERIA EN TECNOLOGIAS DE LA INFORMACIÓN",
+          grupo: "ITI07",
+          numAlumnos: "20",
+          periodoEval: "enero-abril 2026",
+          fechaCelebracion: "5 de enero de 2026",
+          horaIni: "10:10",
+          horaFin: "10:30",
+          p_producto: "40",
+          p_conocimiento: "30",
+          p_desempeno: "20",
+          p_actitudinal: "10",
+          c1: "03 de octubre",
+          r1: "07 de Octubre",
+          c2: "07 de noviembre",
+          r2: "11 de Noviembre",
+          c3: "16 de diciembre",
+          r3: "18 de Diciembre"
+        };
+
+        units = JSON.parse(JSON.stringify(exampleUnits));
+        Object.keys(exampleInputs).forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.value = exampleInputs[id];
+        });
+
+        renderUnitsEditor();
+        updatePreview();
+        saveToLocalStorage();
       }
     }
 
     function addUnit() {
+      syncStateFromDOM();
       units.push({
         title: "Nueva Unidad",
         evidences: ["Descripción de evidencia"],
@@ -108,6 +178,7 @@ const STORAGE_KEY = "acta_acuerdos_data";
     }
 
     function addEvidence(unitIndex) {
+      syncStateFromDOM();
       units[unitIndex].evidences.push("Nueva evidencia");
       renderUnitsEditor();
       updatePreview();
@@ -115,6 +186,7 @@ const STORAGE_KEY = "acta_acuerdos_data";
     }
 
     function removeEvidence(unitIndex, evidenceIndex) {
+      syncStateFromDOM();
       units[unitIndex].evidences.splice(evidenceIndex, 1);
       renderUnitsEditor();
       updatePreview();
@@ -123,6 +195,7 @@ const STORAGE_KEY = "acta_acuerdos_data";
 
     function removeUnit(index) {
       if (confirm("¿Estás seguro de eliminar esta unidad?")) {
+        syncStateFromDOM();
         units.splice(index, 1);
         renderUnitsEditor();
         updatePreview();
@@ -132,54 +205,110 @@ const STORAGE_KEY = "acta_acuerdos_data";
 
     function renderUnitsEditor() {
       const list = document.getElementById("units-list");
+      if (!list) return;
+      
       list.innerHTML = "";
       units.forEach((u, i) => {
-        const evidencesHTML = u.evidences
-          .map(
-            (ev, ei) => `
-          <div class="evidence-item">
-            <div class="flex w-full gap-2">
-              <textarea class="dark:bg-zinc-900 w-full form-textarea flex-1 text-sm" rows="2" oninput="units[${i}].evidences[${ei}] = this.value; updatePreview(); saveToLocalStorage()" placeholder="Descripción de evidencia">${ev}</textarea>
-              <button onclick="removeEvidence(${i}, ${ei})" class="btn-danger self-start color-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-        `
-          )
-          .join("");
-
-        const div = document.createElement("div");
-        div.className = "unit-card fade-in";
-        div.innerHTML = `
-          <div class="flex justify-between items-start mb-3">
-            <span class="text-xs font-semibold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 px-3 py-1 rounded-full">Unidad ${i + 1}</span>
-            <button onclick="removeUnit(${i})" class="btn-danger color-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20">
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-              </svg>
-            </button>
-          </div>
-          <div class="mb-3">
-            <input type="text" class="dark:bg-zinc-900 w-full form-input font-semibold" value="${u.title}" 
-              oninput="units[${i}].title = this.value; updatePreview(); saveToLocalStorage()" 
-              onkeydown="if(event.key==='Enter'){ event.preventDefault(); addEvidence(${i}) }"
-              placeholder="Título de la unidad">
-          </div>
-          <div>
-            <label class="form-label mb-2">Evidencias</label>
-            ${evidencesHTML}
-            <button onclick="addEvidence(${i})" class="flex text-center text-purple-500 items-center justify-center gap-2 btn-secondary text-xs mt-2 hover:text-purple-300">
-              <svg class="w-3 h-3 items-center justify-center" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
-              </svg>
-              Agregar Evidencia (Enter en título)
-            </button>
-          </div>
+        const unitCard = document.createElement("div");
+        unitCard.className = "unit-card fade-in";
+        
+        // Header de la unidad
+        const header = document.createElement("div");
+        header.className = "flex justify-between items-start mb-3";
+        
+        const unitBadge = document.createElement("span");
+        unitBadge.className = "text-xs font-semibold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 px-3 py-1 rounded-full";
+        unitBadge.textContent = `Unidad ${i + 1}`;
+        
+        const removeUnitBtn = document.createElement("button");
+        removeUnitBtn.className = "btn-danger color-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20";
+        removeUnitBtn.innerHTML = `
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+          </svg>
         `;
-        list.appendChild(div);
+        removeUnitBtn.onclick = () => removeUnit(i);
+        
+        header.appendChild(unitBadge);
+        header.appendChild(removeUnitBtn);
+        unitCard.appendChild(header);
+
+        // Título de la unidad
+        const titleDiv = document.createElement("div");
+        titleDiv.className = "mb-3";
+        const titleInput = document.createElement("input");
+        titleInput.type = "text";
+        titleInput.className = "dark:bg-zinc-900 w-full form-input font-semibold";
+        titleInput.value = u.title;
+        titleInput.placeholder = "Título de la unidad";
+        titleInput.oninput = () => {
+          units[i].title = titleInput.value;
+          updatePreview();
+          saveToLocalStorage();
+        };
+        titleInput.onkeydown = (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            addEvidence(i);
+          }
+        };
+        titleDiv.appendChild(titleInput);
+        unitCard.appendChild(titleDiv);
+
+        // Evidencias
+        const evidencesContainer = document.createElement("div");
+        const evidencesLabel = document.createElement("label");
+        evidencesLabel.className = "form-label mb-2";
+        evidencesLabel.textContent = "Evidencias";
+        evidencesContainer.appendChild(evidencesLabel);
+
+        u.evidences.forEach((ev, ei) => {
+          const evidenceItem = document.createElement("div");
+          evidenceItem.className = "evidence-item";
+          
+          const flexDiv = document.createElement("div");
+          flexDiv.className = "flex w-full gap-2";
+          
+          const textarea = document.createElement("textarea");
+          textarea.className = "dark:bg-zinc-900 w-full form-textarea flex-1 text-sm";
+          textarea.rows = 2;
+          textarea.value = ev;
+          textarea.placeholder = "Descripción de evidencia";
+          textarea.oninput = () => {
+            units[i].evidences[ei] = textarea.value;
+            updatePreview();
+            saveToLocalStorage();
+          };
+          
+          const deleteBtn = document.createElement("button");
+          deleteBtn.className = "btn-danger self-start color-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20";
+          deleteBtn.innerHTML = `
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+            </svg>
+          `;
+          deleteBtn.onclick = () => removeEvidence(i, ei);
+          
+          flexDiv.appendChild(textarea);
+          flexDiv.appendChild(deleteBtn);
+          evidenceItem.appendChild(flexDiv);
+          evidencesContainer.appendChild(evidenceItem);
+        });
+
+        // Botón agregar evidencia
+        const addEvBtn = document.createElement("button");
+        addEvBtn.className = "flex text-center text-purple-500 items-center justify-center gap-2 btn-secondary text-xs mt-2 hover:text-purple-300";
+        addEvBtn.innerHTML = `
+          <svg class="w-3 h-3 items-center justify-center" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+          </svg>
+          Agregar Evidencia (Enter en título)
+        `;
+        addEvBtn.onclick = () => addEvidence(i);
+        evidencesContainer.appendChild(addEvBtn);
+
+        unitCard.appendChild(evidencesContainer);
+        list.appendChild(unitCard);
       });
     }
 
@@ -469,6 +598,14 @@ const STORAGE_KEY = "acta_acuerdos_data";
       }
     }
 
+    // Restore example button
+    function setupRestoreExampleButton() {
+      const restoreBtn = document.getElementById("restore-example-btn");
+      if (restoreBtn) {
+        restoreBtn.addEventListener("click", restoreExampleData);
+      }
+    }
+
     // Initialize on load
     window.addEventListener("DOMContentLoaded", () => {
       loadFromLocalStorage();
@@ -477,6 +614,7 @@ const STORAGE_KEY = "acta_acuerdos_data";
       setupPrintButton();
       setupAddUnitButton();
       setupClearButton();
+      setupRestoreExampleButton();
       renderUnitsEditor();
       updatePreview();
     });

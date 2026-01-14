@@ -2,10 +2,11 @@
 const {
   videoId,
   title = "Cómo usar esta herramienta",
-  platform = "youtube", // youtube | vimeo | local
+  platform = "youtube", // youtube | vimeo | local | cloudflare
 } = Astro.props;
 
 let videoSrc = "";
+const isDirectVideo = platform === "local" || platform === "cloudflare";
 
 if (platform === "youtube") {
   videoSrc =
@@ -21,19 +22,29 @@ if (platform === "vimeo") {
   videoSrc = `https://player.vimeo.com/video/${videoId}?title=0&byline=0&portrait=0`;
 }
 
-if (platform === "local") {
+if (isDirectVideo) {
   videoSrc = videoId;
 }
 ---
 
-<div id="floating-tutorial" class="fixed bottom-6 right-6 z-50 no-print">
+<div
+  id="floating-tutorial"
+  class="fixed bottom-6 right-6 z-50 no-print"
+  data-platform={platform}
+  data-video-src={videoSrc}
+  data-is-direct={isDirectVideo.toString()}
+>
   <!-- Botón flotante minimalista -->
   <button
     id="tutorial-toggle"
     class="group flex items-center gap-2 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 pl-3 pr-4 py-2.5 rounded-full shadow-lg border border-zinc-200 dark:border-zinc-700 transition-all duration-200 text-sm font-medium"
   >
-    <svg class="w-4 h-4 text-purple-600 dark:text-purple-400" fill="currentColor" viewBox="0 0 20 20">
-      <path d="M6 4l10 6-10 6V4z" />
+    <svg
+      class="w-4 h-4 text-purple-600 dark:text-purple-400"
+      fill="currentColor"
+      viewBox="0 0 20 20"
+    >
+      <path d="M6 4l10 6-10 6V4z"></path>
     </svg>
     <span>{title}</span>
   </button>
@@ -59,8 +70,17 @@ if (platform === "local") {
         class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors"
         aria-label="Cerrar tutorial"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"></path>
         </svg>
       </button>
     </div>
@@ -70,35 +90,18 @@ if (platform === "local") {
       id="tutorial-video-wrapper"
       class="relative w-full aspect-video bg-zinc-950"
     >
-      {platform === "local" ? (
-        <video controls class="w-full h-full" preload="metadata">
-          <source src={videoSrc} type="video/mp4" />
-        </video>
-      ) : (
-        <>
-          <!-- Overlay minimalista -->
-          <button
-            id="tutorial-play"
-            class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-purple-600/20 to-blue-600/20 backdrop-blur-sm hover:backdrop-blur-md transition-all duration-300 group"
-            aria-label="Reproducir tutorial"
+      {
+        isDirectVideo ? (
+          <video
+            id="tutorial-video"
+            class="w-full h-full hidden rounded-b-2xl"
+            controls
+            preload="metadata"
+            playsinline
           >
-            <div class="flex flex-col items-center gap-3">
-              <div class="w-16 h-16 flex items-center justify-center rounded-full bg-zinc-800/40 shadow-xl group-hover:scale-110 transition-transform duration-300">
-                <svg
-                  class="w-7 h-7 text-purple-600  ml-1"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M6 4l10 6-10 6V4z" />
-                </svg>
-              </div>
-              <span class="text-sm font-medium text-white/90 px-3 py-1 rounded-full bg-black/30 backdrop-blur-sm">
-                Ver tutorial
-              </span>
-            </div>
-          </button>
-
-          <!-- Iframe -->
+            Tu navegador no soporta el formato de video.
+          </video>
+        ) : (
           <iframe
             id="tutorial-iframe"
             class="w-full h-full hidden"
@@ -107,64 +110,159 @@ if (platform === "local") {
             referrerpolicy="strict-origin-when-cross-origin"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowfullscreen
-          ></iframe>
-        </>
-      )}
+          />
+        )
+      }
+
+      <!-- Overlay minimalista (Visible por defecto) -->
+      <button
+        id="tutorial-play"
+        class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-purple-600/20 to-blue-600/20 backdrop-blur-sm hover:backdrop-blur-md transition-all duration-300 group"
+        aria-label="Reproducir tutorial"
+      >
+        <div class="flex flex-col items-center gap-3">
+          <div
+            class="w-16 h-16 flex items-center justify-center rounded-full bg-zinc-800/40 shadow-xl group-hover:scale-110 transition-transform duration-300"
+          >
+            <svg
+              class="w-7 h-7 text-purple-600 ml-1"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M6 4l10 6-10 6V4z"></path>
+            </svg>
+          </div>
+          <span
+            class="text-sm font-medium text-white/90 px-3 py-1 rounded-full bg-black/30 backdrop-blur-sm"
+          >
+            Ver tutorial
+          </span>
+        </div>
+      </button>
     </div>
   </div>
 </div>
 
-<script is:inline>
+<style>
+  /* Personalización del reproductor nativo */
+  #tutorial-video {
+    accent-color: #9333ea; /* Purple 600 */
+    background: #000;
+  }
+
+  /* Asegurar que el control de volumen sea prominente en navegadores compatibles */
+  #tutorial-video::-webkit-media-controls-volume-slider {
+    display: flex !important;
+    width: 50px !important;
+  }
+
+  /* Colorear los controles nativos mediante filtros (aproximación a morado) */
+  #tutorial-video::-webkit-media-controls-play-button,
+  #tutorial-video::-webkit-media-controls-mute-button,
+  #tutorial-video::-webkit-media-controls-timeline,
+  #tutorial-video::-webkit-media-controls-current-time-display,
+  #tutorial-video::-webkit-media-controls-time-remaining-display,
+  #tutorial-video::-webkit-media-controls-fullscreen-button {
+    filter: sepia(1) hue-rotate(245deg) saturate(4) brightness(0.9);
+  }
+
+  /* Ajuste para el panel de control */
+  #tutorial-video::-webkit-media-controls-panel {
+    background-image: linear-gradient(
+      transparent,
+      rgba(0, 0, 0, 0.7)
+    ) !important;
+  }
+</style>
+
+<script>
+  import Hls from "hls.js";
+
+  const floatingTutorial = document.getElementById("floating-tutorial");
   const toggle = document.getElementById("tutorial-toggle");
   const panel = document.getElementById("tutorial-panel");
   const closeBtn = document.getElementById("tutorial-close");
   const playBtn = document.getElementById("tutorial-play");
-  const iframe = document.getElementById("tutorial-iframe");
-  const header = document.getElementById("tutorial-header");
-  const floatingTutorial = document.getElementById("floating-tutorial");
+  const iframe = document.getElementById(
+    "tutorial-iframe"
+  ) as HTMLIFrameElement;
+  const video = document.getElementById("tutorial-video") as HTMLVideoElement;
 
-  /* Verificar si ya fue cerrado anteriormente
-  if (localStorage.getItem("cla_hide_tutorial")) {
-    floatingTutorial.style.display = "none";
-  }
-    */
+  if (floatingTutorial) {
+    const isDirectVideo =
+      floatingTutorial.getAttribute("data-is-direct") === "true";
+    const videoSrc = floatingTutorial.getAttribute("data-video-src") || "";
+    let hls: Hls | null = null;
 
-  // Toggle panel con animación
-  toggle?.addEventListener("click", () => {
-    const isHidden = panel.classList.contains("hidden");
-    if (isHidden) {
-      panel.classList.remove("hidden");
-      setTimeout(() => panel.classList.add("scale-100", "opacity-100"), 10);
-    } else {
-      panel.classList.remove("scale-100", "opacity-100");
-      setTimeout(() => panel.classList.add("hidden"), 200);
-    }
-  });
+    // Toggle panel con animación
+    toggle?.addEventListener("click", () => {
+      const isHidden = panel?.classList.contains("hidden");
+      if (isHidden) {
+        panel?.classList.remove("hidden");
+        setTimeout(() => panel?.classList.add("scale-100", "opacity-100"), 10);
+      } else {
+        panel?.classList.remove("scale-100", "opacity-100");
+        setTimeout(() => panel?.classList.add("hidden"), 200);
+      }
+    });
 
-  // Cerrar panel y guardar preferencia
-  closeBtn?.addEventListener("click", () => {
-    // Detener el video vaciando completamente el src
-    if (iframe && !iframe.classList.contains("hidden")) {
-      iframe.src = "";
-      iframe.classList.add("hidden");
+    // Cerrar panel y guardar preferencia
+    closeBtn?.addEventListener("click", () => {
+      if (isDirectVideo && video) {
+        video.pause();
+        video.currentTime = 0;
+        video.classList.add("hidden");
+      } else if (iframe && !iframe.classList.contains("hidden")) {
+        iframe.src = "";
+        iframe.classList.add("hidden");
+      }
+
       playBtn?.classList.remove("hidden");
-    }
-    localStorage.setItem("cla_hide_tutorial", "1");
-    floatingTutorial.style.display = "none";
-  });
+      localStorage.setItem("cla_hide_tutorial", "1");
+      floatingTutorial.style.display = "none";
+    });
 
-  // Reproducir video (mantener header visible)
-  playBtn?.addEventListener("click", () => {
-    iframe.src += "&autoplay=1";
-    iframe.classList.remove("hidden");
-    playBtn.classList.add("hidden");
-    // No ocultamos el header para mantener el botón de cerrar accesible
-  });
+    // Reproducir video
+    playBtn?.addEventListener("click", () => {
+      if (isDirectVideo && video) {
+        video.classList.remove("hidden");
 
-  // Cerrar al hacer clic fuera (solo cierra el panel, no guarda preferencia)
-  document.addEventListener("click", (e) => {
-    if (!floatingTutorial?.contains(e.target) && !panel.classList.contains("hidden")) {
-      panel.classList.add("hidden");
-    }
-  });
+        if (videoSrc.endsWith(".m3u8")) {
+          if (video.canPlayType("application/vnd.apple.mpegurl")) {
+            video.src = videoSrc;
+            video.play();
+          } else if (Hls.isSupported()) {
+            if (!hls) {
+              hls = new Hls();
+              hls.loadSource(videoSrc);
+              hls.attachMedia(video);
+            }
+            video.play();
+          }
+        } else {
+          video.src = videoSrc;
+          video.play();
+        }
+      } else if (iframe) {
+        if (!iframe.src.includes("autoplay=1")) {
+          iframe.src += iframe.src.includes("?")
+            ? "&autoplay=1"
+            : "?autoplay=1";
+        }
+        iframe.classList.remove("hidden");
+      }
+      playBtn.classList.add("hidden");
+    });
+
+    // Cerrar al hacer clic fuera
+    document.addEventListener("click", (e) => {
+      if (
+        !floatingTutorial?.contains(e.target as Node) &&
+        !panel?.classList.contains("hidden")
+      ) {
+        panel?.classList.remove("scale-100", "opacity-100");
+        setTimeout(() => panel?.classList.add("hidden"), 200);
+      }
+    });
+  }
 </script>

@@ -9,7 +9,8 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.1.18"
+    "@tailwindcss/vite": "^4.1.18",
+    "hls.js": "^1.6.15"
   },
   "engines": {
     "node": "24.x"

@@ -2,7 +2,6 @@
 import Layout from "../../layouts/Layout.astro";
 import FloatingVideoTutorial from "../../components/FloatingVideoTutorial.astro";
 import commonScript from "../../assets/scripts/common.js?raw";
-import mergePdfScript from "../../assets/scripts/merge-pdf.js?raw";
 ---
 
 <Layout
@@ -16,6 +15,27 @@ import mergePdfScript from "../../assets/scripts/merge-pdf.js?raw";
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
   />
+
+  <!-- Estilos personalizados para botones de vista -->
+  <style slot="head">
+    /* Botones de vista - estado inactivo */
+    .view-button:not(.active) {
+      @apply border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300;
+    }
+
+    .view-button:not(.active):hover {
+      @apply bg-zinc-100 dark:bg-zinc-700 border-zinc-400 dark:border-zinc-500 shadow-sm;
+    }
+
+    /* Botones de vista - estado activo */
+    .view-button.active {
+      @apply bg-purple-600 dark:bg-purple-700 text-white border-purple-600 dark:border-purple-700;
+    }
+
+    .view-button.active:hover {
+      @apply bg-purple-700 dark:bg-purple-800 border-purple-700 dark:border-purple-800 shadow-md;
+    }
+  </style>
 
   <div class="flex flex-col min-h-full items-center justify-center py-8 px-4">
     <div class="w-full max-w-6xl shadow-2xl rounded-xl p-6 sm:p-8 md:p-12">
@@ -91,19 +111,44 @@ import mergePdfScript from "../../assets/scripts/merge-pdf.js?raw";
       </div>
 
       <!-- View Controls -->
-      <div class="flex justify-center gap-2 mb-6">
-        <button
-          class="view-button px-4 py-2 border border-zinc-300 dark:border-zinc-600 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-700 transition cursor-pointer"
-          data-view="list"
-        >
-          <i class="fas fa-list"></i> Lista
-        </button>
-        <button
-          class="view-button active px-4 py-2 bg-purple-600 text-white border border-purple-600 rounded-lg hover:bg-purple-700 transition cursor-pointer"
-          data-view="grid"
-        >
-          <i class="fas fa-th"></i> Cuadrícula
-        </button>
+      <div
+        class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6"
+      >
+        <!-- Botones de vista -->
+        <div class="flex gap-2">
+          <button
+            class="view-button px-4 py-2 border-2 rounded-lg transition-all duration-200 cursor-pointer font-medium"
+            data-view="list"
+          >
+            <i class="fas fa-list"></i> Lista
+          </button>
+          <button
+            class="view-button active px-4 py-2 border-2 rounded-lg transition-all duration-200 cursor-pointer font-medium"
+            data-view="grid"
+          >
+            <i class="fas fa-th"></i> Cuadrícula
+          </button>
+        </div>
+
+        <!-- Botones de ordenamiento -->
+        <div id="sort-controls" class="hidden flex gap-2">
+          <button
+            id="sort-name-btn"
+            class="px-4 py-2 bg-zinc-100 dark:bg-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-600 text-zinc-700 dark:text-zinc-300 rounded-lg transition cursor-pointer flex items-center gap-2"
+            title="Ordenar por nombre"
+          >
+            <i class="fas fa-sort-alpha-down"></i>
+            <span class="hidden sm:inline">Ordenar por nombre</span>
+          </button>
+          <button
+            id="sort-date-btn"
+            class="px-4 py-2 bg-zinc-100 dark:bg-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-600 text-zinc-700 dark:text-zinc-300 rounded-lg transition cursor-pointer flex items-center gap-2"
+            title="Ordenar por fecha de modificación"
+          >
+            <i class="fas fa-calendar-alt"></i>
+            <span class="hidden sm:inline">Por fecha</span>
+          </button>
+        </div>
       </div>
 
       <!-- PDF Preview -->
@@ -168,32 +213,30 @@ import mergePdfScript from "../../assets/scripts/merge-pdf.js?raw";
   />
 </Layout>
 
-<!-- PDF.js -->
+<!-- Cargar common.js primero (inline porque usa eval) -->
+<script is:inline define:vars={{ commonScript }}>
+  eval(commonScript);
+</script>
+
+<!-- PDF.js para renderizar miniaturas -->
 <script
   is:inline
   src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"
 ></script>
-<!-- Cargar common.js primero para las utilidades -->
-<script is:inline define:vars={{ commonScript }}>
-  eval(commonScript);
+<script is:inline>
+  // Configurar PDF.js worker
+  if (typeof pdfjsLib !== "undefined") {
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  }
 </script>
-<!-- PDF-lib -->
-<script
-  is:inline
-  src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"
-></script>
 
-<!-- Sortable.js -->
+<!-- Sortable.js (librería externa) -->
 <script
   is:inline
   src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
-<!-- Cargar common.js primero para las utilidades -->
-<script is:inline define:vars={{ commonScript }}>
-  eval(commonScript);
-</script>
-
-<!-- Merge PDF Script -->
-<script is:inline define:vars={{ mergeScript: mergePdfScript }}>
-  eval(mergeScript);
+<!-- Merge PDF Script como módulo ES6 -->
+<script>
+  import "../../assets/scripts/merge-pdf.js";
 </script>

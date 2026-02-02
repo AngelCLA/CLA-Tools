@@ -1,8 +1,0 @@
-{
-  "functions": {
-    "dist/pages/api/upload-pdf.js": {
-      "maxDuration": 10,
-      "memory": 1024
-    }
-  }
-}

@@ -3,48 +3,9 @@ import { put } from "@vercel/blob";
 // Force this route to be serverless (not prerendered)
 export const prerender = false;
 
-// Log at module load time to catch early issues
-console.log('Module loaded - checking environment...');
-console.log('Has BLOB token at load:', !!process.env.BLOB_READ_WRITE_TOKEN);
-console.log('Runtime environment:', process.env.VERCEL_ENV || 'local');
-
-// Health check endpoint
-export async function GET() {
-  const headers = { 
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*'
-  };
-  
-  return new Response(JSON.stringify({ 
-    status: 'ok', 
-    timestamp: new Date().toISOString(),
-    env_check: {
-      blob_token_available: !!process.env.BLOB_READ_WRITE_TOKEN,
-      all_env_keys: Object.keys(process.env).filter(k => k.includes('BLOB') || k.includes('VERCEL'))
-    }
-  }), {
-    status: 200,
-    headers
-  });
-}
-
-// Handle CORS preflight requests
-export async function OPTIONS() {
-  return new Response(null, {
-    status: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-      'Access-Control-Max-Age': '86400'
-    }
-  });
-}
-
 export async function POST({ request }) {
   console.log('=== UPLOAD PDF API CALLED ===');
   
-  // Set response headers early
   const headers = { 
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
@@ -53,15 +14,9 @@ export async function POST({ request }) {
   };
   
   try {
-    // Early error boundary
-    if (!request) {
-      return new Response(JSON.stringify({ error: 'No request object' }), {
-        status: 400,
-        headers
-      });
-    }
+    // Lazy import to avoid module loading errors
+    const { put } = await import("@vercel/blob");
     
-    // Vercel Blob SDK busca BLOB_READ_WRITE_TOKEN en process.env
     const token = process.env.BLOB_READ_WRITE_TOKEN;
     console.log('Token check - available:', !!token);
     console.log('Token length:', token?.length || 0);

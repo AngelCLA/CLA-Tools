@@ -9,11 +9,9 @@ config();
 export default defineConfig({
   site: 'https://tools.claangel.site',
   integrations: [tailwind()],
-  output: 'static',
+  output: 'server',
   adapter: vercel({
-    webAnalytics: {
-      enabled: false
-    },
+    edgeMiddleware: false,
     functionPerRoute: false
   }),
   alias: {

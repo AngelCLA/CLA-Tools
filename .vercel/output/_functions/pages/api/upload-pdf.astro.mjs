@@ -1,112 +1,158 @@
 import { put } from '@vercel/blob';
 export { renderers } from '../../renderers.mjs';
 
+// Force this route to be serverless (not prerendered)
 const prerender = false;
-const runtime = "nodejs";
-const dynamic = "force-dynamic";
+
+// Log at module load time to catch early issues
+console.log('Module loaded - checking environment...');
+console.log('Has BLOB token at load:', !!process.env.BLOB_READ_WRITE_TOKEN);
+console.log('Runtime environment:', process.env.VERCEL_ENV || 'local');
+
+// Health check endpoint
 async function GET() {
-  const headers = {
-    "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "*"
+  const headers = { 
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*'
   };
-  return new Response(JSON.stringify({
-    status: "ok",
-    timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+  
+  return new Response(JSON.stringify({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
     env_check: {
-      blob_token_available: true,
-      all_env_keys: Object.keys(process.env).filter((k) => k.includes("BLOB") || k.includes("VERCEL"))
+      blob_token_available: !!process.env.BLOB_READ_WRITE_TOKEN,
+      all_env_keys: Object.keys(process.env).filter(k => k.includes('BLOB') || k.includes('VERCEL'))
     }
   }), {
     status: 200,
     headers
   });
 }
+
+// Handle CORS preflight requests
 async function OPTIONS() {
   return new Response(null, {
     status: 200,
     headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-      "Access-Control-Max-Age": "86400"
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Max-Age': '86400'
     }
   });
 }
+
 async function POST({ request }) {
-  console.log("=== UPLOAD PDF API CALLED ===");
-  const headers = {
-    "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type"
+  console.log('=== UPLOAD PDF API CALLED ===');
+  
+  // Set response headers early
+  const headers = { 
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type'
   };
+  
   try {
+    // Early error boundary
     if (!request) {
-      return new Response(JSON.stringify({ error: "No request object" }), {
+      return new Response(JSON.stringify({ error: 'No request object' }), {
         status: 400,
         headers
       });
     }
-    const token = "vercel_blob_rw_kTQe66XT9wxwyfoE_kA3V35hTGfWAxDWBHdAsuy53wQlo9a";
-    console.log("Token check - available:", !!token);
-    console.log("Token length:", token?.length || 0);
-    console.log("Environment:", process.env.NODE_ENV || "development");
-    console.log("All BLOB env vars:", Object.keys(process.env).filter((k) => k.includes("BLOB")));
-    if (!token) ;
-    console.log("Parsing form data...");
+    
+    // Vercel Blob SDK busca BLOB_READ_WRITE_TOKEN en process.env
+    const token = process.env.BLOB_READ_WRITE_TOKEN;
+    console.log('Token check - available:', !!token);
+    console.log('Token length:', token?.length || 0);
+    console.log('Environment:', process.env.NODE_ENV || 'development');
+    console.log('All BLOB env vars:', Object.keys(process.env).filter(k => k.includes('BLOB')));
+    
+    if (!token) {
+      console.error('BLOB_READ_WRITE_TOKEN not found in environment');
+      console.error('Available env vars:', Object.keys(process.env).join(', '));
+      return new Response(JSON.stringify({ 
+        error: 'Server configuration error: Missing blob storage token',
+        debug: {
+          all_env_keys: Object.keys(process.env).filter(k => !k.includes('KEY') && !k.includes('SECRET')),
+          vercel_env: process.env.VERCEL_ENV,
+          node_env: process.env.NODE_ENV
+        }
+      }), {
+        status: 500,
+        headers
+      });
+    }
+
+    console.log('Parsing form data...');
     const formData = await request.formData();
-    const file = formData.get("file");
-    const filename = formData.get("filename") || (file instanceof File ? file.name : "document.pdf");
+    const file = formData.get('file');
+    const filename = formData.get('filename') || (file instanceof File ? file.name : 'document.pdf');
+    
     console.log(`File details - name: ${filename}, type: ${file?.constructor?.name}, size: ${file?.size}`);
+    
     if (!file) {
-      console.error("No file provided in request");
-      return new Response(JSON.stringify({ error: "Missing file" }), {
+      console.error('No file provided in request');
+      return new Response(JSON.stringify({ error: 'Missing file' }), {
         status: 400,
         headers
       });
     }
-    console.log("Converting file to buffer...");
+
+    // Convertir el archivo (Blob/File) a Buffer
+    console.log('Converting file to buffer...');
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     console.log(`Buffer created - size: ${buffer.length} bytes`);
-    console.log("Uploading to Vercel Blob...");
+
+    // Subir a Vercel Blob Storage
+    console.log('Uploading to Vercel Blob...');
     const blob = await put(filename, buffer, {
-      access: "public",
-      contentType: "application/pdf",
-      token
+      access: 'public',
+      contentType: 'application/pdf',
+      token: token,
     });
+    
     console.log(`Upload successful - URL: ${blob.url}`);
+
     return new Response(JSON.stringify({
       success: true,
-      url: blob.url
+      url: blob.url,
     }), {
       status: 200,
       headers
     });
   } catch (error) {
-    console.error("=== UPLOAD ERROR ===");
-    console.error("Error type:", typeof error);
-    console.error("Error name:", error?.name);
-    console.error("Error message:", error?.message);
-    console.error("Error stack:", error?.stack);
-    console.error("Full error object:", error);
-    let errorMessage = "Unknown server error";
-    let errorType = "ServerError";
-    if (error && typeof error === "object") {
+    console.error('=== UPLOAD ERROR ===');
+    console.error('Error type:', typeof error);
+    console.error('Error name:', error?.name);
+    console.error('Error message:', error?.message);
+    console.error('Error stack:', error?.stack);
+    console.error('Full error object:', error);
+    
+    // Crear respuesta de error más segura
+    let errorMessage = 'Unknown server error';
+    let errorType = 'ServerError';
+    
+    if (error && typeof error === 'object') {
       errorMessage = error.message || error.toString() || errorMessage;
       errorType = error.name || error.constructor?.name || errorType;
     }
+    
     const errorResponse = {
       error: errorMessage,
       type: errorType,
-      timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+      timestamp: new Date().toISOString(),
       debug: {
-        has_token: true,
-        node_env: process.env.NODE_ENV || "unknown",
-        vercel_env: process.env.VERCEL_ENV || "unknown"
+        has_token: !!process.env.BLOB_READ_WRITE_TOKEN,
+        node_env: process.env.NODE_ENV || 'unknown',
+        vercel_env: process.env.VERCEL_ENV || 'unknown'
       }
     };
-    console.error("Sending error response:", errorResponse);
+    
+    console.error('Sending error response:', errorResponse);
+    
     return new Response(JSON.stringify(errorResponse), {
       status: 500,
       headers
@@ -119,9 +165,7 @@ const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   GET,
   OPTIONS,
   POST,
-  dynamic,
-  prerender,
-  runtime
+  prerender
 }, Symbol.toStringTag, { value: 'Module' }));
 
 const page = () => _page;

@@ -3,9 +3,10 @@ import { put } from "@vercel/blob";
 // Force this route to be serverless (not prerendered)
 export const prerender = false;
 
-// Ensure this runs as a Vercel serverless function
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
+// Log at module load time to catch early issues
+console.log('Module loaded - checking environment...');
+console.log('Has BLOB token at load:', !!process.env.BLOB_READ_WRITE_TOKEN);
+console.log('Runtime environment:', process.env.VERCEL_ENV || 'local');
 
 // Health check endpoint
 export async function GET() {

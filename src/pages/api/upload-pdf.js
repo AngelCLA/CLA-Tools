@@ -18,7 +18,7 @@ export async function GET() {
     status: 'ok', 
     timestamp: new Date().toISOString(),
     env_check: {
-      blob_token_available: !!process.env.BLOB_READ_WRITE_TOKEN_READ_WRITE_TOKEN,
+      blob_token_available: !!process.env.BLOB_READ_WRITE_TOKEN,
       all_env_keys: Object.keys(process.env).filter(k => k.includes('BLOB') || k.includes('VERCEL'))
     }
   }), {
@@ -142,7 +142,7 @@ export async function POST({ request }) {
       type: errorType,
       timestamp: new Date().toISOString(),
       debug: {
-        has_token: !!process.env.BLOB_READ_WRITE_TOKEN_READ_WRITE_TOKEN,
+        has_token: !!process.env.BLOB_READ_WRITE_TOKEN,
         node_env: process.env.NODE_ENV || 'unknown',
         vercel_env: process.env.VERCEL_ENV || 'unknown'
       }

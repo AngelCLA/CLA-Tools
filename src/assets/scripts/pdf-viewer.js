@@ -161,7 +161,7 @@ if (uploadPdfBtn) {
         
         // Handle common server error responses
         if (responseText.includes('A server error has occurred')) {
-          throw new Error('Server configuration error: The API endpoint is not properly configured. This usually means the BLOB_READ_WRITE_TOKEN_READ_WRITE_TOKEN environment variable is missing.');
+          throw new Error('Server configuration error: The API endpoint is not properly configured. This usually means the BLOB_READ_WRITE_TOKEN environment variable is missing.');
         } else if (responseText.includes('FUNCTION_INVOCATION_FAILED')) {
           throw new Error('Server deployment error: The function failed to execute. Check server logs for details.');
         } else {

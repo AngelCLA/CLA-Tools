@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://clatools.com/sitemap-index.xml

@@ -158,6 +158,7 @@ if (uploadPdfBtn) {
         
         uploadPdfBtn.style.display = "none";
       } else {
+        console.error("Server error details:", data);
         throw new Error(data.error || "Error al subir el archivo");
       }
     } catch (error) {

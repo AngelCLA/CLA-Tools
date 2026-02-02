@@ -1,6 +1,6 @@
 import { renderers } from './renderers.mjs';
-import { c as createExports, s as serverEntrypointModule } from './chunks/_@astrojs-ssr-adapter_B6NEyA8q.mjs';
-import { manifest } from './manifest_B9urqPqc.mjs';
+import { c as createExports, s as serverEntrypointModule } from './chunks/_@astrojs-ssr-adapter_CkUQl2qw.mjs';
+import { manifest } from './manifest_mErLCnCY.mjs';
 
 const serverIslandMap = new Map();;
 
@@ -13,7 +13,7 @@ const _page5 = () => import('./pages/tools/merge-pdf.astro.mjs');
 const _page6 = () => import('./pages/tools/text-html.astro.mjs');
 const _page7 = () => import('./pages/index.astro.mjs');
 const pageMap = new Map([
-    ["node_modules/.pnpm/astro@5.16.6_@types+node@25_8b3350bdf0fb2aa1120ab6efa94e2ee0/node_modules/astro/dist/assets/endpoint/generic.js", _page0],
+    ["node_modules/astro/dist/assets/endpoint/generic.js", _page0],
     ["src/pages/api/upload-pdf.js", _page1],
     ["src/pages/tools/docx-gift.astro", _page2],
     ["src/pages/tools/ebooks.astro", _page3],
@@ -31,7 +31,7 @@ const _manifest = Object.assign(manifest, {
     middleware: () => import('./_noop-middleware.mjs')
 });
 const _args = {
-    "middlewareSecret": "ecb7faa8-9390-4d18-b414-052a02a917b0",
+    "middlewareSecret": "73291f48-4d90-4e34-b02d-21a820f0be0e",
     "skewProtection": false
 };
 const _exports = createExports(_manifest, _args);

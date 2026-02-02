@@ -1,6 +1,6 @@
 ---
 // Footer.astro
-import logo from "../assets//logo.svg";
+import logo from "@assets//logo.svg";
 ---
 
 <style>
@@ -203,8 +203,8 @@ import logo from "../assets//logo.svg";
         <!-- Copyright -->
         <div class="text-center md:text-left">
           <p class="text-zinc-600 dark:text-zinc-400 text-sm">
-            © <span id="footer-year"></span> <span
-              class="font-semibold text-purple-600 dark:text-purple-400"
+            © <span id="footer-year"></span>
+            <span class="font-semibold text-purple-600 dark:text-purple-400"
               >CLA Tools</span
             >. Todos los derechos reservados.
           </p>
@@ -496,11 +496,11 @@ import logo from "../assets//logo.svg";
 </div>
 
 <script>
-    // Año automático en el footer
-    document.addEventListener("DOMContentLoaded", () => {
-      const yearSpan = document.getElementById("footer-year");
-      if (yearSpan) yearSpan.textContent = new Date().getFullYear().toString();
-    });
+  // Año automático en el footer
+  document.addEventListener("DOMContentLoaded", () => {
+    const yearSpan = document.getElementById("footer-year");
+    if (yearSpan) yearSpan.textContent = new Date().getFullYear().toString();
+  });
   // Modal de Privacidad
   const privacyModal = document.getElementById("privacy-modal");
   const openPrivacyBtn = document.getElementById("open-privacy-btn");

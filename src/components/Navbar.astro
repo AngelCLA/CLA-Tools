@@ -1,5 +1,5 @@
 ---
-import logo from "../assets/Logo.svg";
+import logo from "@assets/Logo.svg";
 ---
 
 <header
@@ -184,7 +184,7 @@ import logo from "../assets/Logo.svg";
   function initTheme() {
     const savedTheme = localStorage.getItem("theme");
     const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
+      "(prefers-color-scheme: dark)",
     ).matches;
     const isDark = savedTheme === "dark" || (!savedTheme && prefersDark);
     console.log(
@@ -194,7 +194,7 @@ import logo from "../assets/Logo.svg";
       savedTheme,
       ", prefiere dark:",
       prefersDark,
-      ")"
+      ")",
     );
     updateTheme(isDark);
   }

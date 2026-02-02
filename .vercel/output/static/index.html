@@ -2,7 +2,7 @@
       (function () {
         const savedTheme = localStorage.getItem("theme");
         const prefersDark = window.matchMedia(
-          "(prefers-color-scheme: dark)"
+          "(prefers-color-scheme: dark)",
         ).matches;
         const isDark = savedTheme === "dark" || (!savedTheme && prefersDark);
 
@@ -47,7 +47,7 @@ Contacto
   function initTheme() {
     const savedTheme = localStorage.getItem("theme");
     const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
+      "(prefers-color-scheme: dark)",
     ).matches;
     const isDark = savedTheme === "dark" || (!savedTheme && prefersDark);
     console.log(
@@ -57,7 +57,7 @@ Contacto
       savedTheme,
       ", prefiere dark:",
       prefersDark,
-      ")"
+      ")",
     );
     updateTheme(isDark);
   }

@@ -1,19 +1,12 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
-import vercel from '@astrojs/vercel';
-import { config } from 'dotenv';
-
-// Load .env file
-config();
+import vercel from '@astrojs/vercel/serverless';
 
 export default defineConfig({
   site: 'https://tools.claangel.site',
   integrations: [tailwind()],
   output: 'server',
-  adapter: vercel({
-    edgeMiddleware: false,
-    functionPerRoute: false
-  }),
+  adapter: vercel(),
   alias: {
     '@components': new URL('./src/components', import.meta.url).pathname,
     '@assets': new URL('./src/assets', import.meta.url).pathname,

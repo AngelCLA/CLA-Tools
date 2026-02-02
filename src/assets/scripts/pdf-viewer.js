@@ -119,6 +119,17 @@ if (uploadPdfBtn) {
       return;
     }
 
+    // Verificar tamaño del archivo (Límite de Vercel es ~4.5MB)
+    const MAX_SIZE = 4.5 * 1024 * 1024; // 4.5 MB
+    if (currentPdfFile.size > MAX_SIZE) {
+      alert(`El archivo es demasiado grande (${(currentPdfFile.size / 1024 / 1024).toFixed(2)}MB). El límite para subida directa es de 4.5MB debido a restricciones de Vercel. Por favor, usa una URL externa o un PDF más ligero.`);
+      if (uploadStatus) {
+        uploadStatus.textContent = "✗ Archivo demasiado grande para el servidor.";
+        uploadStatus.className = "text-sm text-red-500 mt-2";
+      }
+      return;
+    }
+
     uploadPdfBtn.disabled = true;
     uploadPdfBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Subiendo...';
     
@@ -143,9 +154,9 @@ if (uploadPdfBtn) {
         }),
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => null);
 
-      if (data.success && data.url) {
+      if (data && data.success && data.url) {
         if (embedPdfUrlInput) {
           embedPdfUrlInput.value = data.url;
           updateIframeCode();
@@ -158,8 +169,11 @@ if (uploadPdfBtn) {
         
         uploadPdfBtn.style.display = "none";
       } else {
+        if (!data && response.status === 413) {
+           throw new Error("El servidor rechazó el archivo por ser demasiado grande (413 Content Too Large).");
+        }
         console.error("Server error details:", data);
-        throw new Error(data.error || "Error al subir el archivo");
+        throw new Error(data?.error || "Error al subir el archivo");
       }
     } catch (error) {
       console.error("Error uploading PDF:", error);

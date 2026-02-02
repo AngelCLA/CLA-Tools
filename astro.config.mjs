@@ -5,7 +5,7 @@ import vercel from '@astrojs/vercel';
 export default defineConfig({
   site: 'https://tools.claangel.site',
   integrations: [tailwind()],
-  output: 'hybrid',
+  output: 'static',
   adapter: vercel({
     edgeMiddleware: false,
     includeFiles: [],

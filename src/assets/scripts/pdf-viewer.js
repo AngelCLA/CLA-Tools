@@ -139,19 +139,15 @@ if (uploadPdfBtn) {
     }
 
     try {
-      // Convertir archivo a base64
-      const base64 = await fileToBase64(currentPdfFile);
+      // Usar FormData para evitar el sobrecosto de Base64
+      const formData = new FormData();
+      formData.append("file", currentPdfFile);
+      formData.append("filename", currentPdfFile.name);
       
       // Subir al servidor
       const response = await fetch("/api/upload-pdf", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          filename: currentPdfFile.name,
-          file: base64,
-        }),
+        body: formData,
       });
 
       const data = await response.json().catch(() => null);
@@ -188,16 +184,6 @@ if (uploadPdfBtn) {
       uploadPdfBtn.disabled = false;
       uploadPdfBtn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Subir PDF al Servidor';
     }
-  });
-}
-
-// Función auxiliar para convertir archivo a base64
-function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
   });
 }
 

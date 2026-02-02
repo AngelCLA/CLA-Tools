@@ -4,26 +4,29 @@ export const prerender = false;
 
 export async function POST({ request }) {
   try {
-    const { filename, file } = await request.json();
+    const formData = await request.formData();
+    const file = formData.get('file');
+    const filename = formData.get('filename') || (file instanceof File ? file.name : 'document.pdf');
+    
     console.log(`Intentando subir: ${filename}`);
     
-    if (!file || !filename) {
-      return new Response(JSON.stringify({ error: 'Missing file or filename' }), {
+    if (!file) {
+      return new Response(JSON.stringify({ error: 'Missing file' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
-    // Convertir base64 a buffer
-    const base64Data = file.replace(/^data:.+;base64,/, '');
-    const buffer = Buffer.from(base64Data, 'base64');
+    // Convertir el archivo (Blob/File) a Buffer
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
     console.log(`Tamaño del buffer: ${buffer.length} bytes`);
 
     // Subir a Vercel Blob Storage
     const blob = await put(filename, buffer, {
       access: 'public',
       contentType: 'application/pdf',
-      token: import.meta.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN,
+      token: import.meta.env.BLOB_READ_WRITE_TOKEN,
     });
     
     console.log(`Subida exitosa: ${blob.url}`);

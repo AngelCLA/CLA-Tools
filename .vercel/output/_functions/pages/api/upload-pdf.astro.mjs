@@ -4,16 +4,18 @@ export { renderers } from '../../renderers.mjs';
 const prerender = false;
 async function POST({ request }) {
   try {
-    const { filename, file } = await request.json();
+    const formData = await request.formData();
+    const file = formData.get("file");
+    const filename = formData.get("filename") || (file instanceof File ? file.name : "document.pdf");
     console.log(`Intentando subir: ${filename}`);
-    if (!file || !filename) {
-      return new Response(JSON.stringify({ error: "Missing file or filename" }), {
+    if (!file) {
+      return new Response(JSON.stringify({ error: "Missing file" }), {
         status: 400,
         headers: { "Content-Type": "application/json" }
       });
     }
-    const base64Data = file.replace(/^data:.+;base64,/, "");
-    const buffer = Buffer.from(base64Data, "base64");
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
     console.log(`Tamaño del buffer: ${buffer.length} bytes`);
     const blob = await put(filename, buffer, {
       access: "public",

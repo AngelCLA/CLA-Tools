@@ -18,7 +18,8 @@ export async function GET() {
     status: 'ok', 
     timestamp: new Date().toISOString(),
     env_check: {
-      blob_token_available: !!(import.meta.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN)
+      blob_token_available: !!process.env.BLOB_READ_WRITE_TOKEN,
+      all_env_keys: Object.keys(process.env).filter(k => k.includes('BLOB') || k.includes('VERCEL'))
     }
   }), {
     status: 200,
@@ -59,19 +60,22 @@ export async function POST({ request }) {
       });
     }
     
-    // Verificar token de Vercel Blob (dev usa import.meta.env, production usa process.env)
-    const token = import.meta.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN;
+    // En Vercel serverless, las variables están en process.env SIEMPRE
+    const token = process.env.BLOB_READ_WRITE_TOKEN;
     console.log('Token check - available:', !!token);
+    console.log('Token length:', token?.length || 0);
     console.log('Environment:', process.env.NODE_ENV || 'development');
+    console.log('All BLOB env vars:', Object.keys(process.env).filter(k => k.includes('BLOB')));
     
     if (!token) {
       console.error('BLOB_READ_WRITE_TOKEN not found in environment');
-      console.error('Available env vars:', Object.keys(process.env).filter(k => k.includes('BLOB')));
+      console.error('Available env vars:', Object.keys(process.env).join(', '));
       return new Response(JSON.stringify({ 
         error: 'Server configuration error: Missing blob storage token',
         debug: {
-          env_vars_available: Object.keys(process.env).filter(k => k.includes('BLOB')),
-          meta_env_available: Object.keys(import.meta.env || {})
+          all_env_keys: Object.keys(process.env).filter(k => !k.includes('KEY') && !k.includes('SECRET')),
+          vercel_env: process.env.VERCEL_ENV,
+          node_env: process.env.NODE_ENV
         }
       }), {
         status: 500,
@@ -139,8 +143,9 @@ export async function POST({ request }) {
       type: errorType,
       timestamp: new Date().toISOString(),
       debug: {
-        has_token: !!(import.meta.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN),
-        node_env: process.env.NODE_ENV || 'unknown'
+        has_token: !!process.env.BLOB_READ_WRITE_TOKEN,
+        node_env: process.env.NODE_ENV || 'unknown',
+        vercel_env: process.env.VERCEL_ENV || 'unknown'
       }
     };
     

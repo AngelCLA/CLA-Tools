@@ -1,6 +1,10 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import vercel from '@astrojs/vercel';
+import { config } from 'dotenv';
+
+// Load .env file
+config();
 
 export default defineConfig({
   site: 'https://tools.claangel.site',
@@ -15,6 +19,9 @@ export default defineConfig({
     '@styles': new URL('./src/styles', import.meta.url).pathname,
   },
   vite: {
+    define: {
+      'process.env.BLOB_READ_WRITE_TOKEN': JSON.stringify(process.env.BLOB_READ_WRITE_TOKEN)
+    },
     build: {
       rollupOptions: {
         external: [],

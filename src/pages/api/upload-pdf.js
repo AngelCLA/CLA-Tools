@@ -18,7 +18,7 @@ export async function GET() {
     status: 'ok', 
     timestamp: new Date().toISOString(),
     env_check: {
-      blob_token_available: !!process.env.PUBLIC_BLOB_READ_WRITE_TOKEN,
+      blob_token_available: !!process.env.BLOB_READ_WRITE_TOKEN,
       all_env_keys: Object.keys(process.env).filter(k => k.includes('BLOB') || k.includes('VERCEL'))
     }
   }), {
@@ -60,15 +60,15 @@ export async function POST({ request }) {
       });
     }
     
-    // En Vercel serverless, las variables están en process.env SIEMPRE
-    const token = process.env.PUBLIC_BLOB_READ_WRITE_TOKEN;
+    // Vercel Blob SDK busca BLOB_READ_WRITE_TOKEN en process.env
+    const token = process.env.BLOB_READ_WRITE_TOKEN;
     console.log('Token check - available:', !!token);
     console.log('Token length:', token?.length || 0);
     console.log('Environment:', process.env.NODE_ENV || 'development');
     console.log('All BLOB env vars:', Object.keys(process.env).filter(k => k.includes('BLOB')));
     
     if (!token) {
-      console.error('PUBLIC_BLOB_READ_WRITE_TOKEN not found in environment');
+      console.error('BLOB_READ_WRITE_TOKEN not found in environment');
       console.error('Available env vars:', Object.keys(process.env).join(', '));
       return new Response(JSON.stringify({ 
         error: 'Server configuration error: Missing blob storage token',
@@ -109,6 +109,7 @@ export async function POST({ request }) {
     const blob = await put(filename, buffer, {
       access: 'public',
       contentType: 'application/pdf',
+      token: token,
     });
     
     console.log(`Upload successful - URL: ${blob.url}`);
@@ -142,7 +143,7 @@ export async function POST({ request }) {
       type: errorType,
       timestamp: new Date().toISOString(),
       debug: {
-        has_token: !!process.env.PUBLIC_BLOB_READ_WRITE_TOKEN,
+        has_token: !!process.env.BLOB_READ_WRITE_TOKEN,
         node_env: process.env.NODE_ENV || 'unknown',
         vercel_env: process.env.VERCEL_ENV || 'unknown'
       }

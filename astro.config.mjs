@@ -5,12 +5,8 @@ import vercel from '@astrojs/vercel';
 export default defineConfig({
   site: 'https://tools.claangel.site',
   integrations: [tailwind()],
-  output: 'server',
-  adapter: vercel({
-    webAnalytics: {
-      enabled: true,
-    },
-  }),
+  output: 'static',
+  adapter: vercel(),
   alias: {
     '@components': new URL('./src/components', import.meta.url).pathname,
     '@assets': new URL('./src/assets', import.meta.url).pathname,

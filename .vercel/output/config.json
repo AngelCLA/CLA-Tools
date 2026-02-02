@@ -22,26 +22,6 @@
 		{
 			"src": "^/api/upload-pdf/?$",
 			"dest": "_render"
-		},
-		{
-			"src": "^/tools/ebooks/?$",
-			"dest": "_render"
-		},
-		{
-			"src": "^/tools/generador-acta/?$",
-			"dest": "_render"
-		},
-		{
-			"src": "^/tools/merge-pdf/?$",
-			"dest": "_render"
-		},
-		{
-			"src": "^/tools/text-html/?$",
-			"dest": "_render"
-		},
-		{
-			"src": "^/$",
-			"dest": "_render"
 		}
 	]
 }

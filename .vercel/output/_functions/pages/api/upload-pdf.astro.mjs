@@ -3,6 +3,8 @@ export { renderers } from '../../renderers.mjs';
 
 const __vite_import_meta_env__ = {"ASSETS_PREFIX": undefined, "BASE_URL": "/", "DEV": false, "MODE": "production", "PROD": true, "SITE": "https://tools.claangel.site", "SSR": true};
 const prerender = false;
+const runtime = "nodejs";
+const dynamic = "force-dynamic";
 async function GET() {
   return new Response(JSON.stringify({
     status: "ok",
@@ -86,7 +88,9 @@ const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
   GET,
   POST,
-  prerender
+  dynamic,
+  prerender,
+  runtime
 }, Symbol.toStringTag, { value: 'Module' }));
 
 const page = () => _page;

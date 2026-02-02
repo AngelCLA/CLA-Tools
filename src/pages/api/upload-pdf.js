@@ -1,7 +1,11 @@
 import { put } from '@vercel/blob';
 
-// Ensure this API route is NOT prerendered (serverless function)
+// Force this route to be serverless (not prerendered)
 export const prerender = false;
+
+// Ensure this runs as a Vercel serverless function
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 // Health check endpoint
 export async function GET() {

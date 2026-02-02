@@ -129,7 +129,23 @@ Este proyecto está construido con tecnologías modernas:
    pnpm install
    ```
 
-3. **Configura el sitio** (opcional)
+3. **Configura variables de entorno** (para funcionalidad de upload PDF)
+   
+   ```bash
+   # Copia el archivo de ejemplo
+   cp .env.example .env
+   ```
+   
+   Edita `.env` y añade tu token de Vercel Blob Storage:
+   ```bash
+   BLOB_READ_WRITE_TOKEN=your_vercel_blob_token_here
+   ```
+   
+   > **Nota**: El token es necesario solo si quieres probar la funcionalidad de subida de PDFs en el Ebook Reader. Sin él, las herramientas seguirán funcionando pero la subida directa de archivos estará deshabilitada.
+
+4. **Configura el sitio** (opcional)
+   
+4. **Configura el sitio** (opcional)
    
    Edita `astro.config.mjs` y cambia la URL del sitio:
    ```javascript
@@ -139,12 +155,12 @@ Este proyecto está construido con tecnologías modernas:
    })
    ```
 
-4. **Inicia el servidor de desarrollo**
+5. **Inicia el servidor de desarrollo**
    ```bash
    npm run dev
    ```
 
-5. **Abre tu navegador**
+6. **Abre tu navegador**
    
    Visita `http://localhost:4321`
 

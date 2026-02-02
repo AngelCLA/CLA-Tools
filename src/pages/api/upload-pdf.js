@@ -9,6 +9,11 @@ export const dynamic = 'force-dynamic';
 
 // Health check endpoint
 export async function GET() {
+  const headers = { 
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*'
+  };
+  
   return new Response(JSON.stringify({ 
     status: 'ok', 
     timestamp: new Date().toISOString(),
@@ -17,14 +22,43 @@ export async function GET() {
     }
   }), {
     status: 200,
-    headers: { 'Content-Type': 'application/json' }
+    headers
+  });
+}
+
+// Handle CORS preflight requests
+export async function OPTIONS() {
+  return new Response(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Max-Age': '86400'
+    }
   });
 }
 
 export async function POST({ request }) {
   console.log('=== UPLOAD PDF API CALLED ===');
   
+  // Set response headers early
+  const headers = { 
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type'
+  };
+  
   try {
+    // Early error boundary
+    if (!request) {
+      return new Response(JSON.stringify({ error: 'No request object' }), {
+        status: 400,
+        headers
+      });
+    }
+    
     // Verificar token de Vercel Blob (dev usa import.meta.env, production usa process.env)
     const token = import.meta.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN;
     console.log('Token check - available:', !!token);
@@ -41,7 +75,7 @@ export async function POST({ request }) {
         }
       }), {
         status: 500,
-        headers: { 'Content-Type': 'application/json' }
+        headers
       });
     }
 
@@ -56,7 +90,7 @@ export async function POST({ request }) {
       console.error('No file provided in request');
       return new Response(JSON.stringify({ error: 'Missing file' }), {
         status: 400,
-        headers: { 'Content-Type': 'application/json' }
+        headers
       });
     }
 
@@ -81,7 +115,7 @@ export async function POST({ request }) {
       url: blob.url,
     }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' }
+      headers
     });
   } catch (error) {
     console.error('=== UPLOAD ERROR ===');
@@ -114,7 +148,7 @@ export async function POST({ request }) {
     
     return new Response(JSON.stringify(errorResponse), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' }
+      headers
     });
   }
 }

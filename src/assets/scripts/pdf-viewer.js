@@ -158,7 +158,15 @@ if (uploadPdfBtn) {
       } catch (parseError) {
         console.error('Response is not valid JSON:', responseText);
         console.error('Parse error:', parseError);
-        throw new Error(`Server error (${response.status}): ${responseText.substring(0, 100)}...`);
+        
+        // Handle common server error responses
+        if (responseText.includes('A server error has occurred')) {
+          throw new Error('Server configuration error: The API endpoint is not properly configured. This usually means the BLOB_READ_WRITE_TOKEN environment variable is missing.');
+        } else if (responseText.includes('FUNCTION_INVOCATION_FAILED')) {
+          throw new Error('Server deployment error: The function failed to execute. Check server logs for details.');
+        } else {
+          throw new Error(`Server error (${response.status}): ${responseText.substring(0, 100)}...`);
+        }
       }
 
       if (data && data.success && data.url) {

@@ -6,6 +6,10 @@ const prerender = false;
 const runtime = "nodejs";
 const dynamic = "force-dynamic";
 async function GET() {
+  const headers = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*"
+  };
   return new Response(JSON.stringify({
     status: "ok",
     timestamp: (/* @__PURE__ */ new Date()).toISOString(),
@@ -14,12 +18,35 @@ async function GET() {
     }
   }), {
     status: 200,
-    headers: { "Content-Type": "application/json" }
+    headers
+  });
+}
+async function OPTIONS() {
+  return new Response(null, {
+    status: 200,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Max-Age": "86400"
+    }
   });
 }
 async function POST({ request }) {
   console.log("=== UPLOAD PDF API CALLED ===");
+  const headers = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type"
+  };
   try {
+    if (!request) {
+      return new Response(JSON.stringify({ error: "No request object" }), {
+        status: 400,
+        headers
+      });
+    }
     const token = "vercel_blob_rw_kTQe66XT9wxwyfoE_kA3V35hTGfWAxDWBHdAsuy53wQlo9a";
     console.log("Token check - available:", !!token);
     console.log("Environment:", process.env.NODE_ENV || "development");
@@ -33,7 +60,7 @@ async function POST({ request }) {
       console.error("No file provided in request");
       return new Response(JSON.stringify({ error: "Missing file" }), {
         status: 400,
-        headers: { "Content-Type": "application/json" }
+        headers
       });
     }
     console.log("Converting file to buffer...");
@@ -52,7 +79,7 @@ async function POST({ request }) {
       url: blob.url
     }), {
       status: 200,
-      headers: { "Content-Type": "application/json" }
+      headers
     });
   } catch (error) {
     console.error("=== UPLOAD ERROR ===");
@@ -79,7 +106,7 @@ async function POST({ request }) {
     console.error("Sending error response:", errorResponse);
     return new Response(JSON.stringify(errorResponse), {
       status: 500,
-      headers: { "Content-Type": "application/json" }
+      headers
     });
   }
 }
@@ -87,6 +114,7 @@ async function POST({ request }) {
 const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
   GET,
+  OPTIONS,
   POST,
   dynamic,
   prerender,

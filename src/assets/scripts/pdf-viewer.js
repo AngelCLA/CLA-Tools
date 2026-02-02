@@ -150,7 +150,16 @@ if (uploadPdfBtn) {
         body: formData,
       });
 
-      const data = await response.json().catch(() => null);
+      let data = null;
+      const responseText = await response.text();
+      
+      try {
+        data = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error('Response is not valid JSON:', responseText);
+        console.error('Parse error:', parseError);
+        throw new Error(`Server error (${response.status}): ${responseText.substring(0, 100)}...`);
+      }
 
       if (data && data.success && data.url) {
         if (embedPdfUrlInput) {
@@ -165,11 +174,11 @@ if (uploadPdfBtn) {
         
         uploadPdfBtn.style.display = "none";
       } else {
-        if (!data && response.status === 413) {
+        if (response.status === 413) {
            throw new Error("El servidor rechazó el archivo por ser demasiado grande (413 Content Too Large).");
         }
         console.error("Server error details:", data);
-        throw new Error(data?.error || "Error al subir el archivo");
+        throw new Error(data?.error || `Error del servidor (${response.status})`);
       }
     } catch (error) {
       console.error("Error uploading PDF:", error);

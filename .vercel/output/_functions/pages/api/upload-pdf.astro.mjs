@@ -4,6 +4,9 @@ export { renderers } from '../../renderers.mjs';
 const prerender = false;
 async function POST({ request }) {
   try {
+    const token = "vercel_blob_rw_kTQe66XT9wxwyfoE_kA3V35hTGfWAxDWBHdAsuy53wQlo9a";
+    console.log("Token available:", !!token);
+    if (!token) ;
     const formData = await request.formData();
     const file = formData.get("file");
     const filename = formData.get("filename") || (file instanceof File ? file.name : "document.pdf");
@@ -20,7 +23,7 @@ async function POST({ request }) {
     const blob = await put(filename, buffer, {
       access: "public",
       contentType: "application/pdf",
-      token: "vercel_blob_rw_kTQe66XT9wxwyfoE_kA3V35hTGfWAxDWBHdAsuy53wQlo9a"
+      token
     });
     console.log(`Subida exitosa: ${blob.url}`);
     return new Response(JSON.stringify({
@@ -32,10 +35,14 @@ async function POST({ request }) {
     });
   } catch (error) {
     console.error("Upload error:", error);
-    return new Response(JSON.stringify({
-      error: error.message || "Failed to upload file",
-      stack: error.stack
-    }), {
+    console.error("Error stack:", error.stack);
+    const errorMessage = error.message || "Failed to upload file";
+    const errorResponse = {
+      error: errorMessage,
+      details: error.name || "Unknown error",
+      timestamp: (/* @__PURE__ */ new Date()).toISOString()
+    };
+    return new Response(JSON.stringify(errorResponse), {
       status: 500,
       headers: { "Content-Type": "application/json" }
     });

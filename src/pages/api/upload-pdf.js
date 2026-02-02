@@ -1,5 +1,6 @@
 import { put } from '@vercel/blob';
 
+// Ensure this API route is NOT prerendered (serverless function)
 export const prerender = false;
 
 // Health check endpoint

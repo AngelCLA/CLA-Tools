@@ -1,28 +1,47 @@
 import { put } from "@vercel/blob";
+import { IncomingForm } from "formidable";
 
-export default async function handler(request, response) {
-  if (request.method !== 'POST') {
-    return response.status(405).json({ error: 'Method not allowed' });
+export default async function handler(req, res) {
+  // CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
     const token = process.env.BLOB_READ_WRITE_TOKEN;
     
     if (!token) {
-      return response.status(500).json({ 
+      console.error('BLOB_READ_WRITE_TOKEN missing');
+      return res.status(500).json({ 
         error: 'BLOB_READ_WRITE_TOKEN not configured'
       });
     }
 
-    const formData = await request.formData();
-    const file = formData.get('file');
-    const filename = formData.get('filename') || 'document.pdf';
-    
+    // Parse multipart form data
+    const form = new IncomingForm();
+    const [fields, files] = await new Promise((resolve, reject) => {
+      form.parse(req, (err, fields, files) => {
+        if (err) reject(err);
+        else resolve([fields, files]);
+      });
+    });
+
+    const file = files.file?.[0] || files.file;
     if (!file) {
-      return response.status(400).json({ error: 'No file provided' });
+      return res.status(400).json({ error: 'No file provided' });
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer());
+    const fs = require('fs');
+    const buffer = fs.readFileSync(file.filepath);
+    const filename = fields.filename?.[0] || file.originalFilename || 'document.pdf';
     
     const blob = await put(filename, buffer, {
       access: 'public',
@@ -30,13 +49,13 @@ export default async function handler(request, response) {
       token: token,
     });
 
-    return response.status(200).json({
+    return res.status(200).json({
       success: true,
       url: blob.url,
     });
   } catch (error) {
     console.error('Upload error:', error);
-    return response.status(500).json({ 
+    return res.status(500).json({ 
       error: error.message || 'Upload failed'
     });
   }

@@ -13,6 +13,7 @@
     "@tailwindcss/vite": "^4.1.18",
     "@vercel/blob": "^2.0.1",
     "dotenv": "^17.2.3",
+    "formidable": "^3.5.2",
     "hls.js": "^1.6.15"
   },
   "engines": {

@@ -1,6 +1,6 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
-import vercel from '@astrojs/vercel/serverless';
+import vercel from '@astrojs/vercel';
 
 export default defineConfig({
   site: 'https://tools.claangel.site',
@@ -18,7 +18,6 @@ export default defineConfig({
   },
   vite: {
     ssr: {
-      noExternal: ['@vercel/blob']
     },
     build: {
       rollupOptions: {

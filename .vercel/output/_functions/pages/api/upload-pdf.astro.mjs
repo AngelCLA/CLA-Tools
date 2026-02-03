@@ -1,21 +1,46 @@
 export { renderers } from '../../renderers.mjs';
 
 const prerender = false;
-const SUPABASE_URL = process.env.VITE_PUBLIC_SUPABASE_URL || "https://baqvgbwzgwzljfxpepqy.supabase.co";
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhcXZnYnd6Z3d6bGpmeHBlcHF5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDA3OTk1MywiZXhwIjoyMDg1NjU1OTUzfQ.WQKWHOUlnj9LJIXqwJhU1I1gtpWuQgRH3G88HFAC1V4";
 async function GET() {
+  let supabaseUrl, supabaseKey;
+  try {
+    supabaseUrl = process.env.VITE_PUBLIC_SUPABASE_URL || "https://baqvgbwzgwzljfxpepqy.supabase.co";
+    supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhcXZnYnd6Z3d6bGpmeHBlcHF5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDA3OTk1MywiZXhwIjoyMDg1NjU1OTUzfQ.WQKWHOUlnj9LJIXqwJhU1I1gtpWuQgRH3G88HFAC1V4";
+  } catch (e) {
+    supabaseUrl = "https://baqvgbwzgwzljfxpepqy.supabase.co";
+    supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhcXZnYnd6Z3d6bGpmeHBlcHF5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDA3OTk1MywiZXhwIjoyMDg1NjU1OTUzfQ.WQKWHOUlnj9LJIXqwJhU1I1gtpWuQgRH3G88HFAC1V4";
+  }
   return new Response(JSON.stringify({
     status: "ok",
     message: "PDF Upload API is ready (Supabase REST)",
-    configured: true,
-    hasUrl: true,
-    hasKey: true
+    configured: !!(supabaseUrl && supabaseKey),
+    hasUrl: !!supabaseUrl,
+    hasKey: !!supabaseKey
   }), {
     status: 200,
     headers: { "Content-Type": "application/json" }
   });
 }
 async function POST({ request }) {
+  let SUPABASE_URL, SUPABASE_KEY;
+  try {
+    SUPABASE_URL = process.env.VITE_PUBLIC_SUPABASE_URL || "https://baqvgbwzgwzljfxpepqy.supabase.co";
+    SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhcXZnYnd6Z3d6bGpmeHBlcHF5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDA3OTk1MywiZXhwIjoyMDg1NjU1OTUzfQ.WQKWHOUlnj9LJIXqwJhU1I1gtpWuQgRH3G88HFAC1V4";
+  } catch (e) {
+    SUPABASE_URL = "https://baqvgbwzgwzljfxpepqy.supabase.co";
+    SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhcXZnYnd6Z3d6bGpmeHBlcHF5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDA3OTk1MywiZXhwIjoyMDg1NjU1OTUzfQ.WQKWHOUlnj9LJIXqwJhU1I1gtpWuQgRH3G88HFAC1V4";
+  }
+  if (!SUPABASE_URL || !SUPABASE_KEY) {
+    return new Response(
+      JSON.stringify({
+        error: "Missing Supabase credentials",
+        hasUrl: !!SUPABASE_URL,
+        hasKey: !!SUPABASE_KEY,
+        hint: "Check VITE_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in Vercel env vars"
+      }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
+  }
   try {
     const formData = await request.formData();
     const file = formData.get("file");

@@ -1,16 +1,23 @@
 export const prerender = false;
 
-// En Vercel usar process.env, en local import.meta.env
-const SUPABASE_URL = process.env.VITE_PUBLIC_SUPABASE_URL || import.meta.env.VITE_PUBLIC_SUPABASE_URL;
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
-
 export async function GET() {
+  // Intentar obtener las variables de todas las formas posibles
+  let supabaseUrl, supabaseKey;
+  
+  try {
+    supabaseUrl = process.env.VITE_PUBLIC_SUPABASE_URL || import.meta.env.VITE_PUBLIC_SUPABASE_URL;
+    supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
+  } catch (e) {
+    supabaseUrl = import.meta.env.VITE_PUBLIC_SUPABASE_URL;
+    supabaseKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
+  }
+  
   return new Response(JSON.stringify({ 
     status: "ok", 
     message: "PDF Upload API is ready (Supabase REST)",
-    configured: !!(SUPABASE_URL && SUPABASE_KEY),
-    hasUrl: !!SUPABASE_URL,
-    hasKey: !!SUPABASE_KEY
+    configured: !!(supabaseUrl && supabaseKey),
+    hasUrl: !!supabaseUrl,
+    hasKey: !!supabaseKey
   }), {
     status: 200,
     headers: { "Content-Type": "application/json" }
@@ -18,6 +25,17 @@ export async function GET() {
 }
 
 export async function POST({ request }) {
+  // Obtener variables dentro de la función, no a nivel de módulo
+  let SUPABASE_URL, SUPABASE_KEY;
+  
+  try {
+    SUPABASE_URL = process.env.VITE_PUBLIC_SUPABASE_URL || import.meta.env.VITE_PUBLIC_SUPABASE_URL;
+    SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
+  } catch (e) {
+    SUPABASE_URL = import.meta.env.VITE_PUBLIC_SUPABASE_URL;
+    SUPABASE_KEY = import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
+  }
+  
   // Validar credenciales
   if (!SUPABASE_URL || !SUPABASE_KEY) {
     return new Response(

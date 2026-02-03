@@ -1,22 +1,15 @@
+import { put } from '@vercel/blob';
 export { renderers } from '../../renderers.mjs';
 
-// Force this route to be serverless (not prerendered)
 const prerender = false;
 
 async function POST({ request }) {
-  console.log('=== UPLOAD PDF API CALLED ===');
-  
   const headers = { 
     'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type'
+    'Access-Control-Allow-Origin': '*'
   };
   
   try {
-    // Lazy import to avoid module loading errors
-    const { put } = await import('@vercel/blob');
-    
     const token = process.env.BLOB_READ_WRITE_TOKEN;
     console.log('Token check - available:', !!token);
     console.log('Token length:', token?.length || 0);

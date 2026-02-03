@@ -1,35 +1,19 @@
-import { createClient } from '@supabase/supabase-js';
 export { renderers } from '../../renderers.mjs';
 
 const prerender = false;
-const getSupabaseClient = () => {
-  const supabaseUrl = process.env.VITE_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || "https://baqvgbwzgwzljfxpepqy.supabase.co";
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhcXZnYnd6Z3d6bGpmeHBlcHF5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDA3OTk1MywiZXhwIjoyMDg1NjU1OTUzfQ.WQKWHOUlnj9LJIXqwJhU1I1gtpWuQgRH3G88HFAC1V4";
-  return createClient(supabaseUrl, supabaseKey);
-};
+const SUPABASE_URL = "https://baqvgbwzgwzljfxpepqy.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhcXZnYnd6Z3d6bGpmeHBlcHF5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDA3OTk1MywiZXhwIjoyMDg1NjU1OTUzfQ.WQKWHOUlnj9LJIXqwJhU1I1gtpWuQgRH3G88HFAC1V4";
 async function GET() {
-  const supabase = getSupabaseClient();
   return new Response(JSON.stringify({
     status: "ok",
-    message: "PDF Upload API is ready (Supabase Storage)",
-    hasCredentials: !!supabase
+    message: "PDF Upload API is ready (Supabase REST)",
+    configured: true
   }), {
     status: 200,
     headers: { "Content-Type": "application/json" }
   });
 }
 async function POST({ request }) {
-  const supabase = getSupabaseClient();
-  if (!supabase) {
-    console.error("Supabase client creation failed");
-    return new Response(
-      JSON.stringify({
-        error: "Missing Supabase credentials. Check environment variables in Vercel dashboard.",
-        availableVars: Object.keys(process.env).filter((k) => k.includes("SUPABASE"))
-      }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    );
-  }
   try {
     const formData = await request.formData();
     const file = formData.get("file");
@@ -41,32 +25,35 @@ async function POST({ request }) {
     }
     const timestamp = Date.now();
     const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
-    const filename = `pdfs/${timestamp}-${safeName}`;
+    const filename = `${timestamp}-${safeName}`;
     const arrayBuffer = await file.arrayBuffer();
-    const buffer = new Uint8Array(arrayBuffer);
-    console.log("Attempting upload to Supabase:", { filename, size: buffer.length });
-    const { data, error } = await supabase.storage.from("pdfs").upload(filename, buffer, {
-      contentType: "application/pdf",
-      cacheControl: "3600",
-      upsert: false
+    const uploadUrl = `${SUPABASE_URL}/storage/v1/object/pdfs/${filename}`;
+    const uploadResponse = await fetch(uploadUrl, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${SUPABASE_KEY}`,
+        "Content-Type": "application/pdf",
+        "x-upsert": "false"
+      },
+      body: arrayBuffer
     });
-    if (error) {
-      console.error("Supabase upload error:", error);
+    if (!uploadResponse.ok) {
+      const errorText = await uploadResponse.text();
+      console.error("Supabase upload failed:", errorText);
       return new Response(
         JSON.stringify({
-          error: `Upload failed: ${error.message}`,
-          details: error
+          error: `Upload failed: ${uploadResponse.status} ${uploadResponse.statusText}`,
+          details: errorText
         }),
         { status: 500, headers: { "Content-Type": "application/json" } }
       );
     }
-    const { data: urlData } = supabase.storage.from("pdfs").getPublicUrl(filename);
-    console.log("Upload successful:", urlData.publicUrl);
+    const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/pdfs/${filename}`;
     return new Response(
       JSON.stringify({
         success: true,
-        url: urlData.publicUrl,
-        path: data.path
+        url: publicUrl,
+        path: filename
       }),
       { status: 200, headers: { "Content-Type": "application/json" } }
     );

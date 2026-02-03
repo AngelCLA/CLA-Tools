@@ -5,8 +5,8 @@ export async function GET() {
   let supabaseUrl, supabaseKey;
   
   try {
-    supabaseUrl = process.env.SUPABASE_URL || import.meta.env.VITE_PUBLIC_SUPABASE_URL;
-    supabaseKey = process.env.SUPABASE_KEY || import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
+    supabaseUrl = process.env.VITE_PUBLIC_SUPABASE_URL || import.meta.env.VITE_PUBLIC_SUPABASE_URL;
+    supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
   } catch (e) {
     supabaseUrl = import.meta.env.VITE_PUBLIC_SUPABASE_URL;
     supabaseKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY;

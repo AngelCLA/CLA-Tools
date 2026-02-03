@@ -1,8 +1,8 @@
 export const prerender = false;
 
-// Remove top-level import to prevent crash on load if module is missing
-// import { put } from "@vercel/blob";
+import { put } from "@vercel/blob";
 
+// robust env check
 const getToken = () => {
   return process.env.BLOB_READ_WRITE_TOKEN || import.meta.env.BLOB_READ_WRITE_TOKEN;
 };
@@ -11,7 +11,7 @@ export async function GET() {
   const token = getToken();
   return new Response(JSON.stringify({ 
     status: "ok", 
-    message: "PDF Upload API is ready (Dynamic Import)",
+    message: "PDF Upload API is ready",
     hasToken: !!token
   }), {
     status: 200,
@@ -32,9 +32,6 @@ export async function POST({ request }) {
   }
 
   try {
-    // Dynamic import to isolate dependency issues
-    const { put } = await import("@vercel/blob");
-
     const formData = await request.formData();
     const file = formData.get("file");
 

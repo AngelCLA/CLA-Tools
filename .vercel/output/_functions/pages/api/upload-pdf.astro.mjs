@@ -1,3 +1,4 @@
+import { put } from '@vercel/blob';
 export { renderers } from '../../renderers.mjs';
 
 const prerender = false;
@@ -8,7 +9,7 @@ async function GET() {
   getToken();
   return new Response(JSON.stringify({
     status: "ok",
-    message: "PDF Upload API is ready (Dynamic Import)",
+    message: "PDF Upload API is ready",
     hasToken: true
   }), {
     status: 200,
@@ -18,7 +19,6 @@ async function GET() {
 async function POST({ request }) {
   const token = getToken();
   try {
-    const { put } = await import('@vercel/blob');
     const formData = await request.formData();
     const file = formData.get("file");
     if (!file) {

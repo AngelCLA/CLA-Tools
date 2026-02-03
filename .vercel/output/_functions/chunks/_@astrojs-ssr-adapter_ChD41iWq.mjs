@@ -13,7 +13,6 @@ import { createStorage, builtinDrivers } from 'unstorage';
 import '@vercel/routing-utils';
 import 'deterministic-object-hash';
 import nodePath from 'node:path';
-import { builtinModules } from 'node:module';
 
 function shouldAppendForwardSlash(trailingSlash, buildFormat) {
   switch (trailingSlash) {
@@ -4023,10 +4022,6 @@ function getRequestSocket(req) {
 apply();
 
 nodePath.posix.join;
-
-new RegExp(
-  builtinModules.map((mod) => `(^${mod}$|^node:${mod}$)`).join("|")
-);
 
 const ASTRO_PATH_HEADER = "x-astro-path";
 const ASTRO_PATH_PARAM = "x_astro_path";

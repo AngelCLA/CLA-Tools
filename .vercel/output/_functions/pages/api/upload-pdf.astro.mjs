@@ -1165,7 +1165,7 @@ var put = createPutMethod({
 
 const prerender = false;
 const getToken = () => {
-  return process.env.BLOB_READ_WRITE_TOKEN || "vercel_blob_rw_kTQe66XT9wxwyfoE_kA3V35hTGfWAxDWBHdAsuy53wQlo9a";
+  return process.env.BLOB_READ_WRITE_TOKEN || "vercel_blob_rw_nVf4oJwlVLAwIdIQ_DWvOCfLtOtdswafCCKPtK5Rs13vjta";
 };
 async function GET() {
   getToken();

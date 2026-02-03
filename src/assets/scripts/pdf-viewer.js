@@ -34,15 +34,49 @@ async function loadPDFFromUrl(url) {
     loadingMsg.textContent = "DESCARGANDO PDF...";
   }
 
+  // Ensure pdfjsLib is available
+  if (typeof pdfjsLib === "undefined") {
+    console.error("PDF.js library not loaded");
+    alert("Error: La librería PDF.js no se ha cargado correctamente. Intenta recargar la página.");
+    if (loadingMsg) loadingMsg.style.display = "none";
+    return;
+  }
+
   try {
-    pdfDoc = await pdfjsLib.getDocument(url).promise;
+    // Attempt to load the document
+    const loadingTask = pdfjsLib.getDocument(url);
+    
+    loadingTask.onProgress = function (progress) {
+      if (progress.total > 0) {
+        const percent = (progress.loaded / progress.total * 100).toFixed(0);
+        if (loadingMsg) loadingMsg.textContent = `DESCARGANDO PDF... ${percent}%`;
+      }
+    };
+
+    pdfDoc = await loadingTask.promise;
     totalPages = pdfDoc.numPages;
     document.getElementById("setup-view")?.classList.add("hidden");
     document.getElementById("reader-view")?.classList.remove("hidden");
     createBook();
   } catch (error) {
-    console.error("Error cargando PDF desde URL:", error);
-    alert("No se pudo cargar el PDF desde la URL proporcionada. Asegúrate de que el archivo sea accesible y permita CORS.");
+    console.error("Error loading PDF from URL:", error);
+    
+    let userMsg = "No se pudo cargar el PDF.";
+    
+    if (error.name === "MissingPDFException") {
+      userMsg = "El archivo PDF no se encuentra (404). Verifica la URL.";
+    } else if (error.name === "InvalidPDFException") {
+      userMsg = "El archivo no es un PDF válido o está dañado.";
+    } else {
+      // Likely CORS or network
+      userMsg = "No se pudo acceder al PDF. Posibles causas:\n" +
+                "1. Restricciones CORS en el servidor de origen (común en Vercel Blob si no es público).\n" +
+                "2. URL inválida.\n" +
+                "3. Error de red.\n\n" +
+                "Intenta descargar el archivo y subirlo manualmente.";
+    }
+
+    alert(userMsg);
   } finally {
     if (loadingMsg) loadingMsg.style.display = "none";
   }

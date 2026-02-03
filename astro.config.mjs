@@ -1,9 +1,15 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
+import vercel from '@astrojs/vercel';
 
 export default defineConfig({
   site: 'https://tools.claangel.site',
   integrations: [tailwind()],
+  output: 'static',
+  adapter: vercel({
+    edgeMiddleware: false,
+    includeFiles: [],
+  }),
   alias: {
     '@components': new URL('./src/components', import.meta.url).pathname,
     '@assets': new URL('./src/assets', import.meta.url).pathname,
@@ -12,8 +18,6 @@ export default defineConfig({
     '@styles': new URL('./src/styles', import.meta.url).pathname,
   },
   vite: {
-    ssr: {
-    },
     build: {
       rollupOptions: {
         external: [],

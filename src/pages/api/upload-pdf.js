@@ -1,12 +1,10 @@
-export { renderers } from '../../renderers.mjs';
-
-const prerender = false;
+export const prerender = false;
 
 // Simple Supabase upload usando fetch directo
 const SUPABASE_URL = "https://baqvgbwzgwzljfxpepqy.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhcXZnYnd6Z3d6bGpmeHBlcHF5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDA3OTk1MywiZXhwIjoyMDg1NjU1OTUzfQ.WQKWHOUlnj9LJIXqwJhU1I1gtpWuQgRH3G88HFAC1V4";
 
-async function GET() {
+export async function GET() {
   return new Response(JSON.stringify({ 
     status: "ok", 
     message: "PDF Upload API is ready (Supabase REST)",
@@ -17,7 +15,7 @@ async function GET() {
   });
 }
 
-async function POST({ request }) {
+export async function POST({ request }) {
   try {
     const formData = await request.formData();
     const file = formData.get("file");
@@ -84,14 +82,3 @@ async function POST({ request }) {
     );
   }
 }
-
-const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
-  __proto__: null,
-  GET,
-  POST,
-  prerender
-}, Symbol.toStringTag, { value: 'Module' }));
-
-const page = () => _page;
-
-export { page };

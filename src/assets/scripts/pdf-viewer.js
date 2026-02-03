@@ -153,10 +153,10 @@ if (uploadPdfBtn) {
       return;
     }
 
-    // Verificar tamaño del archivo (Límite de Vercel es ~4.5MB)
-    const MAX_SIZE = 4.5 * 1024 * 1024; // 4.5 MB
+    // Verificar tamaño del archivo (Supabase tiene mejor límite que Vercel Blob)
+    const MAX_SIZE = 50 * 1024 * 1024; // 50 MB (ajustable según tu plan de Supabase)
     if (currentPdfFile.size > MAX_SIZE) {
-      alert(`El archivo es demasiado grande (${(currentPdfFile.size / 1024 / 1024).toFixed(2)}MB). El límite para subida directa es de 4.5MB debido a restricciones de Vercel. Por favor, usa una URL externa o un PDF más ligero.`);
+      alert(`El archivo es demasiado grande (${(currentPdfFile.size / 1024 / 1024).toFixed(2)}MB). El límite de subida es de 50MB. Por favor, usa un PDF más ligero o una URL externa.`);
       if (uploadStatus) {
         uploadStatus.textContent = "✗ Archivo demasiado grande para el servidor.";
         uploadStatus.className = "text-sm text-red-500 mt-2";
@@ -195,7 +195,7 @@ if (uploadPdfBtn) {
         
         // Handle common server error responses
         if (responseText.includes('A server error has occurred')) {
-          throw new Error('Server configuration error: The API endpoint is not properly configured. This usually means the BLOB_READ_WRITE_TOKEN environment variable is missing.');
+          throw new Error('Server configuration error: The API endpoint is not properly configured. Please check that Supabase credentials are set correctly.');
         } else if (responseText.includes('FUNCTION_INVOCATION_FAILED')) {
           throw new Error('Server deployment error: The function failed to execute. Check server logs for details.');
         } else {
@@ -226,11 +226,11 @@ if (uploadPdfBtn) {
       console.error("Error uploading PDF:", error);
       
       if (uploadStatus) {
-        uploadStatus.textContent = "✗ Error al subir. Intenta con un servicio externo.";
+        uploadStatus.textContent = "✗ Error al subir. Verifica la configuración de Supabase.";
         uploadStatus.className = "text-sm text-red-500 mt-2";
       }
       
-      alert("Error al subir el PDF: " + error.message);
+      alert("Error al subir el PDF: " + error.message + "\n\nAsegúrate de que el bucket 'pdfs' existe en Supabase Storage y es público.");
     } finally {
       uploadPdfBtn.disabled = false;
       uploadPdfBtn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Subir PDF al Servidor';

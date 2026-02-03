@@ -1,63 +1,25 @@
 export const prerender = false;
 
-const BLOB_TOKEN = "vercel_blob_rw_kTQe66XT9wxwyfoE_kA3V35hTGfWAxDWBHdAsuy53wQlo9a";
+import { put } from "@vercel/blob";
 
 export async function POST({ request }) {
-  const headers = { 
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*'
-  };
-  
-  try {
-    const formData = await request.formData();
-    const file = formData.get('file');
-    const filename = formData.get('filename') || 'document.pdf';
-    
-    if (!file) {
-      return new Response(JSON.stringify({ error: 'Missing file' }), {
-        status: 400,
-        headers
-      });
-    }
-
-    const arrayBuffer = await file.arrayBuffer();
-    
-    // Usar la API REST de Vercel Blob directamente
-    const uploadResponse = await fetch(
-      `https://blob.vercel-storage.com/${filename}`,
-      {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${BLOB_TOKEN}`,
-          'Content-Type': 'application/pdf',
-          'x-content-type': 'application/pdf',
-        },
-        body: arrayBuffer,
-      }
-    );
-
-    if (!uploadResponse.ok) {
-      throw new Error(`Blob upload failed: ${uploadResponse.status}`);
-    }
-
-    const result = await uploadResponse.json();
-
-    return new Response(JSON.stringify({
-      success: true,
-      url: result.url,
-    }), {
-      status: 200,
-      headers
-    });
-  } catch (error) {
-    console.error('Upload error:', error);
-    
-    return new Response(JSON.stringify({
-      error: error.message || 'Upload failed',
-      type: error.name || 'ServerError'
-    }), {
-      status: 500,
-      headers
-    });
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    throw new Error("Missing BLOB_READ_WRITE_TOKEN env var");
   }
+
+  const formData = await request.formData();
+  const file = formData.get("file");
+
+  if (!file) {
+    return new Response("Missing file", { status: 400 });
+  }
+
+  const blob = await put(file.name, file, {
+    access: "public",
+  });
+
+  return Response.json({
+    success: true,
+    url: blob.url,
+  });
 }

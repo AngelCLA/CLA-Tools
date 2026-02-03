@@ -20,15 +20,11 @@
 			"dest": "_render"
 		},
 		{
-			"src": "^/api/debug/?$",
-			"dest": "_render"
-		},
-		{
-			"src": "^/api/test/?$",
-			"dest": "_render"
-		},
-		{
 			"src": "^/api/upload-pdf/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/tools/ebooks/?$",
 			"dest": "_render"
 		}
 	]

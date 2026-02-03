@@ -26,10 +26,6 @@
 		{
 			"src": "^/api/upload-pdf/?$",
 			"dest": "_render"
-		},
-		{
-			"src": "^/tools/ebooks/?$",
-			"dest": "_render"
 		}
 	]
 }

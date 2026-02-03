@@ -1,14 +1,16 @@
 export const prerender = false;
 
-// Usar variables de entorno (funcionan en Vercel sin problemas)
-const SUPABASE_URL = import.meta.env.VITE_PUBLIC_SUPABASE_URL;
-const SUPABASE_KEY = import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
+// En Vercel usar process.env, en local import.meta.env
+const SUPABASE_URL = process.env.VITE_PUBLIC_SUPABASE_URL || import.meta.env.VITE_PUBLIC_SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
 
 export async function GET() {
   return new Response(JSON.stringify({ 
     status: "ok", 
     message: "PDF Upload API is ready (Supabase REST)",
-    configured: true
+    configured: !!(SUPABASE_URL && SUPABASE_KEY),
+    hasUrl: !!SUPABASE_URL,
+    hasKey: !!SUPABASE_KEY
   }), {
     status: 200,
     headers: { "Content-Type": "application/json" }
@@ -16,6 +18,19 @@ export async function GET() {
 }
 
 export async function POST({ request }) {
+  // Validar credenciales
+  if (!SUPABASE_URL || !SUPABASE_KEY) {
+    return new Response(
+      JSON.stringify({
+        error: "Missing Supabase credentials",
+        hasUrl: !!SUPABASE_URL,
+        hasKey: !!SUPABASE_KEY,
+        hint: "Check VITE_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in Vercel env vars"
+      }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
   try {
     const formData = await request.formData();
     const file = formData.get("file");

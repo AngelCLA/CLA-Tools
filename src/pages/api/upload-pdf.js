@@ -1,8 +1,8 @@
 export const prerender = false;
 
-import { put } from "@vercel/blob";
+// Remove top-level import to prevent crash on load if module is missing
+// import { put } from "@vercel/blob";
 
-// robust env check
 const getToken = () => {
   return process.env.BLOB_READ_WRITE_TOKEN || import.meta.env.BLOB_READ_WRITE_TOKEN;
 };
@@ -11,7 +11,7 @@ export async function GET() {
   const token = getToken();
   return new Response(JSON.stringify({ 
     status: "ok", 
-    message: "PDF Upload API is ready",
+    message: "PDF Upload API is ready (Dynamic Import)",
     hasToken: !!token
   }), {
     status: 200,
@@ -32,6 +32,9 @@ export async function POST({ request }) {
   }
 
   try {
+    // Dynamic import to isolate dependency issues
+    const { put } = await import("@vercel/blob");
+
     const formData = await request.formData();
     const file = formData.get("file");
 
@@ -42,15 +45,15 @@ export async function POST({ request }) {
       });
     }
 
-    // Sanitize filename to avoid issues with special characters and collisions
+    // Sanitize filename
     const timestamp = Date.now();
     const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
     const filename = `${timestamp}-${safeName}`;
 
     const blob = await put(filename, file, {
       access: "public",
-      addRandomSuffix: false, // We already added a timestamp
-      token: token // Explicitly pass the token
+      addRandomSuffix: false, 
+      token: token
     });
 
     return new Response(
@@ -65,6 +68,7 @@ export async function POST({ request }) {
     return new Response(
       JSON.stringify({
         error: "Upload failed: " + (error.message || "Unknown error"),
+        stack: error.stack // Debug info
       }),
       { status: 500, headers: { "Content-Type": "application/json" } }
     );

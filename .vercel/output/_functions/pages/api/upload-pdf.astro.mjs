@@ -1,4 +1,3 @@
-import { put } from '@vercel/blob';
 export { renderers } from '../../renderers.mjs';
 
 const prerender = false;
@@ -9,7 +8,7 @@ async function GET() {
   getToken();
   return new Response(JSON.stringify({
     status: "ok",
-    message: "PDF Upload API is ready",
+    message: "PDF Upload API is ready (Dynamic Import)",
     hasToken: true
   }), {
     status: 200,
@@ -19,6 +18,7 @@ async function GET() {
 async function POST({ request }) {
   const token = getToken();
   try {
+    const { put } = await import('@vercel/blob');
     const formData = await request.formData();
     const file = formData.get("file");
     if (!file) {
@@ -33,9 +33,7 @@ async function POST({ request }) {
     const blob = await put(filename, file, {
       access: "public",
       addRandomSuffix: false,
-      // We already added a timestamp
       token
-      // Explicitly pass the token
     });
     return new Response(
       JSON.stringify({
@@ -48,7 +46,9 @@ async function POST({ request }) {
     console.error("Upload error:", error);
     return new Response(
       JSON.stringify({
-        error: "Upload failed: " + (error.message || "Unknown error")
+        error: "Upload failed: " + (error.message || "Unknown error"),
+        stack: error.stack
+        // Debug info
       }),
       { status: 500, headers: { "Content-Type": "application/json" } }
     );

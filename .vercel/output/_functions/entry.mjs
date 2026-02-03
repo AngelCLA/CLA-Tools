@@ -1,28 +1,30 @@
 import { renderers } from './renderers.mjs';
 import { c as createExports, s as serverEntrypointModule } from './chunks/_@astrojs-ssr-adapter_CkUQl2qw.mjs';
-import { manifest } from './manifest_DV8YNGSB.mjs';
+import { manifest } from './manifest_B86xZMws.mjs';
 
 const serverIslandMap = new Map();;
 
 const _page0 = () => import('./pages/_image.astro.mjs');
 const _page1 = () => import('./pages/api/debug.astro.mjs');
-const _page2 = () => import('./pages/api/upload-pdf.astro.mjs');
-const _page3 = () => import('./pages/tools/docx-gift.astro.mjs');
-const _page4 = () => import('./pages/tools/ebooks.astro.mjs');
-const _page5 = () => import('./pages/tools/generador-acta.astro.mjs');
-const _page6 = () => import('./pages/tools/merge-pdf.astro.mjs');
-const _page7 = () => import('./pages/tools/text-html.astro.mjs');
-const _page8 = () => import('./pages/index.astro.mjs');
+const _page2 = () => import('./pages/api/test.astro.mjs');
+const _page3 = () => import('./pages/api/upload-pdf.astro.mjs');
+const _page4 = () => import('./pages/tools/docx-gift.astro.mjs');
+const _page5 = () => import('./pages/tools/ebooks.astro.mjs');
+const _page6 = () => import('./pages/tools/generador-acta.astro.mjs');
+const _page7 = () => import('./pages/tools/merge-pdf.astro.mjs');
+const _page8 = () => import('./pages/tools/text-html.astro.mjs');
+const _page9 = () => import('./pages/index.astro.mjs');
 const pageMap = new Map([
     ["node_modules/astro/dist/assets/endpoint/generic.js", _page0],
     ["src/pages/api/debug.js", _page1],
-    ["src/pages/api/upload-pdf.js", _page2],
-    ["src/pages/tools/docx-gift.astro", _page3],
-    ["src/pages/tools/ebooks.astro", _page4],
-    ["src/pages/tools/generador-acta.astro", _page5],
-    ["src/pages/tools/merge-pdf.astro", _page6],
-    ["src/pages/tools/text-html.astro", _page7],
-    ["src/pages/index.astro", _page8]
+    ["src/pages/api/test.js", _page2],
+    ["src/pages/api/upload-pdf.js", _page3],
+    ["src/pages/tools/docx-gift.astro", _page4],
+    ["src/pages/tools/ebooks.astro", _page5],
+    ["src/pages/tools/generador-acta.astro", _page6],
+    ["src/pages/tools/merge-pdf.astro", _page7],
+    ["src/pages/tools/text-html.astro", _page8],
+    ["src/pages/index.astro", _page9]
 ]);
 
 const _manifest = Object.assign(manifest, {
@@ -33,7 +35,7 @@ const _manifest = Object.assign(manifest, {
     middleware: () => import('./_noop-middleware.mjs')
 });
 const _args = {
-    "middlewareSecret": "61ddec55-6b35-4623-80bb-c2d86670cb74",
+    "middlewareSecret": "b1eae5f3-9d3b-42bb-a164-22481ca4bbb1",
     "skewProtection": false
 };
 const _exports = createExports(_manifest, _args);

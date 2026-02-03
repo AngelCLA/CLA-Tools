@@ -1,5 +1,3 @@
-import { put } from "@vercel/blob";
-
 export const prerender = false;
 
 const BLOB_TOKEN = "vercel_blob_rw_kTQe66XT9wxwyfoE_kA3V35hTGfWAxDWBHdAsuy53wQlo9a";
@@ -13,7 +11,7 @@ export async function POST({ request }) {
   try {
     const formData = await request.formData();
     const file = formData.get('file');
-    const filename = formData.get('filename') || (file instanceof File ? file.name : 'document.pdf');
+    const filename = formData.get('filename') || 'document.pdf';
     
     if (!file) {
       return new Response(JSON.stringify({ error: 'Missing file' }), {
@@ -23,17 +21,30 @@ export async function POST({ request }) {
     }
 
     const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    
+    // Usar la API REST de Vercel Blob directamente
+    const uploadResponse = await fetch(
+      `https://blob.vercel-storage.com/${filename}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${BLOB_TOKEN}`,
+          'Content-Type': 'application/pdf',
+          'x-content-type': 'application/pdf',
+        },
+        body: arrayBuffer,
+      }
+    );
 
-    const blob = await put(filename, buffer, {
-      access: 'public',
-      contentType: 'application/pdf',
-      token: BLOB_TOKEN,
-    });
+    if (!uploadResponse.ok) {
+      throw new Error(`Blob upload failed: ${uploadResponse.status}`);
+    }
+
+    const result = await uploadResponse.json();
 
     return new Response(JSON.stringify({
       success: true,
-      url: blob.url,
+      url: result.url,
     }), {
       status: 200,
       headers

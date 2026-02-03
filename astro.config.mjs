@@ -15,6 +15,9 @@ export default defineConfig({
     '@styles': new URL('./src/styles', import.meta.url).pathname,
   },
   vite: {
+    ssr: {
+      noExternal: ['@vercel/blob']
+    },
     build: {
       rollupOptions: {
         external: [],

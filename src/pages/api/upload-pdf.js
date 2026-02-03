@@ -1,18 +1,25 @@
 export const prerender = false;
 
-import { put } from "@vercel/blob";
+import { createClient } from "@supabase/supabase-js";
 
-// robust env check
-const getToken = () => {
-  return process.env.BLOB_READ_WRITE_TOKEN || import.meta.env.BLOB_READ_WRITE_TOKEN;
+// Get Supabase credentials from environment variables
+const getSupabaseClient = () => {
+  const supabaseUrl = process.env.VITE_PUBLIC_SUPABASE_URL || import.meta.env.VITE_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
+  
+  if (!supabaseUrl || !supabaseKey) {
+    return null;
+  }
+  
+  return createClient(supabaseUrl, supabaseKey);
 };
 
 export async function GET() {
-  const token = getToken();
+  const supabase = getSupabaseClient();
   return new Response(JSON.stringify({ 
     status: "ok", 
-    message: "PDF Upload API is ready",
-    hasToken: !!token
+    message: "PDF Upload API is ready (Supabase Storage)",
+    hasCredentials: !!supabase
   }), {
     status: 200,
     headers: { "Content-Type": "application/json" }
@@ -20,12 +27,12 @@ export async function GET() {
 }
 
 export async function POST({ request }) {
-  const token = getToken();
+  const supabase = getSupabaseClient();
 
-  if (!token) {
+  if (!supabase) {
     return new Response(
       JSON.stringify({
-        error: "Missing BLOB_READ_WRITE_TOKEN env var. Check your Vercel project settings.",
+        error: "Missing Supabase credentials. Check VITE_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY env vars.",
       }),
       { status: 500, headers: { "Content-Type": "application/json" } }
     );
@@ -45,18 +52,43 @@ export async function POST({ request }) {
     // Sanitize filename
     const timestamp = Date.now();
     const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
-    const filename = `${timestamp}-${safeName}`;
+    const filename = `pdfs/${timestamp}-${safeName}`;
 
-    const blob = await put(filename, file, {
-      access: "public",
-      addRandomSuffix: false, 
-      token: token
-    });
+    // Convert file to ArrayBuffer for Supabase
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = new Uint8Array(arrayBuffer);
+
+    // Upload to Supabase Storage
+    // Make sure you have a bucket named 'pdfs' created in Supabase Storage
+    const { data, error } = await supabase.storage
+      .from("pdfs")
+      .upload(filename, buffer, {
+        contentType: "application/pdf",
+        cacheControl: "3600",
+        upsert: false,
+      });
+
+    if (error) {
+      console.error("Supabase upload error:", error);
+      return new Response(
+        JSON.stringify({
+          error: `Upload failed: ${error.message}`,
+          details: error,
+        }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    // Get public URL
+    const { data: urlData } = supabase.storage
+      .from("pdfs")
+      .getPublicUrl(filename);
 
     return new Response(
       JSON.stringify({
         success: true,
-        url: blob.url,
+        url: urlData.publicUrl,
+        path: data.path,
       }),
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
@@ -65,7 +97,7 @@ export async function POST({ request }) {
     return new Response(
       JSON.stringify({
         error: "Upload failed: " + (error.message || "Unknown error"),
-        stack: error.stack // Debug info
+        stack: error.stack,
       }),
       { status: 500, headers: { "Content-Type": "application/json" } }
     );

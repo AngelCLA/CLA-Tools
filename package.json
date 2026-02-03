@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@libpdf/core": "^0.2.5",
+    "@supabase/supabase-js": "^2.93.3",
     "@tailwindcss/vite": "^4.1.18",
     "@vercel/blob": "^2.0.1",
     "dotenv": "^17.2.3",

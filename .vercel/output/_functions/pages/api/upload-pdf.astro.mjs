@@ -1,23 +1,33 @@
-import { put } from '@vercel/blob';
+import { createClient } from '@supabase/supabase-js';
 export { renderers } from '../../renderers.mjs';
 
 const prerender = false;
-const getToken = () => {
-  return process.env.BLOB_READ_WRITE_TOKEN || "vercel_blob_rw_nVf4oJwlVLAwIdIQ_DWvOCfLtOtdswafCCKPtK5Rs13vjta";
+const getSupabaseClient = () => {
+  const supabaseUrl = process.env.VITE_PUBLIC_SUPABASE_URL || "https://baqvgbwzgwzljfxpepqy.supabase.co";
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhcXZnYnd6Z3d6bGpmeHBlcHF5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDA3OTk1MywiZXhwIjoyMDg1NjU1OTUzfQ.WQKWHOUlnj9LJIXqwJhU1I1gtpWuQgRH3G88HFAC1V4";
+  return createClient(supabaseUrl, supabaseKey);
 };
 async function GET() {
-  getToken();
+  const supabase = getSupabaseClient();
   return new Response(JSON.stringify({
     status: "ok",
-    message: "PDF Upload API is ready",
-    hasToken: true
+    message: "PDF Upload API is ready (Supabase Storage)",
+    hasCredentials: !!supabase
   }), {
     status: 200,
     headers: { "Content-Type": "application/json" }
   });
 }
 async function POST({ request }) {
-  const token = getToken();
+  const supabase = getSupabaseClient();
+  if (!supabase) {
+    return new Response(
+      JSON.stringify({
+        error: "Missing Supabase credentials. Check VITE_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY env vars."
+      }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
+  }
   try {
     const formData = await request.formData();
     const file = formData.get("file");
@@ -29,16 +39,30 @@ async function POST({ request }) {
     }
     const timestamp = Date.now();
     const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
-    const filename = `${timestamp}-${safeName}`;
-    const blob = await put(filename, file, {
-      access: "public",
-      addRandomSuffix: false,
-      token
+    const filename = `pdfs/${timestamp}-${safeName}`;
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = new Uint8Array(arrayBuffer);
+    const { data, error } = await supabase.storage.from("pdfs").upload(filename, buffer, {
+      contentType: "application/pdf",
+      cacheControl: "3600",
+      upsert: false
     });
+    if (error) {
+      console.error("Supabase upload error:", error);
+      return new Response(
+        JSON.stringify({
+          error: `Upload failed: ${error.message}`,
+          details: error
+        }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
+    }
+    const { data: urlData } = supabase.storage.from("pdfs").getPublicUrl(filename);
     return new Response(
       JSON.stringify({
         success: true,
-        url: blob.url
+        url: urlData.publicUrl,
+        path: data.path
       }),
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
@@ -48,7 +72,6 @@ async function POST({ request }) {
       JSON.stringify({
         error: "Upload failed: " + (error.message || "Unknown error"),
         stack: error.stack
-        // Debug info
       }),
       { status: 500, headers: { "Content-Type": "application/json" } }
     );

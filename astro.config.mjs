@@ -1,15 +1,9 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
-import vercel from '@astrojs/vercel';
 
 export default defineConfig({
   site: 'https://tools.claangel.site',
   integrations: [tailwind()],
-  output: 'server',
-  adapter: vercel({
-    functionPerRoute: false,
-    runtime: 'nodejs20.x'
-  }),
   alias: {
     '@components': new URL('./src/components', import.meta.url).pathname,
     '@assets': new URL('./src/assets', import.meta.url).pathname,

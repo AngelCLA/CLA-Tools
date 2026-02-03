@@ -4,10 +4,23 @@ import { createClient } from "@supabase/supabase-js";
 
 // Get Supabase credentials from environment variables
 const getSupabaseClient = () => {
-  const supabaseUrl = process.env.VITE_PUBLIC_SUPABASE_URL || import.meta.env.VITE_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
+  // Try multiple variable names (Vercel auto-setup uses different names)
+  const supabaseUrl = 
+    process.env.VITE_PUBLIC_SUPABASE_URL || 
+    process.env.SUPABASE_URL ||
+    import.meta.env.VITE_PUBLIC_SUPABASE_URL;
+    
+  const supabaseKey = 
+    process.env.SUPABASE_SERVICE_ROLE_KEY || 
+    process.env.SUPABASE_KEY ||
+    import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
   
   if (!supabaseUrl || !supabaseKey) {
+    console.error('Missing Supabase credentials:', { 
+      hasUrl: !!supabaseUrl, 
+      hasKey: !!supabaseKey,
+      availableEnvVars: Object.keys(process.env).filter(k => k.includes('SUPABASE'))
+    });
     return null;
   }
   
@@ -30,9 +43,11 @@ export async function POST({ request }) {
   const supabase = getSupabaseClient();
 
   if (!supabase) {
+    console.error('Supabase client creation failed');
     return new Response(
       JSON.stringify({
-        error: "Missing Supabase credentials. Check VITE_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY env vars.",
+        error: "Missing Supabase credentials. Check environment variables in Vercel dashboard.",
+        availableVars: Object.keys(process.env).filter(k => k.includes('SUPABASE'))
       }),
       { status: 500, headers: { "Content-Type": "application/json" } }
     );
@@ -57,6 +72,8 @@ export async function POST({ request }) {
     // Convert file to ArrayBuffer for Supabase
     const arrayBuffer = await file.arrayBuffer();
     const buffer = new Uint8Array(arrayBuffer);
+
+    console.log('Attempting upload to Supabase:', { filename, size: buffer.length });
 
     // Upload to Supabase Storage
     // Make sure you have a bucket named 'pdfs' created in Supabase Storage
@@ -83,6 +100,8 @@ export async function POST({ request }) {
     const { data: urlData } = supabase.storage
       .from("pdfs")
       .getPublicUrl(filename);
+
+    console.log('Upload successful:', urlData.publicUrl);
 
     return new Response(
       JSON.stringify({

@@ -3,8 +3,8 @@ export { renderers } from '../../renderers.mjs';
 
 const prerender = false;
 const getSupabaseClient = () => {
-  const supabaseUrl = process.env.VITE_PUBLIC_SUPABASE_URL || "https://baqvgbwzgwzljfxpepqy.supabase.co";
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhcXZnYnd6Z3d6bGpmeHBlcHF5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDA3OTk1MywiZXhwIjoyMDg1NjU1OTUzfQ.WQKWHOUlnj9LJIXqwJhU1I1gtpWuQgRH3G88HFAC1V4";
+  const supabaseUrl = process.env.VITE_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || "https://baqvgbwzgwzljfxpepqy.supabase.co";
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhcXZnYnd6Z3d6bGpmeHBlcHF5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDA3OTk1MywiZXhwIjoyMDg1NjU1OTUzfQ.WQKWHOUlnj9LJIXqwJhU1I1gtpWuQgRH3G88HFAC1V4";
   return createClient(supabaseUrl, supabaseKey);
 };
 async function GET() {
@@ -21,9 +21,11 @@ async function GET() {
 async function POST({ request }) {
   const supabase = getSupabaseClient();
   if (!supabase) {
+    console.error("Supabase client creation failed");
     return new Response(
       JSON.stringify({
-        error: "Missing Supabase credentials. Check VITE_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY env vars."
+        error: "Missing Supabase credentials. Check environment variables in Vercel dashboard.",
+        availableVars: Object.keys(process.env).filter((k) => k.includes("SUPABASE"))
       }),
       { status: 500, headers: { "Content-Type": "application/json" } }
     );
@@ -42,6 +44,7 @@ async function POST({ request }) {
     const filename = `pdfs/${timestamp}-${safeName}`;
     const arrayBuffer = await file.arrayBuffer();
     const buffer = new Uint8Array(arrayBuffer);
+    console.log("Attempting upload to Supabase:", { filename, size: buffer.length });
     const { data, error } = await supabase.storage.from("pdfs").upload(filename, buffer, {
       contentType: "application/pdf",
       cacheControl: "3600",
@@ -58,6 +61,7 @@ async function POST({ request }) {
       );
     }
     const { data: urlData } = supabase.storage.from("pdfs").getPublicUrl(filename);
+    console.log("Upload successful:", urlData.publicUrl);
     return new Response(
       JSON.stringify({
         success: true,

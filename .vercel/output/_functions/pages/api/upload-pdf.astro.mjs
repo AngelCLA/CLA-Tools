@@ -1164,42 +1164,45 @@ var put = createPutMethod({
 });
 
 const prerender = false;
-
+const getToken = () => {
+  return process.env.BLOB_READ_WRITE_TOKEN || "vercel_blob_rw_kTQe66XT9wxwyfoE_kA3V35hTGfWAxDWBHdAsuy53wQlo9a";
+};
+async function GET() {
+  getToken();
+  return new Response(JSON.stringify({
+    status: "ok",
+    message: "PDF Upload API is ready",
+    hasToken: true
+  }), {
+    status: 200,
+    headers: { "Content-Type": "application/json" }
+  });
+}
 async function POST({ request }) {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return new Response(
-      JSON.stringify({
-        error: "Missing BLOB_READ_WRITE_TOKEN env var. Check your Vercel project settings.",
-      }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    );
-  }
-
+  const token = getToken();
   try {
     const formData = await request.formData();
     const file = formData.get("file");
-
     if (!file) {
       return new Response(JSON.stringify({ error: "No file provided" }), {
         status: 400,
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" }
       });
     }
-
-    // Sanitize filename to avoid issues with special characters and collisions
     const timestamp = Date.now();
     const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
     const filename = `${timestamp}-${safeName}`;
-
     const blob = await put(filename, file, {
       access: "public",
-      addRandomSuffix: false, // We already added a timestamp
+      addRandomSuffix: false,
+      // We already added a timestamp
+      token
+      // Explicitly pass the token
     });
-
     return new Response(
       JSON.stringify({
         success: true,
-        url: blob.url,
+        url: blob.url
       }),
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
@@ -1207,7 +1210,7 @@ async function POST({ request }) {
     console.error("Upload error:", error);
     return new Response(
       JSON.stringify({
-        error: "Upload failed: " + (error.message || "Unknown error"),
+        error: "Upload failed: " + (error.message || "Unknown error")
       }),
       { status: 500, headers: { "Content-Type": "application/json" } }
     );
@@ -1216,6 +1219,7 @@ async function POST({ request }) {
 
 const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
+  GET,
   POST,
   prerender
 }, Symbol.toStringTag, { value: 'Module' }));

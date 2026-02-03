@@ -2,8 +2,27 @@ export const prerender = false;
 
 import { put } from "@vercel/blob";
 
+// robust env check
+const getToken = () => {
+  return process.env.BLOB_READ_WRITE_TOKEN || import.meta.env.BLOB_READ_WRITE_TOKEN;
+};
+
+export async function GET() {
+  const token = getToken();
+  return new Response(JSON.stringify({ 
+    status: "ok", 
+    message: "PDF Upload API is ready",
+    hasToken: !!token
+  }), {
+    status: 200,
+    headers: { "Content-Type": "application/json" }
+  });
+}
+
 export async function POST({ request }) {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+  const token = getToken();
+
+  if (!token) {
     return new Response(
       JSON.stringify({
         error: "Missing BLOB_READ_WRITE_TOKEN env var. Check your Vercel project settings.",
@@ -31,6 +50,7 @@ export async function POST({ request }) {
     const blob = await put(filename, file, {
       access: "public",
       addRandomSuffix: false, // We already added a timestamp
+      token: token // Explicitly pass the token
     });
 
     return new Response(

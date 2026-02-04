@@ -1,12 +1,13 @@
 import { PDF } from "@libpdf/core";
+import { MESSAGES, ICONS } from "./constants.js";
 
 class PDFMerger {
   constructor() {
     this.pdfFiles = [];
     this.sortableInstance = null;
     this.currentView = "grid";
-    this.fileIdCounter = 0; // Contador para IDs únicos
-    this.thumbnailCache = new Map(); // Cache para miniaturas ya cargadas
+    this.fileIdCounter = 0;
+    this.thumbnailCache = new Map();
 
     if (document.readyState === "loading") {
       document.addEventListener("DOMContentLoaded", () => this.init());
@@ -32,8 +33,6 @@ class PDFMerger {
     this.progressBar = document.getElementById("progress-bar");
     this.progressBarInner = document.getElementById("progress-bar-inner");
     this.processingMessage = document.getElementById("processing-message");
-    this.successMessage = document.getElementById("success-message");
-    this.errorMessage = document.getElementById("error-message");
     this.reorderInstructions = document.getElementById("reorder-instructions");
     this.pdfPreview = document.getElementById("pdf-preview");
     this.viewButtons = document.querySelectorAll(".view-button");
@@ -43,7 +42,6 @@ class PDFMerger {
   }
 
   attachEvents() {
-    // Upload area events
     this.uploadArea.addEventListener("click", () => this.fileInput.click());
 
     this.uploadArea.addEventListener("dragover", (e) => {
@@ -58,64 +56,51 @@ class PDFMerger {
     this.uploadArea.addEventListener("drop", (e) => {
       e.preventDefault();
       this.uploadArea.classList.remove("border-purple-500", "bg-purple-50");
-      const files = e.dataTransfer.files;
-      this.processFiles(files);
+      this.processFiles(e.dataTransfer.files);
     });
 
-    // File input change
     this.fileInput.addEventListener("change", (e) => {
       if (e.target.files.length > 0) {
         this.processFiles(e.target.files);
       }
     });
 
-    // Control buttons
     this.addMoreBtn.addEventListener("click", () => this.fileInput.click());
+    
     this.clearAllBtn.addEventListener("click", () => {
       this.showConfirmModal(
-        "¿Eliminar todos los archivos?",
-        `Se eliminarán ${this.pdfFiles.length} archivo${this.pdfFiles.length > 1 ? "s" : ""} de la lista. Esta acción no se puede deshacer.`,
+        MESSAGES.DELETE_ALL_TITLE,
+        MESSAGES.DELETE_ALL_MESSAGE(this.pdfFiles.length),
         () => {
           this.resetInterface();
-          window.ToastManager.showToast("Todos los archivos eliminados", "success");
-        },
+          window.ToastManager.showToast(MESSAGES.ALL_DELETED, "success");
+        }
       );
     });
 
-    // Merge button
     this.mergeButton.addEventListener("click", async () => {
       if (this.pdfFiles.length === 0) {
-        window.ToastManager.showToast("No hay archivos PDF para unir", "error");
+        window.ToastManager.showToast(MESSAGES.NO_FILES, "error");
         return;
       }
       try {
         await this.mergePDFs();
       } catch (error) {
         console.error("Error al unir PDFs:", error);
-        window.ToastManager.showToast(
-          "Ocurrió un error al unir los archivos PDF",
-          "error",
-        );
+        window.ToastManager.showToast(MESSAGES.MERGE_ERROR, "error");
       }
     });
 
-    // View buttons
     this.viewButtons.forEach((button) => {
       button.addEventListener("click", () => this.switchView(button));
     });
 
-    // Sort buttons
     this.sortNameBtn.addEventListener("click", () => this.sortByName());
     this.sortDateBtn.addEventListener("click", () => this.sortByDate());
   }
 
   switchView(button) {
-    // Remover active de todos los botones
-    this.viewButtons.forEach((btn) => {
-      btn.classList.remove("active");
-    });
-
-    // Agregar active al botón clickeado
+    this.viewButtons.forEach((btn) => btn.classList.remove("active"));
     button.classList.add("active");
 
     const view = button.dataset.view;
@@ -123,54 +108,35 @@ class PDFMerger {
 
     if (view === "list") {
       this.pdfPreview.classList.remove(
-        "grid-cols-1",
-        "sm:grid-cols-2",
-        "md:grid-cols-3",
-        "lg:grid-cols-4",
-        "xl:grid-cols-5",
+        "grid-cols-1", "sm:grid-cols-2", "md:grid-cols-3", 
+        "lg:grid-cols-4", "xl:grid-cols-5"
       );
       this.pdfPreview.classList.add("grid-cols-1");
     } else {
       this.pdfPreview.classList.remove("grid-cols-1");
       this.pdfPreview.classList.add(
-        "grid-cols-1",
-        "sm:grid-cols-2",
-        "md:grid-cols-3",
-        "lg:grid-cols-4",
-        "xl:grid-cols-5",
+        "grid-cols-1", "sm:grid-cols-2", "md:grid-cols-3",
+        "lg:grid-cols-4", "xl:grid-cols-5"
       );
     }
 
-    // Reconstruir la vista sin recargar las miniaturas
     this.rebuildView();
   }
 
   processFiles(fileList) {
-    let validFiles = [];
-
-    for (let i = 0; i < fileList.length; i++) {
-      const file = fileList[i];
-      if (file.type === "application/pdf") {
-        // Agregar ID único a cada archivo
+    const validFiles = Array.from(fileList)
+      .filter(file => file.type === "application/pdf")
+      .map(file => {
         file._uniqueId = this.fileIdCounter++;
-        validFiles.push(file);
-      }
-    }
+        return file;
+      });
 
     if (validFiles.length === 0) {
-      window.ToastManager.showToast(
-        "Por favor, selecciona archivos PDF válidos",
-        "error",
-      );
+      window.ToastManager.showToast(MESSAGES.INVALID_PDF, "error");
       return;
     }
 
     this.pdfFiles = [...this.pdfFiles, ...validFiles];
-    
-    // NO ordenar automáticamente - dejar que el usuario controle el orden
-    // this.sortPDFsByName();
-    
-    // Solo agregar nuevos archivos sin recargar los existentes
     this.addNewFiles(validFiles);
     this.updateFileCount();
 
@@ -184,108 +150,87 @@ class PDFMerger {
       this.reorderInstructions.classList.remove("hidden");
     }
 
-    window.ToastManager.showToast(
-      `${validFiles.length} archivo${validFiles.length > 1 ? "s agregados" : " agregado"}`,
-      "success",
-    );
+    window.ToastManager.showToast(MESSAGES.FILES_ADDED(validFiles.length), "success");
   }
 
   sortPDFsByName() {
     this.pdfFiles.sort((a, b) => {
       const nameA = a.name.toLowerCase();
       const nameB = b.name.toLowerCase();
-
       const numA = parseInt(nameA.match(/\d+/)?.[0] || 0, 10);
       const numB = parseInt(nameB.match(/\d+/)?.[0] || 0, 10);
-
-      if (numA !== numB) {
-        return numA - numB;
-      }
-
-      return nameA.localeCompare(nameB);
+      
+      return numA !== numB ? numA - numB : nameA.localeCompare(nameB);
     });
   }
 
   sortByName() {
     this.sortPDFsByName();
     this.reorderDOM();
-    window.ToastManager.showToast("Archivos ordenados por nombre", "success");
+    window.ToastManager.showToast(MESSAGES.SORTED_NAME, "success");
   }
 
   sortByDate() {
-    this.pdfFiles.sort((a, b) => {
-      return b.lastModified - a.lastModified;
-    });
+    this.pdfFiles.sort((a, b) => b.lastModified - a.lastModified);
     this.reorderDOM();
-    window.ToastManager.showToast("Archivos ordenados por fecha", "success");
+    window.ToastManager.showToast(MESSAGES.SORTED_DATE, "success");
   }
 
   reorderDOM() {
-    // Reordenar los elementos en el DOM según el nuevo orden de pdfFiles
     const fragment = document.createDocumentFragment();
     
     this.pdfFiles.forEach((file) => {
       const element = this.pdfPreview.querySelector(`[data-file-id="${file._uniqueId}"]`);
-      if (element) {
-        fragment.appendChild(element);
-      }
+      if (element) fragment.appendChild(element);
     });
     
     this.pdfPreview.innerHTML = "";
     this.pdfPreview.appendChild(fragment);
-    
-    // Actualizar los números de orden
     this.updateOrderNumbers();
   }
 
   async addNewFiles(newFiles) {
-    // Solo agregar los archivos nuevos
     for (const file of newFiles) {
       const fileIndex = this.pdfFiles.findIndex(f => f._uniqueId === file._uniqueId);
       const fileSize = this.formatFileSize(file.size);
-
       const thumbnail = this.createThumbnailElement(file, fileSize, fileIndex);
       
-      // Delete button
       thumbnail.querySelector(".delete-btn").addEventListener("click", () => {
         this.deleteFile(file._uniqueId);
       });
 
       this.pdfPreview.appendChild(thumbnail);
       
-      // Cargar preview de forma asíncrona solo si no está en cache
       if (!this.thumbnailCache.has(file._uniqueId)) {
         this.loadPDFPreview(file, file._uniqueId);
       } else {
-        // Usar la miniatura del cache
-        const cachedData = this.thumbnailCache.get(file._uniqueId);
-        const thumbnailImg = document.getElementById(`thumbnail-${file._uniqueId}`);
-        const loadingIndicator = document.getElementById(`thumbnail-loading-${file._uniqueId}`);
-        const pageCountElement = document.getElementById(`page-count-${file._uniqueId}`);
-        
-        if (thumbnailImg && cachedData.thumbnail) {
-          thumbnailImg.src = cachedData.thumbnail;
-          thumbnailImg.classList.remove("hidden");
-        }
-        if (loadingIndicator) {
-          loadingIndicator.remove();
-        }
-        if (pageCountElement) {
-          pageCountElement.textContent = cachedData.pageCountText;
-        }
+        this.applyCachedThumbnail(file._uniqueId);
       }
     }
 
-    // Actualizar números después de agregar
     this.updateOrderNumbers();
     this.initSortable();
   }
 
+  applyCachedThumbnail(uniqueId) {
+    const cachedData = this.thumbnailCache.get(uniqueId);
+    if (!cachedData) return;
+
+    const thumbnailImg = document.getElementById(`thumbnail-${uniqueId}`);
+    const loadingIndicator = document.getElementById(`thumbnail-loading-${uniqueId}`);
+    const pageCountElement = document.getElementById(`page-count-${uniqueId}`);
+    
+    if (thumbnailImg && cachedData.thumbnail) {
+      thumbnailImg.src = cachedData.thumbnail;
+      thumbnailImg.classList.remove("hidden");
+    }
+    if (loadingIndicator) loadingIndicator.remove();
+    if (pageCountElement) pageCountElement.textContent = cachedData.pageCountText;
+  }
+
   rebuildView() {
-    // Guardar las miniaturas actuales antes de limpiar
     this.pdfPreview.innerHTML = "";
     
-    // Recrear todos los elementos pero usando el cache de miniaturas
     this.pdfFiles.forEach((file, index) => {
       const fileSize = this.formatFileSize(file.size);
       const thumbnail = this.createThumbnailElement(file, fileSize, index);
@@ -296,25 +241,9 @@ class PDFMerger {
       
       this.pdfPreview.appendChild(thumbnail);
       
-      // Usar datos del cache si existen
       if (this.thumbnailCache.has(file._uniqueId)) {
-        const cachedData = this.thumbnailCache.get(file._uniqueId);
-        const thumbnailImg = document.getElementById(`thumbnail-${file._uniqueId}`);
-        const loadingIndicator = document.getElementById(`thumbnail-loading-${file._uniqueId}`);
-        const pageCountElement = document.getElementById(`page-count-${file._uniqueId}`);
-        
-        if (thumbnailImg && cachedData.thumbnail) {
-          thumbnailImg.src = cachedData.thumbnail;
-          thumbnailImg.classList.remove("hidden");
-        }
-        if (loadingIndicator) {
-          loadingIndicator.remove();
-        }
-        if (pageCountElement) {
-          pageCountElement.textContent = cachedData.pageCountText;
-        }
+        this.applyCachedThumbnail(file._uniqueId);
       } else {
-        // Si por alguna razón no está en cache, cargar
         this.loadPDFPreview(file, file._uniqueId);
       }
     });
@@ -326,23 +255,18 @@ class PDFMerger {
     const file = this.pdfFiles.find(f => f._uniqueId === fileId);
     if (!file) return;
     
-    const fileName = file.name;
     const index = this.pdfFiles.findIndex(f => f._uniqueId === fileId);
     
     if (index !== -1) {
       this.pdfFiles.splice(index, 1);
-      // Eliminar del cache
       this.thumbnailCache.delete(fileId);
       
-      // Eliminar el elemento del DOM
       const thumbnail = this.pdfPreview.querySelector(`[data-file-id="${fileId}"]`);
-      if (thumbnail) {
-        thumbnail.remove();
-      }
+      if (thumbnail) thumbnail.remove();
       
       this.updateOrderNumbers();
       this.updateFileCount();
-      window.ToastManager.showToast(`${fileName} eliminado`, "success");
+      window.ToastManager.showToast(MESSAGES.FILE_DELETED(file.name), "success");
       
       if (this.pdfFiles.length === 0) {
         this.resetInterface();
@@ -358,43 +282,41 @@ class PDFMerger {
     const uniqueId = file._uniqueId;
 
     if (isListView) {
-      thumbnail.className =
-        "group relative bg-white dark:bg-zinc-900 rounded-md shadow-sm hover:shadow-lg transition-all duration-300 cursor-move flex flex-row items-center gap-3 p-3";
+      thumbnail.className = "group relative bg-white dark:bg-zinc-900 rounded-md shadow-sm hover:shadow-lg transition-all duration-300 cursor-move flex flex-row items-center gap-3 p-3";
       thumbnail.dataset.fileId = uniqueId;
       thumbnail.innerHTML = `
         <div class="w-12 h-16 flex-shrink-0 bg-gray-100 dark:bg-zinc-800 rounded flex items-center justify-center overflow-hidden relative">
           <div id="thumbnail-loading-${uniqueId}" class="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-zinc-800">
-            <i class="fas fa-spinner fa-spin text-purple-600 text-xl"></i>
+            ${ICONS.SPINNER}
           </div>
           <img id="thumbnail-${uniqueId}" class="w-full h-full object-cover hidden" alt="Vista previa">
         </div>
         <div class="flex-1 min-w-0">
           <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-1 overflow-hidden text-ellipsis whitespace-nowrap" title="${file.name}">${file.name}</div>
           <div class="text-xs text-gray-500 dark:text-gray-400">
-            ${fileSize} • <span id="page-count-${uniqueId}">Cargando...</span>
+            ${fileSize} • <span id="page-count-${uniqueId}">${MESSAGES.LOADING}</span>
           </div>
         </div>
         <div class="flex items-center gap-2 flex-shrink-0">
           <div class="order-badge w-7 h-7 bg-purple-600/90 text-white rounded-full flex items-center justify-center text-xs font-bold">${index + 1}</div>
           <button class="delete-btn w-7 h-7 bg-red-500 hover:bg-red-600 text-white border-0 rounded-full cursor-pointer flex items-center justify-center transition-all duration-200 hover:scale-110" title="Eliminar">
-            <i class="fas fa-times text-xs"></i>
+            ${ICONS.TIMES}
           </button>
         </div>
       `;
     } else {
-      thumbnail.className =
-        "group relative bg-white dark:bg-zinc-900 rounded-md shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 cursor-move flex flex-col items-center text-center h-full p-4";
+      thumbnail.className = "group relative bg-white dark:bg-zinc-900 rounded-md shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 cursor-move flex flex-col items-center text-center h-full p-4";
       thumbnail.dataset.fileId = uniqueId;
       thumbnail.innerHTML = `
         <div class="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between z-10 gap-2.5">
           <div class="order-badge w-8 h-8 bg-purple-600/90 text-white rounded-full flex items-center justify-center text-sm font-bold shadow-md">${index + 1}</div>
           <button class="delete-btn w-8 h-8 bg-red-500 hover:bg-red-600 text-white border-0 rounded-full cursor-pointer flex items-center justify-center transition-all duration-200 opacity-0 group-hover:opacity-100 hover:scale-110 shadow-md" title="Eliminar">
-            <i class="fas fa-times"></i>
+            ${ICONS.TIMES}
           </button>
         </div>
         <div class="w-full aspect-[3/4] bg-gray-100 dark:bg-zinc-800 rounded mb-3 flex items-center justify-center overflow-hidden relative shadow-inner">
           <div id="thumbnail-loading-${uniqueId}" class="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-zinc-800">
-            <i class="fas fa-spinner fa-spin text-purple-600 text-4xl"></i>
+            ${ICONS.SPINNER}
           </div>
           <img id="thumbnail-${uniqueId}" class="w-full h-full object-contain hidden" alt="Vista previa">
         </div>
@@ -402,7 +324,7 @@ class PDFMerger {
           <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-1 overflow-hidden text-ellipsis whitespace-nowrap" title="${file.name}">${file.name}</div>
           <div class="text-xs text-gray-500 dark:text-gray-400">
             ${fileSize}
-            <span class="ml-1" id="page-count-${uniqueId}">Cargando...</span>
+            <span class="ml-1" id="page-count-${uniqueId}">${MESSAGES.LOADING}</span>
           </div>
         </div>
       `;
@@ -420,12 +342,9 @@ class PDFMerger {
       animation: 150,
       ghostClass: "opacity-50",
       onEnd: (evt) => {
-        const oldIndex = evt.oldIndex;
-        const newIndex = evt.newIndex;
-
-        if (oldIndex !== newIndex) {
-          const item = this.pdfFiles.splice(oldIndex, 1)[0];
-          this.pdfFiles.splice(newIndex, 0, item);
+        if (evt.oldIndex !== evt.newIndex) {
+          const item = this.pdfFiles.splice(evt.oldIndex, 1)[0];
+          this.pdfFiles.splice(evt.newIndex, 0, item);
           this.updateOrderNumbers();
         }
       },
@@ -433,12 +352,9 @@ class PDFMerger {
   }
 
   updateOrderNumbers() {
-    const thumbnails = this.pdfPreview.querySelectorAll("[data-file-id]");
-    thumbnails.forEach((thumbnail, index) => {
+    this.pdfPreview.querySelectorAll("[data-file-id]").forEach((thumbnail, index) => {
       const orderBadge = thumbnail.querySelector(".order-badge");
-      if (orderBadge) {
-        orderBadge.textContent = index + 1;
-      }
+      if (orderBadge) orderBadge.textContent = index + 1;
     });
   }
 
@@ -447,20 +363,17 @@ class PDFMerger {
       const arrayBuffer = await this.readFileAsArrayBuffer(file);
       const bytes = new Uint8Array(arrayBuffer);
       
-      // Usar LibPDF solo para obtener el conteo de páginas
       const pdf = await PDF.load(bytes);
       const pageCount = pdf.getPageCount();
-      const pageCountText = `${pageCount} ${pageCount === 1 ? "página" : "páginas"}`;
+      const pageCountText = MESSAGES.PAGE_COUNT(pageCount);
       
       const pageCountElement = document.getElementById(`page-count-${uniqueId}`);
       if (pageCountElement) {
         pageCountElement.textContent = pageCountText;
       }
 
-      // Usar PDF.js para generar la miniatura
       const thumbnailDataUrl = await this.renderPDFPageWithPDFJS(arrayBuffer);
       
-      // Guardar en cache
       this.thumbnailCache.set(uniqueId, {
         thumbnail: thumbnailDataUrl,
         pageCountText: pageCountText
@@ -474,59 +387,43 @@ class PDFMerger {
         thumbnailImg.classList.remove("hidden");
         loadingIndicator.remove();
       } else if (loadingIndicator && !thumbnailDataUrl) {
-        // Si falla el rendering, mostrar ícono
-        loadingIndicator.innerHTML = '<i class="fas fa-file-pdf text-purple-600 text-2xl"></i>';
+        loadingIndicator.innerHTML = ICONS.PDF;
       }
     } catch (error) {
       console.error("Error al cargar vista previa del PDF:", error);
       
       const pageCountElement = document.getElementById(`page-count-${uniqueId}`);
-      if (pageCountElement) {
-        pageCountElement.textContent = "Error";
-      }
+      if (pageCountElement) pageCountElement.textContent = MESSAGES.ERROR;
       
       const loadingIndicator = document.getElementById(`thumbnail-loading-${uniqueId}`);
-      if (loadingIndicator) {
-        loadingIndicator.innerHTML = '<i class="fas fa-file-pdf text-purple-600 text-2xl"></i>';
-      }
+      if (loadingIndicator) loadingIndicator.innerHTML = ICONS.PDF;
     }
   }
 
   async renderPDFPageWithPDFJS(arrayBuffer) {
     try {
-      // Verificar si PDF.js está disponible
       if (typeof pdfjsLib === 'undefined') {
         console.warn('PDF.js no está disponible');
         return null;
       }
 
-      // Cargar el PDF con PDF.js
       const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
       const pdfDoc = await loadingTask.promise;
-      
-      // Obtener la primera página
       const page = await pdfDoc.getPage(1);
       
-      // Crear canvas
       const canvas = document.createElement('canvas');
       const context = canvas.getContext('2d');
-      
-      // Calcular escala para la miniatura
       const scale = 0.5;
       const viewport = page.getViewport({ scale });
       
       canvas.width = viewport.width;
       canvas.height = viewport.height;
       
-      // Renderizar la página
-      const renderContext = {
+      await page.render({
         canvasContext: context,
         viewport: viewport
-      };
+      }).promise;
       
-      await page.render(renderContext).promise;
-      
-      // Convertir a data URL
       return canvas.toDataURL('image/png');
     } catch (error) {
       console.error('Error al renderizar con PDF.js:', error);
@@ -536,19 +433,14 @@ class PDFMerger {
 
   updateFileCount() {
     const count = this.pdfFiles.length;
-    this.fileCount.textContent =
-      count === 1
-        ? "1 archivo seleccionado"
-        : `${count} archivos seleccionados`;
+    this.fileCount.textContent = MESSAGES.FILES_SELECTED(count);
   }
 
   formatFileSize(bytes) {
     if (bytes === 0) return "0 Bytes";
-
     const k = 1024;
     const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   }
 
@@ -558,29 +450,23 @@ class PDFMerger {
       this.processingMessage.classList.remove("hidden");
       this.mergeButton.disabled = true;
 
-      // Preparar array de bytes de todos los PDFs
       const pdfBytesArray = [];
 
       for (let i = 0; i < this.pdfFiles.length; i++) {
         const file = this.pdfFiles[i];
-
         const progress = (i / this.pdfFiles.length) * 100;
         this.progressBarInner.style.width = `${progress}%`;
-        this.processingMessage.textContent = `Procesando: ${file.name}`;
+        this.processingMessage.textContent = `${MESSAGES.PROCESSING}: ${file.name}`;
 
         const arrayBuffer = await this.readFileAsArrayBuffer(file);
         pdfBytesArray.push(new Uint8Array(arrayBuffer));
       }
 
       this.progressBarInner.style.width = "100%";
-      this.processingMessage.textContent = "Combinando PDFs...";
+      this.processingMessage.textContent = MESSAGES.MERGING;
 
-      // Usar el método merge de LibPDF - combina múltiples PDFs en uno solo
       const mergedPdf = await PDF.merge(pdfBytesArray);
-
-      // Guardar el PDF combinado
       const mergedPdfBytes = await mergedPdf.save();
-
       const blob = new Blob([mergedPdfBytes], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
 
@@ -593,19 +479,13 @@ class PDFMerger {
 
       this.progressBar.classList.add("hidden");
       this.processingMessage.classList.add("hidden");
-      window.ToastManager.showToast(
-        `¡${this.pdfFiles.length} PDFs combinados exitosamente!`,
-        "success",
-      );
+      window.ToastManager.showToast(MESSAGES.MERGE_SUCCESS(this.pdfFiles.length), "success");
       this.mergeButton.disabled = false;
     } catch (error) {
       console.error("Error al combinar PDFs:", error);
       this.progressBar.classList.add("hidden");
       this.processingMessage.classList.add("hidden");
-      window.ToastManager.showToast(
-        "Error al combinar los PDFs. Intenta de nuevo.",
-        "error",
-      );
+      window.ToastManager.showToast(MESSAGES.MERGE_ERROR, "error");
       this.mergeButton.disabled = false;
     }
   }
@@ -613,29 +493,18 @@ class PDFMerger {
   readFileAsArrayBuffer(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-
-      reader.onload = (e) => {
-        resolve(e.target.result);
-      };
-
-      reader.onerror = (e) => {
-        reject(new Error("Error al leer el archivo"));
-      };
-
+      reader.onload = (e) => resolve(e.target.result);
+      reader.onerror = () => reject(new Error("Error al leer el archivo"));
       reader.readAsArrayBuffer(file);
     });
   }
 
   showConfirmModal(title, message, onConfirm) {
-    // Crear overlay
     const overlay = document.createElement("div");
-    overlay.className =
-      "fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in";
+    overlay.className = "fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in";
 
-    // Crear modal
     const modal = document.createElement("div");
-    modal.className =
-      "bg-white dark:bg-zinc-800 rounded-xl shadow-2xl max-w-md w-full transform scale-95 opacity-0 transition-all duration-200";
+    modal.className = "bg-white dark:bg-zinc-800 rounded-xl shadow-2xl max-w-md w-full transform scale-95 opacity-0 transition-all duration-200";
 
     modal.innerHTML = `
       <div class="p-6">
@@ -650,13 +519,12 @@ class PDFMerger {
             <p class="text-sm text-zinc-600 dark:text-zinc-400">${message}</p>
           </div>
         </div>
-
         <div class="flex gap-3 justify-end">
           <button class="modal-cancel px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-lg transition">
-            Cancelar
+            ${MESSAGES.CANCEL}
           </button>
           <button class="modal-confirm px-4 py-2 text-sm font-medium bg-red-600 hover:bg-red-700 text-white rounded-lg transition">
-            Eliminar
+            ${MESSAGES.DELETE}
           </button>
         </div>
       </div>
@@ -665,39 +533,27 @@ class PDFMerger {
     overlay.appendChild(modal);
     document.body.appendChild(overlay);
 
-    // Animar entrada
     setTimeout(() => {
       modal.style.transform = "scale(1)";
       modal.style.opacity = "1";
     }, 10);
 
-    // Función para cerrar modal
     const closeModal = () => {
       modal.style.transform = "scale(0.95)";
       modal.style.opacity = "0";
-      setTimeout(() => {
-        overlay.remove();
-      }, 200);
+      setTimeout(() => overlay.remove(), 200);
     };
 
-    // Event listeners
-    const cancelBtn = modal.querySelector(".modal-cancel");
-    const confirmBtn = modal.querySelector(".modal-confirm");
-
-    cancelBtn.addEventListener("click", closeModal);
-
-    confirmBtn.addEventListener("click", () => {
+    modal.querySelector(".modal-cancel").addEventListener("click", closeModal);
+    modal.querySelector(".modal-confirm").addEventListener("click", () => {
       closeModal();
       onConfirm();
     });
 
     overlay.addEventListener("click", (e) => {
-      if (e.target === overlay) {
-        closeModal();
-      }
+      if (e.target === overlay) closeModal();
     });
 
-    // Cerrar con ESC
     const handleEscape = (e) => {
       if (e.key === "Escape") {
         closeModal();
@@ -722,5 +578,4 @@ class PDFMerger {
   }
 }
 
-// Initialize
 window.pdfMerger = new PDFMerger();

@@ -1,0 +1,25 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{js,jsx,ts,tsx,astro,html,css}]
+indent_style = space
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false
+```
+
+## 4. Crear .gitattributes
+
+Crea `.gitattributes` en la raíz:
+```
+* text=auto eol=lf encoding=UTF-8
+*.{js,jsx,ts,tsx,astro} text eol=lf encoding=UTF-8
+*.{json,md,html,css} text eol=lf encoding=UTF-8
+*.{png,jpg,jpeg,gif,svg,ico,webp} binary
+*.pdf binary

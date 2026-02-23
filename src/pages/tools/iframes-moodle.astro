@@ -1,0 +1,1591 @@
+---
+export const prerender = true;
+import Layout from "@layouts/Layout.astro";
+import moodlePlaygroundScript from "@assets/scripts/moodle-playground.js?raw";
+---
+
+<Layout
+  title="Moodle Playground | CLA Tools"
+  description="Previsualiza cómo se verán tus iframes en diferentes temas de Moodle (Klass, Boost, Moove, Adaptable). Herramienta interactiva para diseñadores e instructores."
+  keywords="moodle, iframe, simulador, temas moodle, klass, boost, moove, adaptable, vista previa"
+>
+  <style is:global>
+    :root {
+      --bg: #0f1117;
+      --surface: #171b26;
+      --surface2: #1e2333;
+      --border: #2a2f45;
+      --accent: #f97316;
+      --blue: #60a5fa;
+      --green: #4ade80;
+      --text: #e2e8f0;
+      --muted: #64748b;
+    }
+
+    .moodle-playground {
+      --bg: #0f1117;
+      --surface: #171b26;
+      --surface2: #1e2333;
+      --border: #2a2f45;
+      --accent: #f97316;
+      --blue: #60a5fa;
+      --green: #4ade80;
+      --text: #e2e8f0;
+      --muted: #64748b;
+    }
+
+    .moodle-playground * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    .moodle-playground {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', 'Segoe UI', sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ═══ HEADER ═══════════════════════════════════ */
+    .mp-header {
+      height: 54px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 18px;
+      gap: 14px;
+      flex-shrink: 0;
+    }
+
+    .mp-logo {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mp-logo-dot {
+      width: 10px;
+      height: 10px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 12px var(--accent);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.8); }
+    }
+
+    .mp-header-sep {
+      flex: 1;
+    }
+
+    .mp-btn {
+      padding: 7px 16px;
+      border-radius: 8px;
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+    }
+
+    .mp-btn-run {
+      background: var(--accent);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mp-btn-run:hover {
+      background: #fb923c;
+      transform: translateY(-1px);
+    }
+
+    .mp-btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .mp-btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .mp-view-toggle {
+      display: flex;
+      background: var(--bg);
+      border-radius: 8px;
+      padding: 3px;
+      gap: 2px;
+      border: 1px solid var(--border);
+    }
+
+    .mp-view-btn {
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-family: 'Syne', sans-serif;
+      transition: all 0.15s;
+    }
+
+    .mp-view-btn.active {
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    /* ═══ WORKSPACE ═══════════════════════════════════ */
+    .mp-workspace {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    .mp-editor-panel {
+      width: 50%;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--border);
+      transition: width 0.3s;
+    }
+
+    .mp-editor-panel.hidden {
+      width: 0;
+      overflow: hidden;
+    }
+
+    .mp-editor-panel.full {
+      width: 100%;
+      border-right: none;
+    }
+
+    .mp-code-tabs {
+      display: flex;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      height: 42px;
+      flex-shrink: 0;
+    }
+
+    .mp-code-tab {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 18px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      border-bottom: 2px solid var(--accent);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      height: 100%;
+    }
+
+    .mp-tab-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--blue);
+    }
+
+    .mp-code-editors {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mp-code-area {
+      position: absolute;
+      inset: 0;
+      display: flex;
+    }
+
+    .mp-line-numbers-wrap {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      background: var(--surface);
+    }
+
+    .mp-line-numbers {
+      padding: 14px 0 14px 14px;
+      min-width: 44px;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      text-align: right;
+      user-select: none;
+      overflow: hidden;
+      flex-shrink: 0;
+      opacity: 0.4;
+    }
+
+    .mp-editor {
+      flex: 1;
+      padding: 14px 14px 14px 10px;
+      background: var(--surface);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      border: none;
+      outline: none;
+      resize: none;
+      tab-size: 2;
+      overflow-y: auto;
+      white-space: pre;
+      overflow-x: auto;
+      caret-color: var(--accent);
+    }
+
+    .mp-editor::selection {
+      background: rgba(249, 115, 22, 0.25);
+    }
+
+    .mp-editor::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    .mp-editor::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+
+    .mp-resize-bar {
+      width: 4px;
+      background: var(--border);
+      cursor: col-resize;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+
+    .mp-resize-bar:hover,
+    .mp-resize-bar.dragging {
+      background: var(--accent);
+    }
+
+    /* ═══ PREVIEW PANEL ═══════════════════════════════════ */
+    .mp-preview-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .mp-preview-panel.hidden {
+      width: 0;
+      overflow: hidden;
+      flex: 0;
+    }
+
+    .mp-preview-panel.full {
+      flex: 1;
+    }
+
+    .mp-preview-tabs {
+      display: flex;
+      align-items: center;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      height: 42px;
+      padding: 0 12px;
+      gap: 6px;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+
+    .mp-preview-tab {
+      padding: 5px 13px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      font-family: 'Syne', sans-serif;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .mp-preview-tab.active {
+      background: var(--surface2);
+      color: var(--text);
+      border-color: var(--border);
+    }
+
+    .mp-preview-tab:hover:not(.active) {
+      color: var(--text);
+    }
+
+    .mp-theme-sep {
+      width: 1px;
+      height: 22px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+
+    .mp-theme-btn {
+      padding: 4px 10px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-family: 'Syne', sans-serif;
+      transition: all 0.15s;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    .mp-theme-btn.active {
+      background: var(--surface2);
+      color: var(--text);
+      border-color: var(--accent);
+    }
+
+    .mp-theme-btn:hover:not(.active) {
+      color: var(--text);
+      border-color: var(--muted);
+    }
+
+    .mp-theme-controls {
+      display: none;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .mp-height-ctrl {
+      display: none;
+      align-items: center;
+      gap: 7px;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    .mp-height-ctrl label {
+      font-size: 11px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .mp-height-ctrl input[type='range'] {
+      width: 80px;
+      accent-color: var(--accent);
+    }
+
+    .mp-height-ctrl .val {
+      font-size: 11px;
+      color: var(--text);
+      min-width: 40px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .mp-preview-content {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+      background: #0a0d14;
+    }
+
+    #raw-preview {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: white;
+      display: block;
+    }
+
+    .mp-theme-wrap {
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      display: none;
+    }
+
+    .mp-theme-wrap::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .mp-theme-wrap::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+
+    .mp-theme-iframe {
+      width: 100%;
+      border: none;
+      display: block;
+    }
+
+    /* ═══ STATUS BAR ═══════════════════════════════════ */
+    .mp-status-bar {
+      height: 24px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      gap: 14px;
+      font-size: 11px;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+      flex-shrink: 0;
+    }
+
+    .mp-ok {
+      color: var(--green);
+    }
+
+    #status-msg {
+      margin-left: auto;
+    }
+
+    /* ═══ KLASS THEME ═══════════════════════════════════ */
+    .k-chrome {
+      background: #f1f1f1;
+      font-family: 'Open Sans', 'Segoe UI', sans-serif;
+      font-size: 13px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+
+    .k-hdr {
+      background: #009fe5;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .k-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .k-logo-box {
+      width: 36px;
+      height: 36px;
+      background: white;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 900;
+      color: #009fe5;
+    }
+
+    .k-site {
+      color: white;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .k-hdr-right {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .k-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+      position: relative;
+    }
+
+    .k-icon .b {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 12px;
+      height: 12px;
+      background: #e74c3c;
+      border-radius: 50%;
+      font-size: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+
+    .k-av {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #0077b5;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 13px;
+      font-weight: bold;
+      margin-left: 6px;
+    }
+
+    .k-nav {
+      background: #2c3e50;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    .k-nav a {
+      color: rgba(255, 255, 255, 0.75);
+      text-decoration: none;
+      font-size: 12.5px;
+      padding: 0 14px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      border-bottom: 3px solid transparent;
+      font-weight: 500;
+    }
+
+    .k-nav a.on {
+      color: #009fe5;
+      border-bottom-color: #009fe5;
+    }
+
+    .k-phdr {
+      background: white;
+      padding: 4px 24px 10px;
+      border-bottom: 1px solid #dde3e9;
+      flex-shrink: 0;
+    }
+
+    .k-bc {
+      font-size: 11.5px;
+      color: #888;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+
+    .k-bc a {
+      color: #009fe5;
+      text-decoration: none;
+    }
+
+    .k-r-hdr {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .k-r-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #009fe5, #0077b5);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .k-r-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #2c3e50;
+    }
+
+    .k-r-meta {
+      font-size: 11px;
+      color: #999;
+      margin-top: 2px;
+    }
+
+    .k-main {
+      flex: 1;
+      padding: 18px 24px;
+    }
+
+    .k-resource-wrap {
+      background: white;
+      border: 1px solid #dde3e9;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .k-res-topbar {
+      background: #f7f9fb;
+      border-bottom: 1px solid #dde3e9;
+      padding: 7px 14px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11.5px;
+      color: #666;
+    }
+
+    .dot-green {
+      width: 7px;
+      height: 7px;
+      background: #27ae60;
+      border-radius: 50%;
+      display: inline-block;
+      margin-left: auto;
+    }
+
+    .k-ft {
+      background: #1d1d1d;
+      padding: 12px 24px;
+      flex-shrink: 0;
+    }
+
+    .k-ft-bottom {
+      font-size: 11px;
+      color: #666;
+      text-align: center;
+    }
+
+    /* ═══ BOOST THEME ═══════════════════════════════════ */
+    .bs-chrome {
+      background: #f8f8f8;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+
+    .bs-top {
+      background: #fff;
+      height: 56px;
+      border-bottom: 1px solid #dee2e6;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      flex-shrink: 0;
+    }
+
+    .bs-ham {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .bs-ham span {
+      display: block;
+      width: 20px;
+      height: 2px;
+      background: #6c757d;
+      border-radius: 2px;
+    }
+
+    .bs-logo-area {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .bs-logo {
+      width: 34px;
+      height: 34px;
+      background: #1177d1;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 900;
+      font-size: 17px;
+    }
+
+    .bs-site {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    .bs-top-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .bs-ico {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .bs-ico .b {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: #dc3545;
+      color: white;
+      font-size: 9px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .bs-av {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #1177d1;
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .bs-bc-bar {
+      background: white;
+      border-bottom: 1px solid #dee2e6;
+      padding: 7px 20px;
+      font-size: 12px;
+      color: #6c757d;
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+    }
+
+    .bs-bc-bar a {
+      color: #1177d1;
+      text-decoration: none;
+    }
+
+    .bs-res-header {
+      background: white;
+      border-bottom: 1px solid #dee2e6;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .bs-r-badge {
+      width: 40px;
+      height: 40px;
+      background: #1177d1;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .bs-r-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #212529;
+    }
+
+    .bs-r-meta {
+      font-size: 12px;
+      color: #6c757d;
+      margin-top: 2px;
+    }
+
+    .bs-main {
+      flex: 1;
+      padding: 18px 20px;
+    }
+
+    .bs-res-card {
+      background: white;
+      border: 1px solid #dee2e6;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .bs-rc-h {
+      padding: 9px 14px;
+      border-bottom: 1px solid #dee2e6;
+      font-size: 12px;
+      color: #6c757d;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ═══ MOOVE THEME ═══════════════════════════════════ */
+    .mv-chrome {
+      background: #f5f5f5;
+      font-family: 'Roboto', 'Segoe UI', sans-serif;
+      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+
+    .mv-top {
+      background: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+
+    .mv-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .mv-logo-box {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, #0e6d99, #0ba3c8);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 900;
+      font-size: 18px;
+    }
+
+    .mv-site {
+      font-size: 17px;
+      font-weight: 700;
+      color: #2d2d2d;
+    }
+
+    .mv-search {
+      flex: 1;
+      max-width: 320px;
+      background: #f0f0f0;
+      border: 1px solid #e0e0e0;
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 13px;
+      color: #999;
+    }
+
+    .mv-top-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mv-ico {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      cursor: pointer;
+      color: #555;
+      position: relative;
+    }
+
+    .mv-ico .b {
+      position: absolute;
+      top: 1px;
+      right: 1px;
+      background: #e53935;
+      color: white;
+      font-size: 9px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .mv-user {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .mv-av {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #0e6d99;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .mv-banner {
+      background: linear-gradient(135deg, #0e6d99, #0ba3c8);
+      padding: 16px 24px;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .mv-banner-bc {
+      font-size: 11px;
+      opacity: 0.72;
+      margin-bottom: 6px;
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .mv-banner-bc a {
+      color: rgba(255, 255, 255, 0.88);
+      text-decoration: none;
+    }
+
+    .mv-banner-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .mv-banner-ico {
+      font-size: 22px;
+    }
+
+    .mv-banner-name {
+      font-size: 19px;
+      font-weight: 700;
+    }
+
+    .mv-main {
+      flex: 1;
+      padding: 18px 24px;
+    }
+
+    .mv-res-card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+    }
+
+    .mv-rc-h {
+      padding: 10px 16px;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 12px;
+      color: #757575;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ═══ ADAPTABLE THEME ═══════════════════════════════════ */
+    .ad-chrome {
+      background: #eef0f4;
+      font-family: 'Open Sans', 'Segoe UI', sans-serif;
+      font-size: 13px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+
+    .ad-hdr {
+      background: #1a2238;
+      padding: 0 20px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-shrink: 0;
+    }
+
+    .ad-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ad-logo-box {
+      width: 38px;
+      height: 38px;
+      background: #ff6b35;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 900;
+      font-size: 19px;
+    }
+
+    .ad-site {
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .ad-hnav {
+      display: flex;
+      gap: 2px;
+      margin-left: 16px;
+    }
+
+    .ad-hnav a {
+      color: rgba(255, 255, 255, 0.65);
+      font-size: 12.5px;
+      padding: 8px 12px;
+      border-radius: 4px;
+      text-decoration: none;
+    }
+
+    .ad-hnav a.on {
+      background: rgba(255, 107, 53, 0.2);
+      color: #ff6b35;
+    }
+
+    .ad-hdr-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .ad-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.8);
+      position: relative;
+    }
+
+    .ad-btn .b {
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      background: #ff6b35;
+      color: white;
+      font-size: 9px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .ad-user {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 4px 10px 4px 4px;
+      color: white;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .ad-av {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #ff6b35;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .ad-cbar {
+      background: #253151;
+      padding: 10px 20px;
+      border-bottom: 3px solid #ff6b35;
+      flex-shrink: 0;
+    }
+
+    .ad-bc {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 5px;
+    }
+
+    .ad-bc a {
+      color: rgba(255, 255, 255, 0.72);
+      text-decoration: none;
+    }
+
+    .ad-r-hdr {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ad-r-icon {
+      width: 38px;
+      height: 38px;
+      background: #ff6b35;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+      flex-shrink: 0;
+    }
+
+    .ad-r-title {
+      color: white;
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .ad-r-meta {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 2px;
+    }
+
+    .ad-main {
+      flex: 1;
+      padding: 16px 20px;
+    }
+
+    .ad-res-card {
+      background: white;
+      border-radius: 4px;
+      border: 1px solid #dde1e9;
+      overflow: hidden;
+    }
+
+    .ad-rc-h {
+      background: #f7f8fb;
+      border-bottom: 1px solid #dde1e9;
+      padding: 8px 14px;
+      font-size: 12px;
+      color: #666;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ═══ RESPONSIVE ═══════════════════════════════════ */
+    @media (max-width: 768px) {
+      .mp-view-toggle {
+        flex: 1;
+        max-width: 200px;
+      }
+
+      .mp-preview-tabs {
+        height: auto;
+        padding: 8px 12px;
+      }
+
+      .mp-theme-controls {
+        display: none !important;
+      }
+
+      .mp-height-ctrl {
+        display: none !important;
+      }
+
+      .mp-editor-panel,
+      .mp-preview-panel {
+        width: 100% !important;
+      }
+
+      .mp-resize-bar {
+        display: none !important;
+      }
+    }
+  </style>
+
+  <div class="moodle-playground">
+    <!-- Header -->
+    <header class="mp-header">
+      <div class="mp-logo">
+        <div class="mp-logo-dot"></div>
+        Moodle Playground
+      </div>
+      <div class="mp-view-toggle">
+        <button class="mp-view-btn" id="vbtn-editor" onclick="setLayout('editor')">
+          Editor
+        </button>
+        <button class="mp-view-btn active" id="vbtn-split" onclick="setLayout('split')">
+          Split
+        </button>
+        <button class="mp-view-btn" id="vbtn-preview" onclick="setLayout('preview')">
+          Preview
+        </button>
+      </div>
+      <div class="mp-header-sep"></div>
+      <button class="mp-btn mp-btn-outline" onclick="clearAll()">Limpiar</button>
+      <button class="mp-btn mp-btn-run" onclick="runCode()">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+          <polygon points="2,1 11,6 2,11"></polygon>
+        </svg>
+        Ejecutar
+      </button>
+    </header>
+
+    <!-- Workspace -->
+    <div class="mp-workspace" id="workspace">
+      <!-- Editor Panel -->
+      <div class="mp-editor-panel" id="editor-panel">
+        <div class="mp-code-tabs">
+          <div class="mp-code-tab">
+            <div class="mp-tab-dot"></div>
+            HTML — iframe
+          </div>
+        </div>
+        <div class="mp-code-editors">
+          <div class="mp-code-area">
+            <div class="mp-line-numbers-wrap">
+              <div class="mp-line-numbers" id="ln-html">1</div>
+              <textarea
+                class="mp-editor"
+                id="ed-html"
+                spellcheck="false"
+                placeholder="Pega aquí tu iframe o HTML..."
+                oninput="updateLines()"
+                onscroll="syncScroll()"
+                onkeydown="handleTab(event)"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resize Bar -->
+      <div class="mp-resize-bar" id="resize-bar" onmousedown="startResize(event)">
+      </div>
+
+      <!-- Preview Panel -->
+      <div class="mp-preview-panel" id="preview-panel">
+        <div class="mp-preview-tabs">
+          <button
+            class="mp-preview-tab active"
+            id="ptab-raw"
+            onclick="setPreviewMode('raw')">
+            Vista directa
+          </button>
+          <button
+            class="mp-preview-tab"
+            id="ptab-moodle"
+            onclick="setPreviewMode('moodle')">
+            🎓 Simulador Moodle
+          </button>
+          <div id="theme-controls" class="mp-theme-controls">
+            <div class="mp-theme-sep"></div>
+            <button class="mp-theme-btn active" id="tbtn-klass" onclick="setTheme('klass')">
+              Klass
+            </button>
+            <button class="mp-theme-btn" id="tbtn-boost" onclick="setTheme('boost')">
+              Boost
+            </button>
+            <button class="mp-theme-btn" id="tbtn-moove" onclick="setTheme('moove')">
+              Moove
+            </button>
+            <button class="mp-theme-btn" id="tbtn-adaptable" onclick="setTheme('adaptable')">
+              Adaptable
+            </button>
+          </div>
+          <div class="mp-height-ctrl" id="height-ctrl">
+            <label>Alto:</label>
+            <input
+              type="range"
+              id="h-range"
+              min="150"
+              max="900"
+              value="500"
+              step="10"
+              oninput="updateIframeHeight(this.value)" />
+            <span class="val" id="ih-val">500px</span>
+          </div>
+        </div>
+
+        <div class="mp-preview-content">
+          <!-- Raw Preview iframe -->
+          <iframe id="raw-preview" sandbox="allow-scripts allow-forms allow-modals allow-same-origin">
+          </iframe>
+
+          <!-- ═══ KLASS THEME ═══ -->
+          <div id="theme-klass" class="mp-theme-wrap">
+            <div class="k-chrome">
+              <div class="k-hdr">
+                <div class="k-logo">
+                  <div class="k-logo-box">M</div>
+                  <span class="k-site">Mi Plataforma Educativa</span>
+                </div>
+                <div class="k-hdr-right">
+                  <div class="k-icon">🔔<span class="b">2</span></div>
+                  <div class="k-icon">✉️<span class="b">5</span></div>
+                  <div class="k-icon">⚙️</div>
+                  <div class="k-av">DE</div>
+                </div>
+              </div>
+              <div class="k-nav">
+                <a href="#">Inicio del sitio</a>
+                <a href="#" class="on">Mis cursos</a>
+                <a href="#">Calendario</a>
+                <a href="#">Mensajes</a>
+              </div>
+              <div class="k-phdr">
+                <div class="k-bc">
+                  <a href="#">Inicio</a><span>›</span><a href="#">Mis cursos</a><span>›</span>
+                  <a href="#">Diseño Instruccional 2025</a><span>›</span><span>Recurso incrustado</span>
+                </div>
+                <div class="k-r-hdr">
+                  <div class="k-r-icon">🔗</div>
+                  <div>
+                    <div class="k-r-title">Recurso incrustado</div>
+                    <div class="k-r-meta">
+                      Herramientas y recursos digitales · Diseño Instruccional 2025
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="k-main">
+                <div class="k-resource-wrap">
+                  <div class="k-res-topbar">
+                    🔗 Contenido incrustado <span class="dot-green"></span>
+                  </div>
+                  <iframe
+                    id="klass-iframe"
+                    class="mp-theme-iframe"
+                    height="500"
+                    sandbox="allow-scripts allow-forms allow-modals allow-same-origin">
+                  </iframe>
+                </div>
+              </div>
+              <div class="k-ft">
+                <div class="k-ft-bottom">
+                  Mi Plataforma Educativa © 2025 · Tema Klass by LMSACE
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══ BOOST THEME ═══ -->
+          <div id="theme-boost" class="mp-theme-wrap">
+            <div class="bs-chrome">
+              <div class="bs-top">
+                <div class="bs-ham">
+                  <span></span><span></span><span></span>
+                </div>
+                <div class="bs-logo-area">
+                  <div class="bs-logo">M</div>
+                  <span class="bs-site">Mi Plataforma Educativa</span>
+                </div>
+                <div class="bs-top-right">
+                  <div class="bs-ico">🔔<span class="b">2</span></div>
+                  <div class="bs-ico">✉️<span class="b">5</span></div>
+                  <div class="bs-av">DE</div>
+                </div>
+              </div>
+              <div class="bs-bc-bar">
+                <a href="#">Inicio</a> › <a href="#">Mis cursos</a> ›
+                <a href="#">Diseño Instruccional 2025</a> › Recurso incrustado
+              </div>
+              <div class="bs-res-header">
+                <div class="bs-r-badge">🔗</div>
+                <div>
+                  <div class="bs-r-title">Recurso incrustado</div>
+                  <div class="bs-r-meta">
+                    Herramientas y recursos digitales · Diseño Instruccional 2025
+                  </div>
+                </div>
+              </div>
+              <div class="bs-main">
+                <div class="bs-res-card">
+                  <div class="bs-rc-h">🔗 Contenido incrustado</div>
+                  <iframe
+                    id="boost-iframe"
+                    class="mp-theme-iframe"
+                    height="500"
+                    sandbox="allow-scripts allow-forms allow-modals allow-same-origin">
+                  </iframe>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══ MOOVE THEME ═══ -->
+          <div id="theme-moove" class="mp-theme-wrap">
+            <div class="mv-chrome">
+              <div class="mv-top">
+                <div class="mv-logo">
+                  <div class="mv-logo-box">M</div>
+                  <span class="mv-site">Mi Plataforma Educativa</span>
+                </div>
+                <div class="mv-search">🔍 Buscar en el sitio...</div>
+                <div class="mv-top-right">
+                  <div class="mv-ico">🔔<span class="b">2</span></div>
+                  <div class="mv-ico">✉️<span class="b">5</span></div>
+                  <div class="mv-user">
+                    <div class="mv-av">DE</div>
+                    <span style="font-size:13px;font-weight:600;color:#333">Docente Ejemplo</span>
+                  </div>
+                </div>
+              </div>
+              <div class="mv-banner">
+                <div class="mv-banner-bc">
+                  <a href="#">Inicio</a> › <a href="#">Diseño Instruccional 2025</a> ›
+                  Recurso incrustado
+                </div>
+                <div class="mv-banner-title">
+                  <span class="mv-banner-ico">🔗</span>
+                  <span class="mv-banner-name">Recurso incrustado</span>
+                </div>
+              </div>
+              <div class="mv-main">
+                <div class="mv-res-card">
+                  <div class="mv-rc-h">🔗 Contenido incrustado</div>
+                  <iframe
+                    id="moove-iframe"
+                    class="mp-theme-iframe"
+                    height="500"
+                    sandbox="allow-scripts allow-forms allow-modals allow-same-origin">
+                  </iframe>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══ ADAPTABLE THEME ═══ -->
+          <div id="theme-adaptable" class="mp-theme-wrap">
+            <div class="ad-chrome">
+              <div class="ad-hdr">
+                <div class="ad-logo">
+                  <div class="ad-logo-box">M</div>
+                  <span class="ad-site">Mi Plataforma Educativa</span>
+                </div>
+                <div class="ad-hnav">
+                  <a href="#">Inicio</a>
+                  <a href="#" class="on">Mis cursos</a>
+                  <a href="#">Comunidad</a>
+                  <a href="#">Recursos</a>
+                </div>
+                <div class="ad-hdr-right">
+                  <div class="ad-btn">🔔<span class="b">2</span></div>
+                  <div class="ad-btn">✉️<span class="b">5</span></div>
+                  <div class="ad-user">
+                    <div class="ad-av">DE</div>
+                    Docente Ejemplo ▾
+                  </div>
+                </div>
+              </div>
+              <div class="ad-cbar">
+                <div class="ad-bc">
+                  <a href="#">Inicio</a> › <a href="#">Mis cursos</a> ›
+                  <a href="#">Diseño Instruccional 2025</a> › Recurso incrustado
+                </div>
+                <div class="ad-r-hdr">
+                  <div class="ad-r-icon">🔗</div>
+                  <div>
+                    <div class="ad-r-title">Recurso incrustado</div>
+                    <div class="ad-r-meta">
+                      Herramientas y recursos digitales · Diseño Instruccional 2025
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="ad-main">
+                <div class="ad-res-card">
+                  <div class="ad-rc-h">🔗 Contenido incrustado</div>
+                  <iframe
+                    id="adapt-iframe"
+                    class="mp-theme-iframe"
+                    height="500"
+                    sandbox="allow-scripts allow-forms allow-modals allow-same-origin">
+                  </iframe>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="mp-status-bar">
+      <span>Moodle Playground v2.3</span>
+      <span>|</span>
+      <span id="char-count">0 chars</span>
+      <span id="status-msg" class="mp-ok">● Listo</span>
+    </div>
+  </div>
+
+  <script is:inline define:vars={{ moodlePlaygroundScript }}>
+    eval(moodlePlaygroundScript);
+  </script>
+</Layout>

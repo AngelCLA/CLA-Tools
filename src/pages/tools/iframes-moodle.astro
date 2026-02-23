@@ -13,23 +13,40 @@ import moodlePlaygroundScript from "@assets/scripts/moodle-playground.js?raw";
   <div class="flex flex-col min-h-full items-center justify-center py-8 px-4">
     <div class="w-full max-w-6xl shadow-2xl rounded-xl p-6 sm:p-8 md:p-12">
       <!-- Header -->
-      <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gradient mb-4 text-center">
+      <h1
+        class="text-3xl sm:text-4xl md:text-5xl font-bold text-gradient mb-4 text-center"
+      >
         Simulador de Iframes en Moodle
       </h1>
       <p class="mb-6 text-base sm:text-lg md:text-xl text-gradient text-center">
-        Visualiza cómo se verán tus iframes en diferentes temas de Moodle (Klass, Boost, Moove, Adaptable).
+        Visualiza cómo se verán tus iframes en diferentes temas de Moodle
+        (Klass, Boost, Moove, Adaptable).
       </p>
 
       <!-- Instructions -->
-      <div class="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700 rounded-lg p-4 sm:p-6 mb-6">
-        <p class="font-semibold text-purple-800 dark:text-purple-300 mb-2">
-          📌 Instrucciones:
-        </p>
-        <ol class="list-decimal list-inside space-y-2 text-sm sm:text-base text-zinc-700 dark:text-zinc-300">
+      <div
+        class="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700 rounded-lg p-4 sm:p-6 mb-6"
+      >
+        <div class="flex items-center gap-2 mb-2">
+          <svg class="w-5 h-5 text-purple-800 dark:text-purple-300" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+          </svg>
+          <p class="font-semibold text-purple-800 dark:text-purple-300">
+            Instrucciones:
+          </p>
+        </div>
+        <ol
+          class="list-decimal list-inside space-y-2 text-sm sm:text-base text-zinc-700 dark:text-zinc-300"
+        >
           <li>Pega tu código HTML o iframe en la pestaña "Editor".</li>
           <li>Visualiza el resultado en la pestaña "Vista Previa".</li>
-          <li>Simula cómo se verá en diferentes temas de Moodle en la pestaña "Simulador Moodle".</li>
-          <li>Selecciona el tema que desees para previsualizar el resultado.</li>
+          <li>
+            Simula cómo se verá en diferentes temas de Moodle en la pestaña
+            "Simulador Moodle".
+          </li>
+          <li>
+            Selecciona el tema que desees para previsualizar el resultado.
+          </li>
         </ol>
       </div>
 
@@ -47,12 +64,17 @@ import moodlePlaygroundScript from "@assets/scripts/moodle-playground.js?raw";
         >
           Vista Previa
         </button>
-        <button
-          data-tab="moodle"
-          class="px-6 py-3 cursor-pointer font-semibold border-b-2 border-transparent text-zinc-600 dark:text-zinc-400 hover:text-purple-600 dark:hover:text-purple-400 transition"
-        >
-          🎓 Simulador Moodle
-        </button>
+         <button
+           data-tab="moodle"
+           class="px-6 py-3 cursor-pointer font-semibold border-b-2 border-transparent text-zinc-600 dark:text-zinc-400 hover:text-purple-600 dark:hover:text-purple-400 transition"
+         >
+           <span class="flex items-center gap-2">
+             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/>
+             </svg>
+             Simulador Moodle
+           </span>
+         </button>
       </div>
 
       <!-- Editor Tab Content -->
@@ -64,222 +86,508 @@ import moodlePlaygroundScript from "@assets/scripts/moodle-playground.js?raw";
           style="min-height: 300px;"
           placeholder="Pega aquí tu iframe o HTML..."></textarea>
 
-        <div class="flex flex-col sm:flex-row gap-3 mt-6 justify-center items-center">
-          <button
-            id="update-preview-btn"
-            class="px-6 py-3 cursor-pointer bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition shadow-md hover:shadow-lg w-full sm:w-auto"
-          >
-            ▶️ Actualizar Vista
-          </button>
-          <button
-            id="clear-editor-btn"
-            class="px-6 py-3 cursor-pointer bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition shadow-md hover:shadow-lg w-full sm:w-auto"
-          >
-            🗑️ Limpiar
-          </button>
+        <div
+          class="flex flex-col sm:flex-row gap-3 mt-6 justify-center items-center"
+        >
+           <button
+             id="update-preview-btn"
+             class="px-6 py-3 cursor-pointer bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition shadow-md hover:shadow-lg w-full sm:w-auto flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:hover:bg-gray-400 disabled:cursor-not-allowed"
+           >
+             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+               <path d="M8 5v14l11-7z"/>
+             </svg>
+             Actualizar Vista
+           </button>
+           <button
+             id="clear-editor-btn"
+             class="px-6 py-3 cursor-pointer bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition shadow-md hover:shadow-lg w-full sm:w-auto flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:hover:bg-gray-400 disabled:cursor-not-allowed"
+           >
+             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+               <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-9l-1 1H5v2h14V4z"/>
+             </svg>
+             Limpiar
+           </button>
         </div>
       </div>
 
       <!-- Preview Tab Content -->
       <div data-tab-content="preview" class="hidden">
-        <div class="bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-lg overflow-hidden" style="min-height: 400px;">
-          <iframe
-            id="raw-preview"
-            sandbox="allow-scripts allow-forms allow-modals allow-same-origin"
-            class="w-full h-full border-none"
-            style="min-height: 400px;"
-          ></iframe>
+         <!-- Height Slider -->
+         <div
+           class="mb-6 bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-lg p-4"
+         >
+           <div class="flex items-center gap-4 flex-wrap">
+             <label
+               for="preview-height-slider"
+               class="font-semibold text-zinc-700 dark:text-zinc-300 whitespace-nowrap flex items-center gap-2"
+             >
+               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                 <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5.04-6.71l-2.75 3.54h3.58c.77 0 1.38.61 1.38 1.38s-.61 1.38-1.38 1.38H9.5v-1.5h3.58l-2.75-3.54c-.54-.68-.54-1.62 0-2.3l2.75-3.54H9.5V7h3.58c.77 0 1.38.61 1.38 1.38s-.61 1.38-1.38 1.38H9.04l2.96 3.79z"/>
+               </svg>
+               Altura del iframe:
+             </label>
+            </label>
+             <input
+               id="preview-height-slider"
+               type="range"
+               min="200"
+               max="1000"
+               value="600"
+               class="flex-1 min-w-[150px] h-2 bg-zinc-300 dark:bg-zinc-600 rounded-lg appearance-none cursor-pointer"
+               style="accent-color: #a855f7;"
+             />
+             <span
+               id="preview-height-value"
+               class="font-semibold text-purple-600 dark:text-purple-400 min-w-[60px] text-right"
+             >
+               600px
+             </span>
+          </div>
         </div>
 
-        <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-4 text-center">
-          💡 Esta es una vista previa directa de tu HTML. Para ver cómo se vería en Moodle, ve a la pestaña "Simulador Moodle".
-        </p>
+         <div
+           class="bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-lg overflow-hidden"
+           style="min-height: 400px;"
+         >
+           <iframe
+             id="raw-preview"
+             sandbox="allow-scripts allow-forms allow-modals allow-same-origin"
+             class="w-full border-none"
+             style="height: 600px;"></iframe>
+         </div>
+
+         <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-4 text-center flex items-center justify-center gap-2">
+           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+           </svg>
+           Esta es una vista previa directa de tu HTML. Para ver cómo se vería
+           en Moodle, ve a la pestaña "Simulador Moodle".
+         </p>
       </div>
 
       <!-- Moodle Simulator Tab Content -->
       <div data-tab-content="moodle" class="hidden">
-        <!-- Theme Selector -->
-        <div class="flex flex-wrap gap-3 mb-6">
-          <button
-            data-theme="klass"
-            class="px-4 py-2 rounded-lg font-semibold border-2 border-purple-600 bg-purple-600 text-white transition theme-btn active"
-          >
-            🎨 Klass
-          </button>
-          <button
-            data-theme="boost"
-            class="px-4 py-2 rounded-lg font-semibold border-2 border-zinc-300 dark:border-zinc-600 text-zinc-700 dark:text-zinc-300 hover:border-purple-600 dark:hover:border-purple-400 transition theme-btn"
-          >
-            🎨 Boost
-          </button>
-          <button
-            data-theme="moove"
-            class="px-4 py-2 rounded-lg font-semibold border-2 border-zinc-300 dark:border-zinc-600 text-zinc-700 dark:text-zinc-300 hover:border-purple-600 dark:hover:border-purple-400 transition theme-btn"
-          >
-            🎨 Moove
-          </button>
-          <button
-            data-theme="adaptable"
-            class="px-4 py-2 rounded-lg font-semibold border-2 border-zinc-300 dark:border-zinc-600 text-zinc-700 dark:text-zinc-300 hover:border-purple-600 dark:hover:border-purple-400 transition theme-btn"
-          >
-            🎨 Adaptable
-          </button>
+         <!-- Theme Selector -->
+         <div class="flex flex-wrap gap-3 mb-6">
+           <button
+             data-theme="klass"
+             class="px-4 py-2 rounded-lg font-semibold border-2 border-purple-600 bg-purple-600 text-white transition theme-btn active flex items-center gap-2"
+           >
+             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+             </svg>
+             Klass
+           </button>
+           <button
+             data-theme="boost"
+             class="px-4 py-2 rounded-lg font-semibold border-2 border-zinc-300 dark:border-zinc-600 text-zinc-700 dark:text-zinc-300 hover:border-purple-600 dark:hover:border-purple-400 transition theme-btn flex items-center gap-2"
+           >
+             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+             </svg>
+             Boost
+           </button>
+           <button
+             data-theme="moove"
+             class="px-4 py-2 rounded-lg font-semibold border-2 border-zinc-300 dark:border-zinc-600 text-zinc-700 dark:text-zinc-300 hover:border-purple-600 dark:hover:border-purple-400 transition theme-btn flex items-center gap-2"
+           >
+             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+             </svg>
+             Moove
+           </button>
+           <button
+             data-theme="adaptable"
+             class="px-4 py-2 rounded-lg font-semibold border-2 border-zinc-300 dark:border-zinc-600 text-zinc-700 dark:text-zinc-300 hover:border-purple-600 dark:hover:border-purple-400 transition theme-btn flex items-center gap-2"
+           >
+             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+             </svg>
+             Adaptable
+           </button>
+         </div>
+
+         <!-- Height Slider for Moodle -->
+         <div
+           class="mb-6 bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-lg p-4"
+         >
+           <div class="flex items-center gap-4 flex-wrap">
+             <label
+               for="moodle-height-slider"
+               class="font-semibold text-zinc-700 dark:text-zinc-300 whitespace-nowrap flex items-center gap-2"
+             >
+               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                 <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5.04-6.71l-2.75 3.54h3.58c.77 0 1.38.61 1.38 1.38s-.61 1.38-1.38 1.38H9.5v-1.5h3.58l-2.75-3.54c-.54-.68-.54-1.62 0-2.3l2.75-3.54H9.5V7h3.58c.77 0 1.38.61 1.38 1.38s-.61 1.38-1.38 1.38H9.04l2.96 3.79z"/>
+               </svg>
+               Altura del iframe:
+            </label>
+             <input
+               id="moodle-height-slider"
+               type="range"
+               min="200"
+               max="1000"
+               value="600"
+               class="flex-1 min-w-[150px] h-2 bg-zinc-300 dark:bg-zinc-600 rounded-lg appearance-none cursor-pointer"
+               style="accent-color: #a855f7;"
+             />
+             <span
+               id="moodle-height-value"
+               class="font-semibold text-purple-600 dark:text-purple-400 min-w-[60px] text-right"
+             >
+               600px
+             </span>
+          </div>
         </div>
 
         <!-- Simulator Container -->
-        <div class="bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-lg overflow-hidden" style="min-height: 500px;">
+        <div
+          class="bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-lg overflow-hidden"
+          style="min-height: 500px;"
+        >
           <!-- Klass Theme -->
-          <div id="theme-klass" class="moodle-theme-preview hidden w-full h-full overflow-y-auto" style="min-height: 500px;">
-            <div style="background: #f1f1f1; font-family: 'Open Sans', 'Segoe UI', sans-serif; font-size: 13px; display: flex; flex-direction: column; min-height: 100%;">
-              <div style="background: #009fe5; height: 56px; display: flex; align-items: center; padding: 0 20px; justify-content: space-between; flex-shrink: 0;">
+          <div
+            id="theme-klass"
+            class="moodle-theme-preview hidden w-full h-full overflow-y-auto"
+            style="min-height: 500px;"
+          >
+            <div
+              style="background: #f1f1f1; font-family: 'Open Sans', 'Segoe UI', sans-serif; font-size: 13px; display: flex; flex-direction: column; min-height: 100%;"
+            >
+              <div
+                style="background: #009fe5; height: 56px; display: flex; align-items: center; padding: 0 20px; justify-content: space-between; flex-shrink: 0;"
+              >
                 <div style="display: flex; align-items: center; gap: 10px;">
-                  <div style="width: 36px; height: 36px; background: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 900; color: #009fe5;">M</div>
-                  <div style="color: white; font-size: 18px; font-weight: 700;">Mi Plataforma Educativa</div>
+                  <div
+                    style="width: 36px; height: 36px; background: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 900; color: #009fe5;"
+                  >
+                    C
+                  </div>
+                  <div style="color: white; font-size: 18px; font-weight: 700;">
+                    CLA Moodle
+                  </div>
                 </div>
               </div>
-              <div style="background: #2c3e50; height: 40px; display: flex; align-items: center; padding: 0 20px; gap: 2px; flex-shrink: 0;">
-                <a href="#" style="color: rgba(255, 255, 255, 0.75); text-decoration: none; font-size: 12.5px; padding: 0 14px; height: 40px; display: flex; align-items: center; border-bottom: 3px solid transparent; font-weight: 500;">Inicio del sitio</a>
-                <a href="#" style="color: #009fe5; text-decoration: none; font-size: 12.5px; padding: 0 14px; height: 40px; display: flex; align-items: center; border-bottom: 3px solid #009fe5; font-weight: 500;">Mis cursos</a>
+              <div
+                style="background: #2c3e50; height: 40px; display: flex; align-items: center; padding: 0 20px; gap: 2px; flex-shrink: 0;"
+              >
+                <a
+                  href="#"
+                  style="color: rgba(255, 255, 255, 0.75); text-decoration: none; font-size: 12.5px; padding: 0 14px; height: 40px; display: flex; align-items: center; border-bottom: 3px solid transparent; font-weight: 500;"
+                  >Inicio del sitio</a
+                >
+                <a
+                  href="#"
+                  style="color: #009fe5; text-decoration: none; font-size: 12.5px; padding: 0 14px; height: 40px; display: flex; align-items: center; border-bottom: 3px solid #009fe5; font-weight: 500;"
+                  >Mis cursos</a
+                >
               </div>
-              <div style="background: white; padding: 4px 24px 10px; border-bottom: 1px solid #dde3e9; flex-shrink: 0;">
-                <div style="font-size: 11.5px; color: #888; display: flex; align-items: center; gap: 4px; margin-bottom: 6px;">
-                  <a href="#" style="color: #009fe5; text-decoration: none;">Inicio</a> › <a href="#" style="color: #009fe5; text-decoration: none;">Mis cursos</a> › Recurso incrustado
+              <div
+                style="background: white; padding: 4px 24px 10px; border-bottom: 1px solid #dde3e9; flex-shrink: 0;"
+              >
+                <div
+                  style="font-size: 11.5px; color: #888; display: flex; align-items: center; gap: 4px; margin-bottom: 6px;"
+                >
+                  <a href="#" style="color: #009fe5; text-decoration: none;"
+                    >Inicio</a
+                  > › <a href="#" style="color: #009fe5; text-decoration: none;"
+                    >Mis cursos</a
+                  > › Recurso incrustado
                 </div>
                 <div style="display: flex; align-items: center; gap: 12px;">
-                  <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #009fe5, #0077b5); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">🔗</div>
+                   <div
+                     style="width: 40px; height: 40px; background: linear-gradient(135deg, #009fe5, #0077b5); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;"
+                   >
+                     <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                       <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/>
+                     </svg>
+                   </div>
                   <div>
-                    <div style="font-size: 17px; font-weight: 700; color: #2c3e50;">Recurso incrustado</div>
-                    <div style="font-size: 11px; color: #999; margin-top: 2px;">Herramientas y recursos digitales</div>
+                    <div
+                      style="font-size: 17px; font-weight: 700; color: #2c3e50;"
+                    >
+                      Recurso incrustado
+                    </div>
+                    <div style="font-size: 11px; color: #999; margin-top: 2px;">
+                      Herramientas y recursos digitales
+                    </div>
                   </div>
                 </div>
               </div>
               <div style="flex: 1; padding: 18px 24px;">
-                <div style="background: white; border: 1px solid #dde3e9; border-radius: 4px; overflow: hidden;">
-                  <div style="background: #f7f9fb; border-bottom: 1px solid #dde3e9; padding: 7px 14px; display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: #666;">
-                    🔗 Contenido incrustado <span style="margin-left: auto; width: 7px; height: 7px; background: #27ae60; border-radius: 50%; display: inline-block;"></span>
-                  </div>
-                  <iframe
-                    id="klass-preview"
-                    sandbox="allow-scripts allow-forms allow-modals allow-same-origin"
-                    class="w-full border-none"
-                    height="400"
-                  ></iframe>
+                <div
+                  style="background: white; border: 1px solid #dde3e9; border-radius: 4px; overflow: hidden;"
+                >
+                   <div
+                     style="background: #f7f9fb; border-bottom: 1px solid #dde3e9; padding: 7px 14px; display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: #666;"
+                   >
+                     <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                       <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/>
+                     </svg>
+                     Contenido incrustado <span
+                       style="margin-left: auto; width: 7px; height: 7px; background: #27ae60; border-radius: 50%; display: inline-block;"
+                     ></span>
+                   </div>
+                   <iframe
+                     id="klass-preview"
+                     sandbox="allow-scripts allow-forms allow-modals allow-same-origin"
+                     class="w-full border-none"
+                     height="600"></iframe>
                 </div>
               </div>
             </div>
           </div>
 
           <!-- Boost Theme -->
-          <div id="theme-boost" class="moodle-theme-preview hidden w-full h-full overflow-y-auto" style="min-height: 500px;">
-            <div style="background: #f8f8f8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; display: flex; flex-direction: column; min-height: 100%;">
-              <div style="background: #fff; height: 56px; border-bottom: 1px solid #dee2e6; display: flex; align-items: center; padding: 0 20px; gap: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06); flex-shrink: 0;">
-                <div style="width: 34px; height: 34px; background: #1177d1; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 17px;">M</div>
-                <div style="font-size: 16px; font-weight: 600; color: #1a1a1a;">Mi Plataforma Educativa</div>
+          <div
+            id="theme-boost"
+            class="moodle-theme-preview hidden w-full h-full overflow-y-auto"
+            style="min-height: 500px;"
+          >
+            <div
+              style="background: #f8f8f8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; display: flex; flex-direction: column; min-height: 100%;"
+            >
+              <div
+                style="background: #fff; height: 56px; border-bottom: 1px solid #dee2e6; display: flex; align-items: center; padding: 0 20px; gap: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06); flex-shrink: 0;"
+              >
+                <div
+                  style="width: 34px; height: 34px; background: #1177d1; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 17px;"
+                >
+                  C
+                </div>
+                <div style="font-size: 16px; font-weight: 600; color: #1a1a1a;">
+                  CLA Moodle
+                </div>
               </div>
-              <div style="background: white; border-bottom: 1px solid #dee2e6; padding: 7px 20px; font-size: 12px; color: #6c757d; display: flex; gap: 4px; flex-wrap: wrap; flex-shrink: 0;">
-                <a href="#" style="color: #1177d1; text-decoration: none;">Inicio</a> › <a href="#" style="color: #1177d1; text-decoration: none;">Mis cursos</a> › Recurso incrustado
+              <div
+                style="background: white; border-bottom: 1px solid #dee2e6; padding: 7px 20px; font-size: 12px; color: #6c757d; display: flex; gap: 4px; flex-wrap: wrap; flex-shrink: 0;"
+              >
+                <a href="#" style="color: #1177d1; text-decoration: none;"
+                  >Inicio</a
+                > › <a href="#" style="color: #1177d1; text-decoration: none;"
+                  >Mis cursos</a
+                > › Recurso incrustado
               </div>
-              <div style="background: white; border-bottom: 1px solid #dee2e6; padding: 14px 20px; display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
-                <div style="width: 40px; height: 40px; background: #1177d1; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">🔗</div>
+              <div
+                style="background: white; border-bottom: 1px solid #dee2e6; padding: 14px 20px; display: flex; align-items: center; gap: 12px; flex-shrink: 0;"
+              >
+                 <div
+                   style="width: 40px; height: 40px; background: #1177d1; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;"
+                 >
+                   <svg width="24" height="24" fill="white" viewBox="0 0 24 24">
+                     <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/>
+                   </svg>
+                 </div>
                 <div>
-                  <div style="font-size: 18px; font-weight: 600; color: #212529;">Recurso incrustado</div>
-                  <div style="font-size: 12px; color: #6c757d; margin-top: 2px;">Herramientas y recursos digitales</div>
+                  <div
+                    style="font-size: 18px; font-weight: 600; color: #212529;"
+                  >
+                    Recurso incrustado
+                  </div>
+                  <div
+                    style="font-size: 12px; color: #6c757d; margin-top: 2px;"
+                  >
+                    Herramientas y recursos digitales
+                  </div>
                 </div>
               </div>
               <div style="flex: 1; padding: 18px 20px;">
-                <div style="background: white; border: 1px solid #dee2e6; border-radius: 6px; overflow: hidden;">
-                  <div style="padding: 9px 14px; border-bottom: 1px solid #dee2e6; font-size: 12px; color: #6c757d; display: flex; align-items: center; gap: 6px;">🔗 Contenido incrustado</div>
-                  <iframe
-                    id="boost-preview"
-                    sandbox="allow-scripts allow-forms allow-modals allow-same-origin"
-                    class="w-full border-none"
-                    height="400"
-                  ></iframe>
+                <div
+                  style="background: white; border: 1px solid #dee2e6; border-radius: 6px; overflow: hidden;"
+                >
+                   <div
+                     style="padding: 9px 14px; border-bottom: 1px solid #dee2e6; font-size: 12px; color: #6c757d; display: flex; align-items: center; gap: 6px;"
+                   >
+                     <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                       <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/>
+                     </svg>
+                     Contenido incrustado
+                   </div>
+                   <iframe
+                     id="boost-preview"
+                     sandbox="allow-scripts allow-forms allow-modals allow-same-origin"
+                     class="w-full border-none"
+                     height="600"></iframe>
                 </div>
               </div>
             </div>
           </div>
 
           <!-- Moove Theme -->
-          <div id="theme-moove" class="moodle-theme-preview hidden w-full h-full overflow-y-auto" style="min-height: 500px;">
-            <div style="background: #f5f5f5; font-family: 'Roboto', 'Segoe UI', sans-serif; font-size: 14px; display: flex; flex-direction: column; min-height: 100%;">
-              <div style="background: white; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); padding: 0 24px; height: 64px; display: flex; align-items: center; gap: 16px; flex-shrink: 0;">
+          <div
+            id="theme-moove"
+            class="moodle-theme-preview hidden w-full h-full overflow-y-auto"
+            style="min-height: 500px;"
+          >
+            <div
+              style="background: #f5f5f5; font-family: 'Roboto', 'Segoe UI', sans-serif; font-size: 14px; display: flex; flex-direction: column; min-height: 100%;"
+            >
+              <div
+                style="background: white; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); padding: 0 24px; height: 64px; display: flex; align-items: center; gap: 16px; flex-shrink: 0;"
+              >
                 <div style="display: flex; align-items: center; gap: 10px;">
-                  <div style="width: 38px; height: 38px; background: linear-gradient(135deg, #0e6d99, #0ba3c8); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 18px;">M</div>
-                  <div style="font-size: 17px; font-weight: 700; color: #2d2d2d;">Mi Plataforma Educativa</div>
+                  <div
+                    style="width: 38px; height: 38px; background: linear-gradient(135deg, #0e6d99, #0ba3c8); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 18px;"
+                  >
+                    C
+                  </div>
+                  <div
+                    style="font-size: 17px; font-weight: 700; color: #2d2d2d;"
+                  >
+                    CLA Moodle
+                  </div>
                 </div>
               </div>
-              <div style="background: linear-gradient(135deg, #0e6d99, #0ba3c8); padding: 16px 24px; color: white; flex-shrink: 0;">
-                <div style="font-size: 11px; opacity: 0.72; margin-bottom: 6px; display: flex; gap: 4px; flex-wrap: wrap;">
-                  <a href="#" style="color: rgba(255, 255, 255, 0.88); text-decoration: none;">Inicio</a> › <a href="#" style="color: rgba(255, 255, 255, 0.88); text-decoration: none;">Diseño Instruccional</a> › Recurso incrustado
+              <div
+                style="background: linear-gradient(135deg, #0e6d99, #0ba3c8); padding: 16px 24px; color: white; flex-shrink: 0;"
+              >
+                <div
+                  style="font-size: 11px; opacity: 0.72; margin-bottom: 6px; display: flex; gap: 4px; flex-wrap: wrap;"
+                >
+                  <a
+                    href="#"
+                    style="color: rgba(255, 255, 255, 0.88); text-decoration: none;"
+                    >Inicio</a
+                  > › <a
+                    href="#"
+                    style="color: rgba(255, 255, 255, 0.88); text-decoration: none;"
+                    >Diseño Instruccional</a
+                  > › Recurso incrustado
                 </div>
-                <div style="display: flex; align-items: center; gap: 10px;">
-                  <span style="font-size: 22px;">🔗</span>
-                  <span style="font-size: 19px; font-weight: 700;">Recurso incrustado</span>
-                </div>
+                 <div style="display: flex; align-items: center; gap: 10px;">
+                   <span style="font-size: 22px;">
+                     <svg width="24" height="24" fill="white" viewBox="0 0 24 24">
+                       <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/>
+                     </svg>
+                   </span>
+                   <span style="font-size: 19px; font-weight: 700;"
+                     >Recurso incrustado</span
+                   >
+                 </div>
               </div>
               <div style="flex: 1; padding: 18px 24px;">
-                <div style="background: white; border-radius: 8px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08); overflow: hidden;">
-                  <div style="padding: 10px 16px; border-bottom: 1px solid #f0f0f0; font-size: 12px; color: #757575; display: flex; align-items: center; gap: 6px;">🔗 Contenido incrustado</div>
-                  <iframe
-                    id="moove-preview"
-                    sandbox="allow-scripts allow-forms allow-modals allow-same-origin"
-                    class="w-full border-none"
-                    height="400"
-                  ></iframe>
+                <div
+                  style="background: white; border-radius: 8px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08); overflow: hidden;"
+                >
+                   <div
+                     style="padding: 10px 16px; border-bottom: 1px solid #f0f0f0; font-size: 12px; color: #757575; display: flex; align-items: center; gap: 6px;"
+                   >
+                     <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                       <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/>
+                     </svg>
+                     Contenido incrustado
+                   </div>
+                   <iframe
+                     id="moove-preview"
+                     sandbox="allow-scripts allow-forms allow-modals allow-same-origin"
+                     class="w-full border-none"
+                     height="600"></iframe>
                 </div>
               </div>
             </div>
           </div>
 
           <!-- Adaptable Theme -->
-          <div id="theme-adaptable" class="moodle-theme-preview hidden w-full h-full overflow-y-auto" style="min-height: 500px;">
-            <div style="background: #eef0f4; font-family: 'Open Sans', 'Segoe UI', sans-serif; font-size: 13px; display: flex; flex-direction: column; min-height: 100%;">
-              <div style="background: #1a2238; padding: 0 20px; height: 60px; display: flex; align-items: center; gap: 14px; flex-shrink: 0;">
+          <div
+            id="theme-adaptable"
+            class="moodle-theme-preview hidden w-full h-full overflow-y-auto"
+            style="min-height: 500px;"
+          >
+            <div
+              style="background: #eef0f4; font-family: 'Open Sans', 'Segoe UI', sans-serif; font-size: 13px; display: flex; flex-direction: column; min-height: 100%;"
+            >
+              <div
+                style="background: #1a2238; padding: 0 20px; height: 60px; display: flex; align-items: center; gap: 14px; flex-shrink: 0;"
+              >
                 <div style="display: flex; align-items: center; gap: 10px;">
-                  <div style="width: 38px; height: 38px; background: #ff6b35; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 19px;">M</div>
-                  <div style="color: white; font-size: 16px; font-weight: 700;">Mi Plataforma Educativa</div>
+                  <div
+                    style="width: 38px; height: 38px; background: #ff6b35; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 19px;"
+                  >
+                    C
+                  </div>
+                  <div style="color: white; font-size: 16px; font-weight: 700;">
+                    CLA Moodle
+                  </div>
                 </div>
               </div>
-              <div style="background: #253151; padding: 10px 20px; border-bottom: 3px solid #ff6b35; flex-shrink: 0;">
-                <div style="font-size: 11px; color: rgba(255, 255, 255, 0.5); margin-bottom: 5px;">
-                  <a href="#" style="color: rgba(255, 255, 255, 0.72); text-decoration: none;">Inicio</a> › <a href="#" style="color: rgba(255, 255, 255, 0.72); text-decoration: none;">Mis cursos</a> › Recurso incrustado
+              <div
+                style="background: #253151; padding: 10px 20px; border-bottom: 3px solid #ff6b35; flex-shrink: 0;"
+              >
+                <div
+                  style="font-size: 11px; color: rgba(255, 255, 255, 0.5); margin-bottom: 5px;"
+                >
+                  <a
+                    href="#"
+                    style="color: rgba(255, 255, 255, 0.72); text-decoration: none;"
+                    >Inicio</a
+                  > › <a
+                    href="#"
+                    style="color: rgba(255, 255, 255, 0.72); text-decoration: none;"
+                    >Mis cursos</a
+                  > › Recurso incrustado
                 </div>
                 <div style="display: flex; align-items: center; gap: 10px;">
-                  <div style="width: 38px; height: 38px; background: #ff6b35; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 19px; flex-shrink: 0;">🔗</div>
+                   <div
+                     style="width: 38px; height: 38px; background: #ff6b35; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 19px; flex-shrink: 0;"
+                   >
+                     <svg width="24" height="24" fill="white" viewBox="0 0 24 24">
+                       <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/>
+                     </svg>
+                   </div>
                   <div>
-                    <div style="color: white; font-size: 17px; font-weight: 700;">Recurso incrustado</div>
-                    <div style="font-size: 11px; color: rgba(255, 255, 255, 0.6); margin-top: 2px;">Herramientas y recursos digitales</div>
+                    <div
+                      style="color: white; font-size: 17px; font-weight: 700;"
+                    >
+                      Recurso incrustado
+                    </div>
+                    <div
+                      style="font-size: 11px; color: rgba(255, 255, 255, 0.6); margin-top: 2px;"
+                    >
+                      Herramientas y recursos digitales
+                    </div>
                   </div>
                 </div>
               </div>
               <div style="flex: 1; padding: 16px 20px;">
-                <div style="background: white; border-radius: 4px; border: 1px solid #dde1e9; overflow: hidden;">
-                  <div style="background: #f7f8fb; border-bottom: 1px solid #dde1e9; padding: 8px 14px; font-size: 12px; color: #666; display: flex; align-items: center; gap: 6px;">🔗 Contenido incrustado</div>
-                  <iframe
-                    id="adapt-preview"
-                    sandbox="allow-scripts allow-forms allow-modals allow-same-origin"
-                    class="w-full border-none"
-                    height="400"
-                  ></iframe>
+                <div
+                  style="background: white; border-radius: 4px; border: 1px solid #dde1e9; overflow: hidden;"
+                >
+                   <div
+                     style="background: #f7f8fb; border-bottom: 1px solid #dde1e9; padding: 8px 14px; font-size: 12px; color: #666; display: flex; align-items: center; gap: 6px;"
+                   >
+                     <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                       <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/>
+                     </svg>
+                     Contenido incrustado
+                   </div>
+                   <iframe
+                     id="adapt-preview"
+                     sandbox="allow-scripts allow-forms allow-modals allow-same-origin"
+                     class="w-full border-none"
+                     height="600"></iframe>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-4 text-center">
-          💡 Selecciona un tema para ver cómo se vería tu contenido en Moodle.
-        </p>
+         <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-4 text-center flex items-center justify-center gap-2">
+           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+           </svg>
+           Selecciona un tema para ver cómo se vería tu contenido en Moodle.
+         </p>
       </div>
 
-      <!-- Success Message -->
-      <div
-        id="success-message"
-        class="hidden fixed bottom-8 right-8 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg font-semibold animate-fade-in z-50"
-      >
-        ✅ ¡Actualización completada!
-      </div>
+       <!-- Success Message -->
+       <div
+         id="success-message"
+         class="hidden fixed bottom-8 right-8 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg font-semibold animate-fade-in z-50 flex items-center gap-2"
+       >
+         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+           <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+         </svg>
+         ¡Actualización completada!
+       </div>
     </div>
   </div>
 
@@ -291,113 +599,237 @@ import moodlePlaygroundScript from "@assets/scripts/moodle-playground.js?raw";
 
 <script is:inline define:vars={{ moodlePlaygroundScript }}>
   eval(moodlePlaygroundScript);
-  
+
   // Tab switching functionality
-  const tabButtons = document.querySelectorAll('[data-tab]');
-  const tabContents = document.querySelectorAll('[data-tab-content]');
-  
-  tabButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      const tabName = button.getAttribute('data-tab');
-      
+  const tabButtons = document.querySelectorAll("[data-tab]");
+  const tabContents = document.querySelectorAll("[data-tab-content]");
+
+  tabButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const tabName = button.getAttribute("data-tab");
+
       // Remove active state from all buttons
-      tabButtons.forEach(btn => {
-        btn.classList.remove('border-purple-600', 'text-purple-600', 'dark:border-purple-400', 'dark:text-purple-400');
-        btn.classList.add('border-transparent', 'text-zinc-600', 'dark:text-zinc-400');
+      tabButtons.forEach((btn) => {
+        btn.classList.remove(
+          "border-purple-600",
+          "text-purple-600",
+          "dark:border-purple-400",
+          "dark:text-purple-400",
+        );
+        btn.classList.add(
+          "border-transparent",
+          "text-zinc-600",
+          "dark:text-zinc-400",
+        );
       });
-      
+
       // Hide all tab contents
-      tabContents.forEach(content => {
-        content.classList.add('hidden');
+      tabContents.forEach((content) => {
+        content.classList.add("hidden");
       });
-      
+
       // Activate current button
-      button.classList.remove('border-transparent', 'text-zinc-600', 'dark:text-zinc-400');
-      button.classList.add('border-purple-600', 'text-purple-600', 'dark:border-purple-400', 'dark:text-purple-400');
-      
+      button.classList.remove(
+        "border-transparent",
+        "text-zinc-600",
+        "dark:text-zinc-400",
+      );
+      button.classList.add(
+        "border-purple-600",
+        "text-purple-600",
+        "dark:border-purple-400",
+        "dark:text-purple-400",
+      );
+
       // Show current tab content
-      document.querySelector(`[data-tab-content="${tabName}"]`).classList.remove('hidden');
+      document
+        .querySelector(`[data-tab-content="${tabName}"]`)
+        .classList.remove("hidden");
     });
   });
-  
+
   // Theme switching functionality for Moodle simulator
-  const themeButtons = document.querySelectorAll('.theme-btn');
-  const themePreviews = document.querySelectorAll('.moodle-theme-preview');
-  
-  themeButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      const themeName = button.getAttribute('data-theme');
-      
+  const themeButtons = document.querySelectorAll(".theme-btn");
+  const themePreviews = document.querySelectorAll(".moodle-theme-preview");
+
+  themeButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const themeName = button.getAttribute("data-theme");
+
       // Remove active state from all buttons
-      themeButtons.forEach(btn => {
-        btn.classList.remove('bg-purple-600', 'border-purple-600', 'text-white');
-        btn.classList.add('border-zinc-300', 'dark:border-zinc-600', 'text-zinc-700', 'dark:text-zinc-300');
+      themeButtons.forEach((btn) => {
+        btn.classList.remove(
+          "bg-purple-600",
+          "border-purple-600",
+          "text-white",
+        );
+        btn.classList.add(
+          "border-zinc-300",
+          "dark:border-zinc-600",
+          "text-zinc-700",
+          "dark:text-zinc-300",
+        );
       });
-      
+
       // Hide all theme previews
-      themePreviews.forEach(preview => {
-        preview.classList.add('hidden');
+      themePreviews.forEach((preview) => {
+        preview.classList.add("hidden");
       });
-      
+
       // Activate current button
-      button.classList.remove('border-zinc-300', 'dark:border-zinc-600', 'text-zinc-700', 'dark:text-zinc-300');
-      button.classList.add('bg-purple-600', 'border-purple-600', 'text-white');
-      
+      button.classList.remove(
+        "border-zinc-300",
+        "dark:border-zinc-600",
+        "text-zinc-700",
+        "dark:text-zinc-300",
+      );
+      button.classList.add("bg-purple-600", "border-purple-600", "text-white");
+
       // Show current theme preview
-      document.getElementById(`theme-${themeName}`).classList.remove('hidden');
-      
+      document.getElementById(`theme-${themeName}`).classList.remove("hidden");
+
       // Update iframes with content
-      const content = document.getElementById('iframe-input').value;
+      const content = document.getElementById("iframe-input").value;
       const iframeId = `${themeName}-preview`;
       const iframe = document.getElementById(iframeId);
       if (iframe) {
-        iframe.srcdoc = content || '<p style="color: #999; padding: 20px;">No hay contenido</p>';
+        iframe.srcdoc =
+          content ||
+          '<p style="color: #999; padding: 20px;">No hay contenido</p>';
       }
     });
   });
-  
-  // Update preview button handler
-  document.getElementById('update-preview-btn').addEventListener('click', () => {
-    const content = document.getElementById('iframe-input').value;
-    const rawPreview = document.getElementById('raw-preview');
-    
-    // Update raw preview
-    if (rawPreview) {
-      rawPreview.srcdoc = content || '<p style="color: #999; padding: 20px;">No hay contenido</p>';
-    }
-    
-    // Update all moodle theme previews
-    const iframeIds = ['klass-preview', 'boost-preview', 'moove-preview', 'adapt-preview'];
-    iframeIds.forEach(id => {
-      const iframe = document.getElementById(id);
-      if (iframe) {
-        iframe.srcdoc = content || '<p style="color: #999; padding: 20px;">No hay contenido</p>';
-      }
-    });
-    
-    // Show success message
-    const successMsg = document.getElementById('success-message');
-    successMsg.classList.remove('hidden');
-    setTimeout(() => {
-      successMsg.classList.add('hidden');
-    }, 2000);
-  });
-  
-  // Clear editor button handler
-  document.getElementById('clear-editor-btn').addEventListener('click', () => {
-    document.getElementById('iframe-input').value = '';
-    const iframeIds = ['raw-preview', 'klass-preview', 'boost-preview', 'moove-preview', 'adapt-preview'];
-    iframeIds.forEach(id => {
-      const iframe = document.getElementById(id);
-      if (iframe) {
-        iframe.srcdoc = '';
-      }
-    });
-  });
-  
+
+   // Update preview button handler
+   document
+     .getElementById("update-preview-btn")
+     .addEventListener("click", () => {
+       const content = document.getElementById("iframe-input").value;
+       const rawPreview = document.getElementById("raw-preview");
+
+       // Update raw preview
+       if (rawPreview) {
+         rawPreview.srcdoc =
+           content ||
+           '<p style="color: #999; padding: 20px;">No hay contenido</p>';
+       }
+
+       // Update all moodle theme previews
+       const iframeIds = [
+         "klass-preview",
+         "boost-preview",
+         "moove-preview",
+         "adapt-preview",
+       ];
+       iframeIds.forEach((id) => {
+         const iframe = document.getElementById(id);
+         if (iframe) {
+           iframe.srcdoc =
+             content ||
+             '<p style="color: #999; padding: 20px;">No hay contenido</p>';
+         }
+       });
+
+       // Switch to moodle tab
+       const moodleTab = document.querySelector('[data-tab="moodle"]');
+       if (moodleTab) {
+         moodleTab.click();
+       }
+
+       // Scroll to moodle content
+       setTimeout(() => {
+         const moodleContainer = document.querySelector('[data-tab-content="moodle"]');
+         if (moodleContainer) {
+           moodleContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+         }
+       }, 100);
+
+       // Show success message
+       const successMsg = document.getElementById("success-message");
+       successMsg.classList.remove("hidden");
+       setTimeout(() => {
+         successMsg.classList.add("hidden");
+       }, 2000);
+     });
+
+   // Clear editor button handler
+   document.getElementById("clear-editor-btn").addEventListener("click", () => {
+     document.getElementById("iframe-input").value = "";
+     const iframeIds = [
+       "raw-preview",
+       "klass-preview",
+       "boost-preview",
+       "moove-preview",
+       "adapt-preview",
+     ];
+     iframeIds.forEach((id) => {
+       const iframe = document.getElementById(id);
+       if (iframe) {
+         iframe.srcdoc = "";
+       }
+     });
+     updateButtonStates();
+   });
+
+   // Update button states based on content
+   function updateButtonStates() {
+     const textarea = document.getElementById("iframe-input");
+     const updateBtn = document.getElementById("update-preview-btn");
+     const clearBtn = document.getElementById("clear-editor-btn");
+     
+     const hasContent = textarea.value.trim().length > 0;
+     
+     updateBtn.disabled = !hasContent;
+     clearBtn.disabled = !hasContent;
+   }
+
+   // Check button states on textarea input
+   document.getElementById("iframe-input").addEventListener("input", updateButtonStates);
+
+   // Initialize button states on page load
+   updateButtonStates();
+
   // Set initial active theme
-  const firstThemePreview = document.getElementById('theme-klass');
+  const firstThemePreview = document.getElementById("theme-klass");
   if (firstThemePreview) {
-    firstThemePreview.classList.remove('hidden');
+    firstThemePreview.classList.remove("hidden");
+  }
+
+  // Height slider functionality for preview tab
+  const previewHeightSlider = document.getElementById("preview-height-slider");
+  const previewHeightValue = document.getElementById("preview-height-value");
+  const rawPreviewIframe = document.getElementById("raw-preview");
+
+  if (previewHeightSlider) {
+    previewHeightSlider.addEventListener("input", (e) => {
+      const height = e.target.value;
+      previewHeightValue.textContent = height + "px";
+      if (rawPreviewIframe) {
+        rawPreviewIframe.style.height = height + "px";
+      }
+    });
+  }
+
+  // Height slider functionality for moodle tab
+  const moodleHeightSlider = document.getElementById("moodle-height-slider");
+  const moodleHeightValue = document.getElementById("moodle-height-value");
+  const iframeIds = [
+    "klass-preview",
+    "boost-preview",
+    "moove-preview",
+    "adapt-preview",
+  ];
+
+  if (moodleHeightSlider) {
+    moodleHeightSlider.addEventListener("input", (e) => {
+      const height = e.target.value;
+      moodleHeightValue.textContent = height + "px";
+      iframeIds.forEach((id) => {
+        const iframe = document.getElementById(id);
+        if (iframe) {
+          iframe.setAttribute("height", height);
+        }
+      });
+    });
   }
 </script>

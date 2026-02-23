@@ -1,236 +1,328 @@
 // ═══════════════════════════════════════════════════════════════════════════════
-// MOODLE PLAYGROUND - Script de Lógica Principal
+// MOODLE PLAYGROUND - Simulador de iframes en temas Moodle
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const THEMES = ['klass', 'boost', 'moove', 'adaptable'];
-let currentPreview = 'raw';
-let currentTheme = 'klass';
-let layout = 'split';
-let autoRunTimer = null;
+class MoodlePlayground {
+  constructor() {
+    this.THEMES = ['klass', 'boost', 'moove', 'adaptable'];
+    this.currentPreview = 'raw';
+    this.currentTheme = 'klass';
+    this.layout = 'split';
+    this.autoRunTimer = null;
 
-// Inicialización
-document.addEventListener('DOMContentLoaded', function () {
-  const editorElement = document.getElementById('ed-html');
-  if (editorElement) {
-    editorElement.value = `<iframe
+    // Inicializar cuando DOM está listo
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => this.init());
+    } else {
+      this.init();
+    }
+  }
+
+  init() {
+    this.bindElements();
+    this.attachEvents();
+    this.setupInitialContent();
+  }
+
+  /**
+   * Vincula elementos del DOM
+   */
+  bindElements() {
+    this.editorElement = document.getElementById('ed-html');
+    this.lineNumbersElement = document.getElementById('ln-html');
+    this.charCountElement = document.getElementById('char-count');
+    this.statusMsgElement = document.getElementById('status-msg');
+    this.rawPreview = document.getElementById('raw-preview');
+    this.workspace = document.getElementById('workspace');
+    this.editorPanel = document.getElementById('editor-panel');
+    this.previewPanel = document.getElementById('preview-panel');
+    this.resizeBar = document.getElementById('resize-bar');
+    this.themeControls = document.getElementById('theme-controls');
+    this.heightCtrl = document.getElementById('height-ctrl');
+  }
+
+  /**
+   * Vincula eventos a elementos
+   */
+  attachEvents() {
+    // Editor
+    if (this.editorElement) {
+      this.editorElement.addEventListener('input', () => this.updateLines());
+      this.editorElement.addEventListener('scroll', () => this.syncScroll());
+      this.editorElement.addEventListener('keydown', (e) => this.handleTab(e));
+    }
+
+    // Layout buttons
+    ['editor', 'split', 'preview'].forEach(layout => {
+      const btn = document.getElementById(`vbtn-${layout}`);
+      if (btn) {
+        btn.addEventListener('click', () => this.setLayout(layout));
+      }
+    });
+
+    // Preview mode buttons
+    const rawTab = document.getElementById('ptab-raw');
+    const moodleTab = document.getElementById('ptab-moodle');
+    if (rawTab) rawTab.addEventListener('click', () => this.setPreviewMode('raw'));
+    if (moodleTab) moodleTab.addEventListener('click', () => this.setPreviewMode('moodle'));
+
+    // Theme buttons
+    this.THEMES.forEach(theme => {
+      const btn = document.getElementById(`tbtn-${theme}`);
+      if (btn) {
+        btn.addEventListener('click', () => this.setTheme(theme));
+      }
+    });
+
+    // Height control
+    const heightRange = document.getElementById('h-range');
+    if (heightRange) {
+      heightRange.addEventListener('input', (e) => this.updateIframeHeight(e.target.value));
+    }
+
+    // Resize bar
+    if (this.resizeBar) {
+      this.resizeBar.addEventListener('mousedown', (e) => this.startResize(e));
+    }
+
+    // Clear button - buscar por el elemento que no tiene onclick
+    const clearBtn = Array.from(document.querySelectorAll('button')).find(btn => 
+      btn.textContent.includes('Limpiar') && btn.className.includes('mp-btn-outline')
+    );
+    const runBtn = Array.from(document.querySelectorAll('button')).find(btn => 
+      btn.textContent.includes('Ejecutar') && btn.className.includes('mp-btn-run')
+    );
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => this.clearAll());
+    }
+    if (runBtn) {
+      runBtn.addEventListener('click', () => this.runCode());
+    }
+  }
+
+  /**
+   * Configura el contenido inicial del editor
+   */
+  setupInitialContent() {
+    if (this.editorElement) {
+      this.editorElement.value = `<iframe
   src="https://es.wikipedia.org/wiki/Moodle"
   width="100%"
   height="500"
   style="border:none;"
   allowfullscreen>
 </iframe>`;
-    updateLines();
-    setTimeout(runCode, 150);
-  }
-});
-
-/**
- * Actualiza los números de línea y cuenta de caracteres
- */
-function updateLines() {
-  const ta = document.getElementById('ed-html');
-  const ln = document.getElementById('ln-html');
-  if (!ta || !ln) return;
-
-  ln.textContent = ta.value.split('\n').map((_, i) => i + 1).join('\n');
-  const charCount = document.getElementById('char-count');
-  if (charCount) {
-    charCount.textContent = ta.value.length + ' chars';
-  }
-
-  clearTimeout(autoRunTimer);
-  autoRunTimer = setTimeout(runCode, 900);
-}
-
-/**
- * Sincroniza el scroll entre editor y números de línea
- */
-function syncScroll() {
-  const ta = document.getElementById('ed-html');
-  const ln = document.getElementById('ln-html');
-  if (ta && ln) {
-    ln.scrollTop = ta.scrollTop;
-  }
-}
-
-/**
- * Maneja la tecla Tab en el editor
- */
-function handleTab(e) {
-  if (e.key !== 'Tab') return;
-  e.preventDefault();
-
-  const ta = e.target;
-  const s = ta.selectionStart;
-  ta.value = ta.value.slice(0, s) + '  ' + ta.value.slice(ta.selectionEnd);
-  ta.selectionStart = ta.selectionEnd = s + 2;
-  updateLines();
-}
-
-/**
- * Ejecuta y previsualiza el código HTML
- */
-function runCode() {
-  const html = document.getElementById('ed-html').value;
-  const src = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#fff;font-family:sans-serif}</style></head><body>${html}</body></html>`;
-
-  const url = URL.createObjectURL(new Blob([src], { type: 'text/html' }));
-
-  // Actualizar vista directa
-  const rawPreview = document.getElementById('raw-preview');
-  if (rawPreview) {
-    rawPreview.src = url;
-  }
-
-  // Actualizar todos los iframes de temas
-  THEMES.forEach(t => {
-    const f = document.getElementById(t + '-iframe');
-    if (f) f.src = url;
-  });
-
-  // Actualizar mensaje de estado
-  const sm = document.getElementById('status-msg');
-  if (sm) {
-    sm.className = 'ok';
-    sm.textContent = '● Ejecutado correctamente';
-  }
-}
-
-/**
- * Cambia el modo de previsualización
- */
-function setPreviewMode(mode) {
-  currentPreview = mode;
-  const isMoodle = mode === 'moodle';
-
-  const rawTab = document.getElementById('ptab-raw');
-  const moodleTab = document.getElementById('ptab-moodle');
-  const rawPreview = document.getElementById('raw-preview');
-  const themeControls = document.getElementById('theme-controls');
-  const heightCtrl = document.getElementById('height-ctrl');
-
-  if (rawTab) rawTab.classList.toggle('active', !isMoodle);
-  if (moodleTab) moodleTab.classList.toggle('active', isMoodle);
-  if (rawPreview) rawPreview.style.display = isMoodle ? 'none' : 'block';
-  if (themeControls) themeControls.style.display = isMoodle ? 'flex' : 'none';
-  if (heightCtrl) heightCtrl.style.display = isMoodle ? 'flex' : 'none';
-
-  THEMES.forEach(t => {
-    const themeWrap = document.getElementById('theme-' + t);
-    if (themeWrap) {
-      themeWrap.style.display = (isMoodle && t === currentTheme) ? 'block' : 'none';
+      this.updateLines();
+      setTimeout(() => this.runCode(), 150);
     }
-  });
-
-  runCode();
-}
-
-/**
- * Cambia el tema Moodle activo
- */
-function setTheme(theme) {
-  currentTheme = theme;
-  THEMES.forEach(t => {
-    const themeWrap = document.getElementById('theme-' + t);
-    const btn = document.getElementById('tbtn-' + t);
-
-    if (themeWrap) themeWrap.style.display = t === theme ? 'block' : 'none';
-    if (btn) btn.classList.toggle('active', t === theme);
-  });
-}
-
-/**
- * Actualiza la altura de los iframes
- */
-function updateIframeHeight(val) {
-  const valSpan = document.getElementById('ih-val');
-  if (valSpan) {
-    valSpan.textContent = val + 'px';
   }
 
-  THEMES.forEach(t => {
-    const f = document.getElementById(t + '-iframe');
-    if (f) f.height = val;
-  });
-}
+  /**
+   * Actualiza los números de línea y cuenta de caracteres
+   */
+  updateLines() {
+    if (!this.editorElement || !this.lineNumbersElement) return;
 
-/**
- * Cambia el layout (editor, split, preview)
- */
-function setLayout(l) {
-  layout = l;
+    this.lineNumbersElement.textContent = this.editorElement.value
+      .split('\n')
+      .map((_, i) => i + 1)
+      .join('\n');
 
-  // Actualizar botones de vista
-  ['editor', 'split', 'preview'].forEach(v => {
-    const btn = document.getElementById('vbtn-' + v);
-    if (btn) btn.classList.toggle('active', v === l);
-  });
+    if (this.charCountElement) {
+      this.charCountElement.textContent = this.editorElement.value.length + ' chars';
+    }
 
-  const ep = document.getElementById('editor-panel');
-  const pp = document.getElementById('preview-panel');
-  const rb = document.getElementById('resize-bar');
-
-  if (!ep || !pp || !rb) return;
-
-  // Reset classes
-  ep.className = 'editor-panel';
-  pp.className = 'preview-panel';
-  rb.style.display = 'block';
-
-  if (l === 'editor') {
-    ep.classList.add('full');
-    pp.classList.add('hidden');
-    rb.style.display = 'none';
-  } else if (l === 'preview') {
-    pp.classList.add('full');
-    ep.classList.add('hidden');
-    rb.style.display = 'none';
-  } else {
-    ep.style.width = '50%';
+    clearTimeout(this.autoRunTimer);
+    this.autoRunTimer = setTimeout(() => this.runCode(), 900);
   }
 
-  runCode();
-}
+  /**
+   * Sincroniza el scroll entre editor y números de línea
+   */
+  syncScroll() {
+    if (!this.editorElement || !this.lineNumbersElement) return;
+    this.lineNumbersElement.scrollTop = this.editorElement.scrollTop;
+  }
 
-/**
- * Inicia el redimensionamiento de paneles
- */
-function startResize(e) {
-  e.preventDefault();
+  /**
+   * Maneja la tecla Tab en el editor
+   */
+  handleTab(e) {
+    if (e.key !== 'Tab') return;
+    e.preventDefault();
 
-  const bar = document.getElementById('resize-bar');
-  const ws = document.getElementById('workspace');
-  const ep = document.getElementById('editor-panel');
+    const ta = this.editorElement;
+    const s = ta.selectionStart;
+    ta.value = ta.value.slice(0, s) + '  ' + ta.value.slice(ta.selectionEnd);
+    ta.selectionStart = ta.selectionEnd = s + 2;
+    this.updateLines();
+  }
 
-  if (!bar || !ws || !ep) return;
+  /**
+   * Ejecuta y previsualiza el código HTML
+   */
+  runCode() {
+    if (!this.editorElement) return;
 
-  bar.classList.add('dragging');
+    const html = this.editorElement.value;
+    const src = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#fff;font-family:sans-serif}</style></head><body>${html}</body></html>`;
 
-  const onMove = (ev) => {
-    const r = ws.getBoundingClientRect();
-    const newWidth = Math.min(Math.max(((ev.clientX - r.left) / r.width) * 100, 20), 80);
-    ep.style.width = newWidth + '%';
-  };
+    const url = URL.createObjectURL(new Blob([src], { type: 'text/html' }));
 
-  const onUp = () => {
-    bar.classList.remove('dragging');
-    document.removeEventListener('mousemove', onMove);
-    document.removeEventListener('mouseup', onUp);
-  };
+    // Actualizar vista directa
+    if (this.rawPreview) {
+      this.rawPreview.src = url;
+    }
 
-  document.addEventListener('mousemove', onMove);
-  document.addEventListener('mouseup', onUp);
-}
+    // Actualizar todos los iframes de temas
+    this.THEMES.forEach(theme => {
+      const iframe = document.getElementById(`${theme}-iframe`);
+      if (iframe) iframe.src = url;
+    });
 
-/**
- * Limpia todo el código
- */
-function clearAll() {
-  if (!confirm('¿Limpiar el código?')) return;
-  const ta = document.getElementById('ed-html');
-  if (ta) {
-    ta.value = '';
-    updateLines();
-    runCode();
+    // Actualizar mensaje de estado
+    if (this.statusMsgElement) {
+      this.statusMsgElement.className = 'mp-ok';
+      this.statusMsgElement.textContent = '● Ejecutado correctamente';
+    }
+  }
+
+  /**
+   * Cambia el modo de previsualización
+   */
+  setPreviewMode(mode) {
+    this.currentPreview = mode;
+    const isMoodle = mode === 'moodle';
+
+    // Actualizar tabs
+    const rawTab = document.getElementById('ptab-raw');
+    const moodleTab = document.getElementById('ptab-moodle');
+    if (rawTab) rawTab.classList.toggle('active', !isMoodle);
+    if (moodleTab) moodleTab.classList.toggle('active', isMoodle);
+
+    // Actualizar visibilidad
+    if (this.rawPreview) this.rawPreview.style.display = isMoodle ? 'none' : 'block';
+    if (this.themeControls) this.themeControls.style.display = isMoodle ? 'flex' : 'none';
+    if (this.heightCtrl) this.heightCtrl.style.display = isMoodle ? 'flex' : 'none';
+
+    // Mostrar/ocultar temas
+    this.THEMES.forEach(theme => {
+      const themeWrap = document.getElementById(`theme-${theme}`);
+      if (themeWrap) {
+        themeWrap.style.display = (isMoodle && theme === this.currentTheme) ? 'block' : 'none';
+      }
+    });
+
+    this.runCode();
+  }
+
+  /**
+   * Cambia el tema Moodle activo
+   */
+  setTheme(theme) {
+    this.currentTheme = theme;
+    this.THEMES.forEach(t => {
+      const themeWrap = document.getElementById(`theme-${t}`);
+      const btn = document.getElementById(`tbtn-${t}`);
+
+      if (themeWrap) {
+        themeWrap.style.display = t === theme ? 'block' : 'none';
+      }
+      if (btn) {
+        btn.classList.toggle('active', t === theme);
+      }
+    });
+  }
+
+  /**
+   * Actualiza la altura de los iframes
+   */
+  updateIframeHeight(val) {
+    const valSpan = document.getElementById('ih-val');
+    if (valSpan) {
+      valSpan.textContent = val + 'px';
+    }
+
+    this.THEMES.forEach(theme => {
+      const iframe = document.getElementById(`${theme}-iframe`);
+      if (iframe) {
+        iframe.height = val;
+      }
+    });
+  }
+
+  /**
+   * Cambia el layout (editor, split, preview)
+   */
+  setLayout(layout) {
+    this.layout = layout;
+
+    // Actualizar botones de vista
+    ['editor', 'split', 'preview'].forEach(v => {
+      const btn = document.getElementById(`vbtn-${v}`);
+      if (btn) btn.classList.toggle('active', v === layout);
+    });
+
+    if (!this.editorPanel || !this.previewPanel || !this.resizeBar) return;
+
+    // Reset classes
+    this.editorPanel.className = 'mp-editor-panel';
+    this.previewPanel.className = 'mp-preview-panel';
+    this.resizeBar.style.display = 'block';
+
+    if (layout === 'editor') {
+      this.editorPanel.classList.add('full');
+      this.previewPanel.classList.add('hidden');
+      this.resizeBar.style.display = 'none';
+    } else if (layout === 'preview') {
+      this.previewPanel.classList.add('full');
+      this.editorPanel.classList.add('hidden');
+      this.resizeBar.style.display = 'none';
+    } else {
+      this.editorPanel.style.width = '50%';
+    }
+
+    this.runCode();
+  }
+
+  /**
+   * Inicia el redimensionamiento de paneles
+   */
+  startResize(e) {
+    e.preventDefault();
+
+    if (!this.resizeBar || !this.workspace || !this.editorPanel) return;
+
+    this.resizeBar.classList.add('dragging');
+
+    const onMove = (ev) => {
+      const r = this.workspace.getBoundingClientRect();
+      const newWidth = Math.min(Math.max(((ev.clientX - r.left) / r.width) * 100, 20), 80);
+      this.editorPanel.style.width = newWidth + '%';
+    };
+
+    const onUp = () => {
+      this.resizeBar.classList.remove('dragging');
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    };
+
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  }
+
+  /**
+   * Limpia todo el código
+   */
+  clearAll() {
+    if (!confirm('¿Limpiar el código?')) return;
+    if (this.editorElement) {
+      this.editorElement.value = '';
+      this.updateLines();
+      this.runCode();
+    }
   }
 }
+
+// Instanciar la clase cuando se carga el script
+new MoodlePlayground();
